@@ -1,0 +1,41 @@
+package com.util;
+
+import java.io.IOException;
+
+import org.eclipse.jetty.server.HttpConnection;
+import org.eclipse.jetty.server.Request;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+public final class ConnMgrUtil
+{
+    private static Logger logger = LoggerFactory.getLogger(ConnMgrUtil.class);
+
+    public static void closeConnection()
+    {
+        Request jettyreq = null;
+        Object req = SystemProperties.get(SystemConstant.ORIG_REQ_KEY);
+        if (req != null && req instanceof Request)
+        {
+            jettyreq = (Request) req;
+        }
+        else
+        {
+            jettyreq = HttpConnection.getCurrentConnection().getRequest();
+        }
+
+        try
+        {
+            jettyreq.getConnection().getEndPoint().close();
+        }
+        catch (IOException e)
+        {
+            logger.error("close the connection occur some exception.", e);
+        }
+
+    }
+
+    private ConnMgrUtil()
+    {
+    }
+}

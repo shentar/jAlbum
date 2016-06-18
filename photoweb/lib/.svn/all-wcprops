@@ -1,0 +1,515 @@
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/javaprog/!svn/ver/54/rest/CXF_RESTFULL_TEST/lib
+END
+geronimo-activation_1.1_spec-1.1.jar
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/svn/javaprog/!svn/ver/44/rest/CXF_RESTFULL_TEST/lib/geronimo-activation_1.1_spec-1.1.jar
+END
+plexus-archiver-1.0-alpha-7.jar
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/svn/javaprog/!svn/ver/44/rest/CXF_RESTFULL_TEST/lib/plexus-archiver-1.0-alpha-7.jar
+END
+spring-context-3.0.5.RELEASE.jar
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/svn/javaprog/!svn/ver/44/rest/CXF_RESTFULL_TEST/lib/spring-context-3.0.5.RELEASE.jar
+END
+xmlbeans-2.4.0.jar
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn/javaprog/!svn/ver/44/rest/CXF_RESTFULL_TEST/lib/xmlbeans-2.4.0.jar
+END
+geronimo-jaxws-sun-tools-2.2.1.jar
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/svn/javaprog/!svn/ver/44/rest/CXF_RESTFULL_TEST/lib/geronimo-jaxws-sun-tools-2.2.1.jar
+END
+spring-beans-3.0.5.RELEASE.jar
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svn/javaprog/!svn/ver/44/rest/CXF_RESTFULL_TEST/lib/spring-beans-3.0.5.RELEASE.jar
+END
+serializer-2.7.1.jar
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn/javaprog/!svn/ver/44/rest/CXF_RESTFULL_TEST/lib/serializer-2.7.1.jar
+END
+geronimo-transformer-2.2.1.jar
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svn/javaprog/!svn/ver/44/rest/CXF_RESTFULL_TEST/lib/geronimo-transformer-2.2.1.jar
+END
+plexus-classworlds-1.2-alpha-10.jar
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/svn/javaprog/!svn/ver/44/rest/CXF_RESTFULL_TEST/lib/plexus-classworlds-1.2-alpha-10.jar
+END
+jetty-server-8.0.0.M2.jar
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/svn/javaprog/!svn/ver/44/rest/CXF_RESTFULL_TEST/lib/jetty-server-8.0.0.M2.jar
+END
+saaj-api-1.3.jar
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/javaprog/!svn/ver/44/rest/CXF_RESTFULL_TEST/lib/saaj-api-1.3.jar
+END
+commons-pool-1.5.5.jar
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/svn/javaprog/!svn/ver/44/rest/CXF_RESTFULL_TEST/lib/commons-pool-1.5.5.jar
+END
+geronimo-cxf-tools-2.2.1.jar
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/svn/javaprog/!svn/ver/44/rest/CXF_RESTFULL_TEST/lib/geronimo-cxf-tools-2.2.1.jar
+END
+yoko-rmi-spec-1.0.jar
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/svn/javaprog/!svn/ver/44/rest/CXF_RESTFULL_TEST/lib/yoko-rmi-spec-1.0.jar
+END
+FastInfoset-1.2.9.jar
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/svn/javaprog/!svn/ver/44/rest/CXF_RESTFULL_TEST/lib/FastInfoset-1.2.9.jar
+END
+xml-resolver-1.2.jar
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn/javaprog/!svn/ver/44/rest/CXF_RESTFULL_TEST/lib/xml-resolver-1.2.jar
+END
+log4j-1.2.15.jar
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/javaprog/!svn/ver/44/rest/CXF_RESTFULL_TEST/lib/log4j-1.2.15.jar
+END
+velocity-1.6.4.jar
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn/javaprog/!svn/ver/44/rest/CXF_RESTFULL_TEST/lib/velocity-1.6.4.jar
+END
+aopalliance-1.0.jar
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/javaprog/!svn/ver/44/rest/CXF_RESTFULL_TEST/lib/aopalliance-1.0.jar
+END
+xsdlib-2010.1.jar
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/javaprog/!svn/ver/44/rest/CXF_RESTFULL_TEST/lib/xsdlib-2010.1.jar
+END
+geronimo-deploy-jsr88-bootstrapper-2.2.1.jar
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/svn/javaprog/!svn/ver/44/rest/CXF_RESTFULL_TEST/lib/geronimo-deploy-jsr88-bootstrapper-2.2.1.jar
+END
+joda-time-1.6.2.jar
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/javaprog/!svn/ver/44/rest/CXF_RESTFULL_TEST/lib/joda-time-1.6.2.jar
+END
+wss4j-1.6.1.jar
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/javaprog/!svn/ver/44/rest/CXF_RESTFULL_TEST/lib/wss4j-1.6.1.jar
+END
+spring-expression-3.0.5.RELEASE.jar
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/svn/javaprog/!svn/ver/44/rest/CXF_RESTFULL_TEST/lib/spring-expression-3.0.5.RELEASE.jar
+END
+jsr88-deploymentfactory.jar
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/svn/javaprog/!svn/ver/44/rest/CXF_RESTFULL_TEST/lib/jsr88-deploymentfactory.jar
+END
+jaxb-api-2.2.1.jar
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn/javaprog/!svn/ver/44/rest/CXF_RESTFULL_TEST/lib/jaxb-api-2.2.1.jar
+END
+yoko-spec-corba-1.0.jar
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/javaprog/!svn/ver/44/rest/CXF_RESTFULL_TEST/lib/yoko-spec-corba-1.0.jar
+END
+xmltooling-1.3.1.jar
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn/javaprog/!svn/ver/44/rest/CXF_RESTFULL_TEST/lib/xmltooling-1.3.1.jar
+END
+commons-logging-1.1.1.jar
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/svn/javaprog/!svn/ver/44/rest/CXF_RESTFULL_TEST/lib/commons-logging-1.1.1.jar
+END
+spring-aop-3.0.5.RELEASE.jar
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/svn/javaprog/!svn/ver/44/rest/CXF_RESTFULL_TEST/lib/spring-aop-3.0.5.RELEASE.jar
+END
+geronimo-javamail_1.4_spec-1.7.1.jar
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/svn/javaprog/!svn/ver/44/rest/CXF_RESTFULL_TEST/lib/geronimo-javamail_1.4_spec-1.7.1.jar
+END
+geronimo-jaxws_2.2_spec-1.0.jar
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/svn/javaprog/!svn/ver/44/rest/CXF_RESTFULL_TEST/lib/geronimo-jaxws_2.2_spec-1.0.jar
+END
+cglib-nodep-2.1_3.jar
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/svn/javaprog/!svn/ver/44/rest/CXF_RESTFULL_TEST/lib/cglib-nodep-2.1_3.jar
+END
+xmlschema-core-2.0.jar
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/svn/javaprog/!svn/ver/44/rest/CXF_RESTFULL_TEST/lib/xmlschema-core-2.0.jar
+END
+stax2-api-3.1.1.jar
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/javaprog/!svn/ver/44/rest/CXF_RESTFULL_TEST/lib/stax2-api-3.1.1.jar
+END
+WHICH_JARS
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/javaprog/!svn/ver/44/rest/CXF_RESTFULL_TEST/lib/WHICH_JARS
+END
+wsdl4j-1.6.2.jar
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/javaprog/!svn/ver/44/rest/CXF_RESTFULL_TEST/lib/wsdl4j-1.6.2.jar
+END
+spring-jms-3.0.5.RELEASE.jar
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/svn/javaprog/!svn/ver/44/rest/CXF_RESTFULL_TEST/lib/spring-jms-3.0.5.RELEASE.jar
+END
+openws-1.4.1.jar
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/javaprog/!svn/ver/44/rest/CXF_RESTFULL_TEST/lib/openws-1.4.1.jar
+END
+spring-tx-3.0.5.RELEASE.jar
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/svn/javaprog/!svn/ver/44/rest/CXF_RESTFULL_TEST/lib/spring-tx-3.0.5.RELEASE.jar
+END
+saaj-impl-1.3.2.jar
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/javaprog/!svn/ver/44/rest/CXF_RESTFULL_TEST/lib/saaj-impl-1.3.2.jar
+END
+resttest.jar
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/javaprog/!svn/ver/54/rest/CXF_RESTFULL_TEST/lib/resttest.jar
+END
+asm-3.1.jar
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svn/javaprog/!svn/ver/44/rest/CXF_RESTFULL_TEST/lib/asm-3.1.jar
+END
+cxf-2.4.1.jar
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/javaprog/!svn/ver/65/rest/CXF_RESTFULL_TEST/lib/cxf-2.4.1.jar
+END
+isorelax-20030108.jar
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/svn/javaprog/!svn/ver/44/rest/CXF_RESTFULL_TEST/lib/isorelax-20030108.jar
+END
+asm-3.3.jar
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svn/javaprog/!svn/ver/44/rest/CXF_RESTFULL_TEST/lib/asm-3.3.jar
+END
+jetty-io-8.0.0.M2.jar
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/svn/javaprog/!svn/ver/44/rest/CXF_RESTFULL_TEST/lib/jetty-io-8.0.0.M2.jar
+END
+js-1.7R2.jar
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/javaprog/!svn/ver/44/rest/CXF_RESTFULL_TEST/lib/js-1.7R2.jar
+END
+xbean-reflect-3.7.jar
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/svn/javaprog/!svn/ver/44/rest/CXF_RESTFULL_TEST/lib/xbean-reflect-3.7.jar
+END
+servlet-api-7.0.27.jar
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/svn/javaprog/!svn/ver/44/rest/CXF_RESTFULL_TEST/lib/servlet-api-7.0.27.jar
+END
+commons-collections-3.2.1.jar
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/svn/javaprog/!svn/ver/44/rest/CXF_RESTFULL_TEST/lib/commons-collections-3.2.1.jar
+END
+jsr311-api-1.1.1.jar
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn/javaprog/!svn/ver/44/rest/CXF_RESTFULL_TEST/lib/jsr311-api-1.1.1.jar
+END
+woodstox-core-asl-4.1.1.jar
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/svn/javaprog/!svn/ver/44/rest/CXF_RESTFULL_TEST/lib/woodstox-core-asl-4.1.1.jar
+END
+asm-commons-3.1.jar
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/javaprog/!svn/ver/44/rest/CXF_RESTFULL_TEST/lib/asm-commons-3.1.jar
+END
+gshell-bootstrap.jar
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn/javaprog/!svn/ver/44/rest/CXF_RESTFULL_TEST/lib/gshell-bootstrap.jar
+END
+geronimo-kernel-2.2.1.jar
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/svn/javaprog/!svn/ver/44/rest/CXF_RESTFULL_TEST/lib/geronimo-kernel-2.2.1.jar
+END
+jettison-1.3.jar
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/javaprog/!svn/ver/44/rest/CXF_RESTFULL_TEST/lib/jettison-1.3.jar
+END
+geronimo-system-2.2.1.jar
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/svn/javaprog/!svn/ver/44/rest/CXF_RESTFULL_TEST/lib/geronimo-system-2.2.1.jar
+END
+oro-2.0.8.jar
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/javaprog/!svn/ver/44/rest/CXF_RESTFULL_TEST/lib/oro-2.0.8.jar
+END
+jaxb-xjc-2.2.1.1.jar
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn/javaprog/!svn/ver/44/rest/CXF_RESTFULL_TEST/lib/jaxb-xjc-2.2.1.1.jar
+END
+jcl-over-slf4j-1.5.5.jar
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/svn/javaprog/!svn/ver/44/rest/CXF_RESTFULL_TEST/lib/jcl-over-slf4j-1.5.5.jar
+END
+xalan-2.7.1.jar
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/javaprog/!svn/ver/44/rest/CXF_RESTFULL_TEST/lib/xalan-2.7.1.jar
+END
+neethi-3.0.0.jar
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/javaprog/!svn/ver/44/rest/CXF_RESTFULL_TEST/lib/neethi-3.0.0.jar
+END
+spring-core-3.0.5.RELEASE.jar
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/svn/javaprog/!svn/ver/44/rest/CXF_RESTFULL_TEST/lib/spring-core-3.0.5.RELEASE.jar
+END
+msv-core-2010.2.jar
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/javaprog/!svn/ver/44/rest/CXF_RESTFULL_TEST/lib/msv-core-2010.2.jar
+END
+jsr88-deploymentfactory-2.2.1.car
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/svn/javaprog/!svn/ver/44/rest/CXF_RESTFULL_TEST/lib/jsr88-deploymentfactory-2.2.1.car
+END
+geronimo-annotation_1.0_spec-1.1.1.jar
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/svn/javaprog/!svn/ver/44/rest/CXF_RESTFULL_TEST/lib/geronimo-annotation_1.0_spec-1.1.1.jar
+END
+geronimo-ws-metadata_2.0_spec-1.1.3.jar
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svn/javaprog/!svn/ver/44/rest/CXF_RESTFULL_TEST/lib/geronimo-ws-metadata_2.0_spec-1.1.3.jar
+END
+commons-cli-1.0.jar
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/javaprog/!svn/ver/44/rest/CXF_RESTFULL_TEST/lib/commons-cli-1.0.jar
+END
+opensaml-2.4.1.jar
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn/javaprog/!svn/ver/44/rest/CXF_RESTFULL_TEST/lib/opensaml-2.4.1.jar
+END
+jaxb-impl-2.2.1.1.jar
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/svn/javaprog/!svn/ver/44/rest/CXF_RESTFULL_TEST/lib/jaxb-impl-2.2.1.1.jar
+END
+geronimo-cli-2.2.1.jar
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/svn/javaprog/!svn/ver/44/rest/CXF_RESTFULL_TEST/lib/geronimo-cli-2.2.1.jar
+END
+xstream-1.3.jar
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/javaprog/!svn/ver/44/rest/CXF_RESTFULL_TEST/lib/xstream-1.3.jar
+END
+relaxngDatatype-20020414.jar
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/svn/javaprog/!svn/ver/44/rest/CXF_RESTFULL_TEST/lib/relaxngDatatype-20020414.jar
+END
+geronimo-stax-api_1.0_spec-1.0.1.jar
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/svn/javaprog/!svn/ver/44/rest/CXF_RESTFULL_TEST/lib/geronimo-stax-api_1.0_spec-1.0.1.jar
+END
+antlr-2.7.7.jar
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/javaprog/!svn/ver/44/rest/CXF_RESTFULL_TEST/lib/antlr-2.7.7.jar
+END
+geronimo-crypto-2.2.1.jar
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/svn/javaprog/!svn/ver/44/rest/CXF_RESTFULL_TEST/lib/geronimo-crypto-2.2.1.jar
+END
+geronimo-jms_1.1_spec-1.1.1.jar
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/svn/javaprog/!svn/ver/44/rest/CXF_RESTFULL_TEST/lib/geronimo-jms_1.1_spec-1.1.1.jar
+END
+jra-1.0-alpha-4.jar
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/javaprog/!svn/ver/44/rest/CXF_RESTFULL_TEST/lib/jra-1.0-alpha-4.jar
+END
+slf4j-api-1.6.4.jar
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/javaprog/!svn/ver/44/rest/CXF_RESTFULL_TEST/lib/slf4j-api-1.6.4.jar
+END
+commons-lang-2.6.jar
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn/javaprog/!svn/ver/44/rest/CXF_RESTFULL_TEST/lib/commons-lang-2.6.jar
+END
+spring-web-3.0.5.RELEASE.jar
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/svn/javaprog/!svn/ver/44/rest/CXF_RESTFULL_TEST/lib/spring-web-3.0.5.RELEASE.jar
+END
+xmlsec-1.4.5.jar
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/javaprog/!svn/ver/44/rest/CXF_RESTFULL_TEST/lib/xmlsec-1.4.5.jar
+END
+xpp3_min-1.1.4c.jar
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/javaprog/!svn/ver/44/rest/CXF_RESTFULL_TEST/lib/xpp3_min-1.1.4c.jar
+END
+spring-asm-3.0.5.RELEASE.jar
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/svn/javaprog/!svn/ver/44/rest/CXF_RESTFULL_TEST/lib/spring-asm-3.0.5.RELEASE.jar
+END

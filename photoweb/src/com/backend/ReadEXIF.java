@@ -1,0 +1,209 @@
+package com.backend;
+
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.util.Date;
+
+import javax.imageio.ImageIO;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.drew.imaging.ImageMetadataReader;
+import com.drew.metadata.Directory;
+import com.drew.metadata.Metadata;
+import com.drew.metadata.MetadataException;
+import com.drew.metadata.exif.ExifDirectoryBase;
+import com.drew.metadata.exif.ExifIFD0Directory;
+import com.drew.metadata.jpeg.JpegDirectory;
+import com.drew.metadata.png.PngDirectory;
+
+public class ReadEXIF
+{
+    private static final Logger logger = LoggerFactory.getLogger(ReadEXIF.class);
+
+    public static FileInfo genAllInfos(String filePath, boolean needExif)
+    {
+        if (filePath == null || filePath.isEmpty())
+        {
+            logger.error("input file path is empty.");
+            return null;
+        }
+        File f = new File(filePath);
+        if (!f.exists())
+        {
+            logger.error("the file is not exist: " + filePath);
+        }
+
+        try
+        {
+            FileInfo fi = new FileInfo();
+            fi.setPath(f.getCanonicalPath());
+            fi.setSize(f.length());
+            fi.setcTime(new java.sql.Date(FileTools.getFileCreateTime(new File(fi.getPath()))));
+            if (needExif)
+            {
+                Metadata metadata = ImageMetadataReader.readMetadata(f);
+                getInfo(metadata, fi);
+            }
+            return fi;
+        }
+        catch (Throwable e)
+        {
+            logger.error("error file: " + f, e);
+        }
+
+        return null;
+    }
+
+    private static void getInfo(Metadata metadata, FileInfo fi) throws MetadataException, IOException
+    {
+        Iterable<Directory> dirs = metadata.getDirectories();
+        boolean getheightandweight = false;
+        for (Directory dir : dirs)
+        {
+            if (dir != null)
+            {
+                if (dir instanceof ExifDirectoryBase)
+                {
+                    if (!getheightandweight)
+                    {
+                        if (dir.containsTag(ExifDirectoryBase.TAG_IMAGE_HEIGHT))
+                        {
+                            fi.setHeight(dir.getInt(ExifDirectoryBase.TAG_IMAGE_HEIGHT));
+                            getheightandweight = true;
+                        }
+
+                        if (dir.containsTag(ExifDirectoryBase.TAG_IMAGE_WIDTH))
+                        {
+                            fi.setWidth(dir.getInt(ExifDirectoryBase.TAG_IMAGE_WIDTH));
+                            getheightandweight = true;
+                        }
+                    }
+
+                    if (fi.getPhotoTime() == null)
+                    {
+                        Date d = dir.getDate(ExifDirectoryBase.TAG_DATETIME);
+                        if (d != null)
+                        {
+                            fi.setPhotoTime(new java.sql.Date(d.getTime()));
+                            continue;
+                        }
+
+                        d = dir.getDate(ExifIFD0Directory.TAG_DATETIME_ORIGINAL);
+                        if (d != null)
+                        {
+                            fi.setPhotoTime(new java.sql.Date(d.getTime()));
+                            continue;
+                        }
+
+                        d = dir.getDate(ExifIFD0Directory.TAG_DATETIME_DIGITIZED);
+                        if (d != null)
+                        {
+                            fi.setPhotoTime(new java.sql.Date(d.getTime()));
+                            continue;
+                        }
+                    }
+                }
+
+                if (!getheightandweight)
+                {
+                    if (dir instanceof JpegDirectory)
+                    {
+                        if (dir.containsTag(JpegDirectory.TAG_IMAGE_HEIGHT))
+                        {
+                            fi.setHeight(dir.getInt(JpegDirectory.TAG_IMAGE_HEIGHT));
+                            getheightandweight = true;
+                        }
+
+                        if (dir.containsTag(JpegDirectory.TAG_IMAGE_WIDTH))
+                        {
+                            fi.setWidth(dir.getInt(JpegDirectory.TAG_IMAGE_WIDTH));
+                            getheightandweight = true;
+                        }
+                    }
+
+                    if (dir instanceof PngDirectory)
+                    {
+                        if (dir.containsTag(PngDirectory.TAG_IMAGE_HEIGHT))
+                        {
+                            fi.setHeight(dir.getInt(PngDirectory.TAG_IMAGE_HEIGHT));
+                            getheightandweight = true;
+                        }
+
+                        if (dir.containsTag(PngDirectory.TAG_IMAGE_WIDTH))
+                        {
+                            fi.setWidth(dir.getInt(PngDirectory.TAG_IMAGE_WIDTH));
+                            getheightandweight = true;
+                        }
+                    }
+                }
+
+                if (getheightandweight && fi.getcTime() != null && fi.getPhotoTime() != null)
+                {
+                    break;
+                }
+            }
+        }
+
+        if (!getheightandweight)
+        {
+            BufferedImage bfi = ImageIO.read(new File(fi.getPath()));
+            fi.setHeight(bfi.getHeight());
+            fi.setWidth(bfi.getWidth());
+        }
+
+        if (fi.getPhotoTime() == null)
+        {
+            fi.setPhotoTime(fi.getcTime());
+        }
+        else if (fi.getPhotoTime().getTime() > fi.getcTime().getTime())
+        {
+            if (fi.getcTime().getTime() > System.currentTimeMillis())
+            {
+                fi.setPhotoTime(new java.sql.Date(System.currentTimeMillis()));
+            }
+            else
+            {
+                fi.setPhotoTime(fi.getcTime());
+            }
+        }
+    }
+
+    public static int needRotateAngel(String path)
+    {
+        try
+        {
+            Metadata metadata = ImageMetadataReader.readMetadata(new File(path));
+            Iterable<Directory> dirs = metadata.getDirectories();
+            for (Directory dir : dirs)
+            {
+                if (dir instanceof ExifDirectoryBase && dir.containsTag(ExifDirectoryBase.TAG_ORIENTATION))
+                {
+                    int angel = dir.getInt(ExifDirectoryBase.TAG_ORIENTATION);
+                    if (angel == 3)
+                    {
+                        return 180;
+                    }
+
+                    if (angel == 6)
+                    {
+                        return 90;
+                    }
+
+                    if (angel == 8)
+                    {
+                        return 270;
+                    }
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            logger.error("caused by: ", e);
+        }
+
+        return 0;
+    }
+}
