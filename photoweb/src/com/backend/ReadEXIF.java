@@ -30,22 +30,33 @@ public class ReadEXIF
             logger.error("input file path is empty.");
             return null;
         }
+        FileInfo fi = null;
         File f = new File(filePath);
         if (!f.exists())
         {
             logger.error("the file is not exist: " + filePath);
+            return fi;
         }
 
         try
         {
-            FileInfo fi = new FileInfo();
+            fi = new FileInfo();
             fi.setPath(f.getCanonicalPath());
             fi.setSize(f.length());
             fi.setcTime(new java.sql.Date(FileTools.getFileCreateTime(new File(fi.getPath()))));
             if (needExif)
             {
-                Metadata metadata = ImageMetadataReader.readMetadata(f);
-                getInfo(metadata, fi);
+                try
+                {
+                    Metadata metadata = ImageMetadataReader.readMetadata(f);
+                    getInfo(metadata, fi);
+                }
+                catch (Exception e)
+                {
+                    logger.warn("caused by: ", e);
+                    fi.setPhotoTime(new java.sql.Date(fi.getcTime().getTime()));
+                    return fi;
+                }
             }
             return fi;
         }
@@ -54,7 +65,7 @@ public class ReadEXIF
             logger.error("error file: " + f, e);
         }
 
-        return null;
+        return fi;
     }
 
     private static void getInfo(Metadata metadata, FileInfo fi) throws MetadataException, IOException
