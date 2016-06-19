@@ -39,17 +39,17 @@
         
   
     <logger name="com" additivity="false">     
-        <level value ="debug"/>       
+        <level value ="warn"/>       
         <appender-ref ref="activexAppender" />       
     </logger>
      
     <logger name="org" additivity="false">     
-        <level value ="debug"/>       
+        <level value ="warn"/>       
         <appender-ref ref="activexAppender" />       
     </logger>
      
-    <!--root>     
-        <level value ="debug"/>     
+    <root>     
+        <level value ="warn"/>     
         <appender-ref ref="myConsole"/>     
         <appender-ref ref="myFile"/>        
     </root-->     
