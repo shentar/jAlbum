@@ -1,0 +1,7 @@
+CREATE TABLE globalconf ("key" STRING PRIMARY KEY UNIQUE NOT NULL, value STRING);
+CREATE INDEX keyindex ON globalconf ("key");
+CREATE TABLE daterecords (datestr STRING NOT NULL UNIQUE, piccoount BIGINT NOT NULL, firstpichashstr STRING);
+CREATE TABLE "files" (path STRING PRIMARY KEY NOT NULL UNIQUE COLLATE BINARY, sha256 STRING (64, 64), size BIGINT, ctime DATE, phototime DATE, width BIGINT, height BIGINT);
+CREATE INDEX pathindex ON "files" (path ASC);
+CREATE TABLE uniqphotos1 (path STRING NOT NULL, hashstr STRING PRIMARY KEY UNIQUE ON CONFLICT IGNORE, size BIGINT NOT NULL, phototime DATE, width BIGINT, height BIGINT);
+CREATE TABLE uniqphotos2 (path STRING NOT NULL, hashstr STRING PRIMARY KEY UNIQUE ON CONFLICT IGNORE, size BIGINT NOT NULL, phototime DATE, width BIGINT, height BIGINT);
