@@ -22,7 +22,7 @@ public class SpecialListener implements ServletContextListener
 
     static
     {
-        DOMConfigurator.configureAndWatch("log4j.xml");
+        DOMConfigurator.configureAndWatch("log4j.xml", 6000);
         SqliteConnManger.getInstance().init();
     }
 
