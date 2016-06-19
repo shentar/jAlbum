@@ -52,6 +52,6 @@
         <level value ="warn"/>     
         <appender-ref ref="myConsole"/>     
         <appender-ref ref="myFile"/>        
-    </root-->     
+    </root>     
 </log4j:configuration>
    
