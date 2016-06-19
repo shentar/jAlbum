@@ -20,6 +20,7 @@
 		java files into class files, generate jar files">
 		<mkdir dir="${bin.dir}" />
 		<javac destdir="${bin.dir}" debug="true" deprecation="false" optimize="false" failonerror="true" includeantruntime="true">
+            <compilerarg line="-encoding UTF-8 "/>   
 			<src path="${src.dir}" />
 			<classpath refid="master-classpath" />
 		</javac>
