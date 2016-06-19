@@ -8,15 +8,16 @@ This is a local photo management system written with the Java language. Using B/
 
 ## install
 >### 1. for ARM platform, compile jdbcsqlite native so
-cd jdbcsqlitenative
+cd jdbcsqlitenativec<br/>
 make
 
 >### 2. build start.jar
 cd dedup
+<br/>
 ant 
 
 >### 3. build root.war
-cd photoweb
+cd photoweb<br/>
 sh build.sh
 
 
