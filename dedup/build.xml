@@ -29,7 +29,7 @@
 		<jar jarfile="start.jar" basedir="${bin.dir}" includes="**/*.*">
 			<manifest>
                 <attribute name="Main-Class" value="com.shentar.frontend.FrontMain"/>
-                <attribute name="Class-Path" value=". scan_lib/jetty-all-9.3.9.v20160517-uber.jar"/>
+                <attribute name="Class-Path" value=". lib/jetty-all-9.3.9.v20160517-uber.jar"/>
              </manifest>
 		</jar>
 	</target>
