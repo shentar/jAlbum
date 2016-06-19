@@ -8,7 +8,7 @@ This is a local photo management system written with the Java language. Using B/
 
 ## install
 >### 1. for ARM platform, compile jdbcsqlite native so
-cd jdbcsqlitenativec<br/>
+cd jdbcsqlitenative<br/>
 make
 
 >### 2. build start.jar
