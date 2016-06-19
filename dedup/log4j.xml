@@ -50,7 +50,7 @@
      
     <root>     
         <level value ="warn"/>     
-        <appender-ref ref="myFile"/>        
+        <appender-ref ref="activexAppender"/>        
     </root>     
 </log4j:configuration>
    
