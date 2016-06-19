@@ -7,19 +7,36 @@
 This is a local photo management system written with the Java language. Using B/S architecture. Server Servlet provides a RESTful style interface, for direct access to the web browser. Service provides a background task scans the specified directory, and collect the specified suffix photos, then generate a photo gallery. HASH fingerprint is used to recognize the duplicate pic fils. The shooting time in Exif is used to sort all the files. By identifying the picture's aspect ratio, set the appropriate display size on a Web page. Eventually in time axis to generate a year, month, and day dimensions page.
 
 ## install
->### 1. for ARM platform, compile jdbcsqlite native so
+>### 0. For ARM platform, such as Raspberry3 ubuntu-mate system, compile jdbcsqlite native so first. Other platform may not need this.
 cd jdbcsqlitenative<br/>
 make
 
->### 2. build start.jar
+>### 1. Build start.jar
 cd dedup
 <br/>
 ant 
 
->### 3. build root.war
+>### 2. Build root.war
 cd photoweb<br/>
 sh build.sh
 
+
+## start
+>### 0. For the Raspberry3 ubuntu-mate system
+cd jAlbum<br/>
+sh start_for_Raspberry3.sh
+<br/><br/>
+-Dinputdir=/media/Ent/<br/>
+-Dthreadcount=4<br/>
+-Dhashalog=MD5<br/>
+-Dinputdir specify the folder which nedd to scan.<br/>
+-Dthreadcount specify the size of thread pool.<br/>
+-Dhashalog specify the file HASH fingerprint Algorithm.<br/>
+<br/>
+
+>### 1. For other platforms 
+cd dedup<br/>
+java -Dinputdir=/media/Ent/ -Dthreadcount=64 -Dhashalog=sha256 -jar start.jar
 
 
 
