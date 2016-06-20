@@ -36,7 +36,10 @@ sh start_for_Raspberry3.sh
 
 >### 1. For other platforms 
 cd dedup<br/>
-java -Dinputdir=/media/Ent/ -Dthreadcount=64 -Dhashalog=sha256 -jar start.jar
+java -Dinputdir=/media/Ent/ -Dthreadcount=64 -Dhashalog=SHA-256 -jar start.jar
+
+## access
+Open the url: http://ip:2148/ in any Web Browser.
 
 
 
