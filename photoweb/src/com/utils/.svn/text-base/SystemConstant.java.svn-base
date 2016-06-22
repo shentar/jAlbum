@@ -1,6 +1,0 @@
-package com.util;
-
-public class SystemConstant
-{
-    public static final String ORIG_REQ_KEY = "orig_req_key";
-}
