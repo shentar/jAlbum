@@ -33,13 +33,15 @@ public class GenerateHTML
         sb.append(getHtmlHead());
         sb.append(
                 "<table style=\"text-align: center;\" width=\"100%\" height=\"100%\" border=\"0\" bordercolor=\"#000000\">");
-        sb.append("<tr><td width=\"20%\" bordercolor=\"#000000\"><a href=\"?prev=" + firstP.getHash256() + "&count=25"
+        sb.append("<tr><td width=\"33%\" bordercolor=\"#000000\"><a href=\"?prev=" + firstP.getHash256() + "&count=25"
                 + "\">上一页</a></td>");
-        sb.append("<td width=\"20%\" bordercolor=\"#000000\"><a href=\"?next=" + endP.getHash256() + "&count=25"
-                + "\">下一页</a></td>");
-        sb.append("<td width=\"20%\" bordercolor=\"#000000\">" + firstP.getPhotoTime() + " ~ " + endP.getPhotoTime()
-                + "</td></tr>");
-
+        sb.append("<td width=\"33%\" bordercolor=\"#000000\">" + firstP.getPhotoTime() + " ~ " + endP.getPhotoTime()
+                + "</td>");
+        sb.append("<td width=\"33%\" bordercolor=\"#000000\"><a href=\"?next=" + endP.getHash256() + "&count=25"
+                + "\">下一页</a></td></tr></table>");
+        sb.append("<br/><br/>");
+        sb.append(
+                "<table style=\"text-align: center;\" width=\"100%\" height=\"100%\" border=\"0\" bordercolor=\"#000000\">");
         int i = 0;
         int start = 0;
         int end = 0;
@@ -51,12 +53,12 @@ public class GenerateHTML
                 sb.append("<tr>");
             }
 
-            sb.append("<td width=\"20%\" height=\"18%\" bordercolor=\"#000000\">");
+            sb.append("<td width=\"20%\" height=\"18%\" bordercolor=\"#000000\"><br/>");
             sb.append("<a href=\"/photos/" + f.getHash256() + "\" target=\"_blank\">");
             sb.append("<img " + (restrictSize(f) ? "width" : "height") + "=\"340px\" src = \"/photos/" + f.getHash256()
                     + "?content=true" + "\"></img>" + "</a></td>");
 
-            if (i + 1 % 5 == 0)
+            if ((i + 1) % 5 == 0)
             {
                 end++;
                 sb.append("</tr>");
@@ -108,15 +110,13 @@ public class GenerateHTML
                 {
                     ylst.append("<td width=\"5%\" height=\"30px\" bordercolor=\"#000000\">");
                     ylst.append("<a href=\"/\">首页</a></td>");
-                }
-                else
-                {
-
-                    ylst.append("<td width=\"5%\" bordercolor=\"#000000\">");
-                    ylst.append("<a href=\"/year/" + f + "\" >" + f + "</a></td>");
+                    i++;
                 }
 
-                if (i + 1 % 20 == 0)
+                ylst.append("<td width=\"5%\" bordercolor=\"#000000\">");
+                ylst.append("<a href=\"/year/" + f + "\" >" + f + "</a></td>");
+
+                if ((i + 1) % 20 == 0)
                 {
                     end++;
                     ylst.append("</tr>");
@@ -129,7 +129,7 @@ public class GenerateHTML
                 ylst.append("</tr>");
             }
 
-            ylst.append("</table>");
+            ylst.append("</table><br/>");
 
             hh += ylst;
         }
@@ -174,13 +174,24 @@ public class GenerateHTML
         else
         {
             StringBuffer sb = new StringBuffer(getHtmlHead());
-            sb.append("<table width=\"100%\" border=\"0\" align=\"center\" style=\"text-align:center\">");
-            sb.append("<tr><td></td><td style=\"text-align:center\">" + f.getPhotoTime() + "</td><td></td></tr>");
-            sb.append("<tr><td height=\"100%\" width=\"60\"><a href=\"/?prev=" + f.getHash256() + "&count=1" + "\">上一张"
-                    + "</a></td><td width=\"90%\" height=\"100%\"><a target=\"_blank\" href=\"/photos/" + f.getHash256()
-                    + "?content=true" + "\"><img " + (restrictSize(f) ? "width" : "height") + "=\"900px\" src=\"/photos/" + f.getHash256() + "?content=true"
-                    + "\"/></a></td>" + "<td height=\"100%\" width=\"60\"><a href=\"/?next=" + f.getHash256()
-                    + "&count=1" + "\">下一张</a></td></tr></table>");
+
+            sb.append(
+                    "<table style=\"text-align: center;\" width=\"100%\" height=\"100%\" border=\"0\" bordercolor=\"#000000\">");
+            sb.append("<tr><td width=\"33%\" bordercolor=\"#000000\"><a href=\"/?prev=" + f.getHash256() + "&count=1"
+                    + "\">上一张</a></td>");
+            sb.append("<td width=\"33%\" bordercolor=\"#000000\">" + f.getPhotoTime() + "</td>");
+            sb.append("<td width=\"33%\" bordercolor=\"#000000\"><a href=\"/?next=" + f.getHash256() + "&count=1"
+                    + "\">下一张</a></td></tr></table>");
+            sb.append("<br/><br/>");
+            sb.append(
+                    "<table style=\"text-align: center;\" width=\"100%\" height=\"100%\" border=\"0\" bordercolor=\"#000000\">");
+            sb.append("<tr>");
+
+            sb.append("<td width=\"100%\" height=\"100%\" bordercolor=\"#000000\"><br/>");
+            sb.append("<a href=\"/photos/" + f.getHash256() + "?content=true" + "\" target=\"_blank\">");
+            sb.append("<img " + (restrictSize(f) ? "width" : "height") + "=\"900px\" src = \"/photos/" + f.getHash256()
+                    + "?content=true" + "\"></img>" + "</a></td></tr></table>");
+
             sb.append(getHtmlFoot());
             return sb.toString();
         }
@@ -230,10 +241,10 @@ public class GenerateHTML
                 sb.append("<td width=\"25%\" height=\"31%\" bordercolor=\"#000000\">");
                 sb.append("<a href=\"/month/" + year + mo + "\" >");
                 sb.append("<img " + (restrictSize(f) ? "width" : "height") + "=\"280px\" src = \"/photos/" + pic
-                        + "?content=true" + "\"></img>" + "</a><br/><b>" + year + mo + "月份 (" + filecount
+                        + "?content=true" + "\"></img>" + "</a><br/><b>" + year + "-" + mo + "月份 (" + filecount
                         + "张)</b></td>");
             }
-            if (i + 1 % 4 == 0)
+            if ((i + 1) % 4 == 0)
             {
                 end++;
                 sb.append("</tr>");
@@ -299,7 +310,7 @@ public class GenerateHTML
             sb.append("<img " + (restrictSize(f) ? "width" : "height") + "=\"340px\" src = \"/photos/" + f.getHash256()
                     + "?content=true" + "\"></img>" + "</a></td>");
 
-            if (i + 1 % 5 == 0)
+            if ((i + 1) % 5 == 0)
             {
                 end++;
                 sb.append("</tr>");
@@ -353,10 +364,10 @@ public class GenerateHTML
                 sb.append("<td width=\"25%\" height=\"31%\" bordercolor=\"#000000\">");
                 sb.append("<a href=\"/day/" + monthstr + day + " \" >");
                 sb.append("<img " + (restrictSize(f) ? "width" : "height") + "=\"280px\" src = \"/photos/" + pic
-                        + "?content=true" + "\"></img>" + "</a><br/><b>" + monthstr + day + " (" + mr.getPiccount()
-                        + "张)</b></td>");
+                        + "?content=true" + "\"></img>" + "</a><br/><b>" + monthstr + "-" + day + " ("
+                        + mr.getPiccount() + "张)</b></td>");
             }
-            if (i + 1 % 4 == 0)
+            if ((i + 1) % 4 == 0)
             {
                 end++;
                 sb.append("</tr>");

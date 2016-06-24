@@ -105,6 +105,7 @@ public class FileTools
         return true;
     }
 
+    @SuppressWarnings("unused")
     private static void rotateOneFile(FileInfo fi, int angel)
     {
         FileTools.rotatePhonePhoto(fi.getPath(), angel);

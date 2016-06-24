@@ -118,7 +118,7 @@ public class RestRootWebService extends HttpServlet
     public Object getPhoto(@PathParam("id") String id, @Context HttpServletRequest req,
             @Context HttpServletResponse response, @Context HttpHeaders headers, InputStream body)
     {
-        if (id != null && !id.isEmpty())
+        if (StringUtils.isNotBlank(id))
         {
             return new ObjectService(id);
         }
