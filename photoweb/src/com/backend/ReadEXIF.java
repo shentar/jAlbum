@@ -16,6 +16,7 @@ import com.drew.metadata.Metadata;
 import com.drew.metadata.MetadataException;
 import com.drew.metadata.exif.ExifDirectoryBase;
 import com.drew.metadata.exif.ExifIFD0Directory;
+import com.drew.metadata.exif.ExifSubIFDDirectory;
 import com.drew.metadata.jpeg.JpegDirectory;
 import com.drew.metadata.png.PngDirectory;
 
@@ -72,12 +73,23 @@ public class ReadEXIF
     {
         Iterable<Directory> dirs = metadata.getDirectories();
         boolean getheightandweight = false;
+        ExifIFD0Directory dirFD0 = null;
+        ExifSubIFDDirectory dirSub = null;
         for (Directory dir : dirs)
         {
             if (dir != null)
             {
                 if (dir instanceof ExifDirectoryBase)
                 {
+                    if (dir instanceof ExifIFD0Directory)
+                    {
+                        dirFD0 = (ExifIFD0Directory) dir;
+                    }
+                    else if (dir instanceof ExifSubIFDDirectory)
+                    {
+                        dirSub = (ExifSubIFDDirectory) dir;
+                    }
+
                     if (!getheightandweight)
                     {
                         if (dir.containsTag(ExifDirectoryBase.TAG_IMAGE_HEIGHT))
@@ -90,30 +102,6 @@ public class ReadEXIF
                         {
                             fi.setWidth(dir.getInt(ExifDirectoryBase.TAG_IMAGE_WIDTH));
                             getheightandweight = true;
-                        }
-                    }
-
-                    if (fi.getPhotoTime() == null)
-                    {
-                        Date d = dir.getDate(ExifDirectoryBase.TAG_DATETIME);
-                        if (d != null)
-                        {
-                            fi.setPhotoTime(new java.sql.Date(d.getTime()));
-                            continue;
-                        }
-
-                        d = dir.getDate(ExifIFD0Directory.TAG_DATETIME_ORIGINAL);
-                        if (d != null)
-                        {
-                            fi.setPhotoTime(new java.sql.Date(d.getTime()));
-                            continue;
-                        }
-
-                        d = dir.getDate(ExifIFD0Directory.TAG_DATETIME_DIGITIZED);
-                        if (d != null)
-                        {
-                            fi.setPhotoTime(new java.sql.Date(d.getTime()));
-                            continue;
                         }
                     }
                 }
@@ -150,11 +138,10 @@ public class ReadEXIF
                         }
                     }
                 }
-
-                if (getheightandweight && fi.getcTime() != null && fi.getPhotoTime() != null)
-                {
-                    break;
-                }
+            }
+            if (dirFD0 != null && dirSub != null && getheightandweight)
+            {
+                break;
             }
         }
 
@@ -165,11 +152,29 @@ public class ReadEXIF
             fi.setWidth(bfi.getWidth());
         }
 
-        if (fi.getPhotoTime() == null)
+        Date d = null;
+        if (dirSub != null)
+        {
+            d = dirSub.getDate(ExifDirectoryBase.TAG_DATETIME_ORIGINAL);
+            if (d == null)
+            {
+                d = dirSub.getDate(ExifDirectoryBase.TAG_DATETIME_DIGITIZED);
+            }
+        }
+
+        if (d == null)
+        {
+            if (dirFD0 != null)
+            {
+                d = dirFD0.getDate(ExifDirectoryBase.TAG_DATETIME);
+            }
+        }
+
+        if (d == null)
         {
             fi.setPhotoTime(fi.getcTime());
         }
-        else if (fi.getPhotoTime().getTime() > fi.getcTime().getTime())
+        else if (d.getTime() > fi.getcTime().getTime())
         {
             if (fi.getcTime().getTime() > System.currentTimeMillis())
             {
@@ -179,6 +184,10 @@ public class ReadEXIF
             {
                 fi.setPhotoTime(fi.getcTime());
             }
+        }
+        else
+        {
+            fi.setPhotoTime(new java.sql.Date(d.getTime()));
         }
     }
 
