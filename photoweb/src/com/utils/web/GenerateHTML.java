@@ -178,7 +178,7 @@ public class GenerateHTML
             sb.append("<tr><td></td><td style=\"text-align:center\">" + f.getPhotoTime() + "</td><td></td></tr>");
             sb.append("<tr><td height=\"100%\" width=\"60\"><a href=\"/?prev=" + f.getHash256() + "&count=1" + "\">上一张"
                     + "</a></td><td width=\"90%\" height=\"100%\"><a target=\"_blank\" href=\"/photos/" + f.getHash256()
-                    + "?content=true" + "\"><img width=\"900px\" src=\"/photos/" + f.getHash256() + "?content=true"
+                    + "?content=true" + "\"><img " + (restrictSize(f) ? "width" : "height") + "=\"900px\" src=\"/photos/" + f.getHash256() + "?content=true"
                     + "\"/></a></td>" + "<td height=\"100%\" width=\"60\"><a href=\"/?next=" + f.getHash256()
                     + "&count=1" + "\">下一张</a></td></tr></table>");
             sb.append(getHtmlFoot());
