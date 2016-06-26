@@ -216,7 +216,7 @@ public class BaseSqliteStore
         }
     }
 
-    public void scanAllRecords()
+    public void scanAllRecords(List<String> excludeDirs)
     {
         lock.readLock().lock();
         ResultSet res = null;
@@ -230,11 +230,17 @@ public class BaseSqliteStore
             while (res.next())
             {
                 FileInfo fi = getFileInfoFromTable(res);
-                if (FileTools.checkFileDeleted(fi))
+                if (FileTools.checkFileDeleted(fi, excludeDirs))
                 {
                     deleteOneRecord(fi);
+                    PerformanceStatistics.getInstance().addOneFile(true);
+                }
+                else
+                {
+                    PerformanceStatistics.getInstance().addOneFile(false);
                 }
             }
+
             prep.close();
         }
         catch (Exception e)

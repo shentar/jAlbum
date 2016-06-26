@@ -14,6 +14,7 @@ import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.text.SimpleDateFormat;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -66,7 +67,7 @@ public class FileTools
         }
     }
 
-    public static boolean checkFileDeleted(final FileInfo fi) throws IOException
+    public static boolean checkFileDeleted(final FileInfo fi, List<String> excludeDirs) throws IOException
     {
         if (fi != null)
         {
@@ -75,6 +76,17 @@ public class FileTools
             {
                 if (fi.getcTime().getTime() == FileTools.getFileCreateTime(new File(fi.getPath())))
                 {
+                    if (excludeDirs !=null)
+                    {
+                        for (String dir : excludeDirs)
+                        {
+                            if (fi.getPath().startsWith(dir))
+                            {
+                                return true;
+                            }
+                        }
+                    }
+                    
                     return false;
                 }
 

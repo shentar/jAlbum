@@ -25,6 +25,13 @@ public class PerformanceStatistics
         return instance;
     }
 
+    public void reset()
+    {
+        careFileCount.set(0);
+        totalFileCount.set(0);
+        timenow.set(System.currentTimeMillis());
+    }
+
     public void addOneFile(boolean isCare)
     {
         totalFileCount.incrementAndGet();

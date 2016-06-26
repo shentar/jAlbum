@@ -29,11 +29,12 @@ public class ToolMain
         {
             logger.warn("start one roundle.");
             filecount.set(0);
-
-            metaDataStore.scanAllRecords();
-
+            PerformanceStatistics.getInstance().reset();
             List<String> excludeDirs = AppConfig.getInstance().getExcludedir();
-
+            metaDataStore.scanAllRecords(excludeDirs);  
+            PerformanceStatistics.getInstance().printPerformanceLog(System.currentTimeMillis());
+            
+            PerformanceStatistics.getInstance().reset();
             for (String dir : AppConfig.getInstance().getInputDir())
             {
                 mapAllfiles(new File(dir), excludeDirs);
@@ -45,11 +46,9 @@ public class ToolMain
             }
 
             PerformanceStatistics.getInstance().printPerformanceLog(System.currentTimeMillis());
-
+            
             photostore.getDupFiles();
-
             datestore.refreshDate();
-
             logger.warn("completed one roundle.");
         }
         catch (Throwable th)
