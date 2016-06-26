@@ -4,6 +4,7 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Date;
@@ -53,7 +54,7 @@ public class ObjectService
                 builder.header("Expires", new Date(expirtime));
                 builder.header("Cache-Control", "max-age=" + expirAge);
                 builder.header("Content-Disposition", "filename=" + new File(f.getPath()).getName());
-                builder.header("PicFileFullPath", f.getPath());
+                builder.header("PicFileFullPath", URLEncoder.encode(f.getPath(), "UTF-8"));
                 logger.info("the file is: {}, Mime: {}", f, contenttype);
             }
             else
