@@ -2,6 +2,6 @@
 
 cd dedup
 
-"%JAVA_HOME%/bin/java" -Dinputdir=/ -Dusesqlite=true -jar start.jar >result.txt
+java start.jar >result.txt
 
 pause
