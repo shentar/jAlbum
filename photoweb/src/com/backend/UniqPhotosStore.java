@@ -240,7 +240,7 @@ public class UniqPhotosStore
             prep = conn.prepareStatement("delete from uniqphotos2;");
             prep.execute();
             prep.close();
-            System.err.println("delete all records form uniqphotos2.");
+            logger.warn("delete all records form uniqphotos2.");
 
             prep = conn.prepareStatement(
                     "insert into uniqphotos2(path,hashstr,size,phototime,width,height) " + "select path,sha256,size,"
@@ -248,7 +248,7 @@ public class UniqPhotosStore
                             + "group by sha256 ORDER BY phototime DESC");
             prep.execute();
             prep.close();
-            System.err.println("insert new records to uniqphotos2.");
+            logger.warn("insert new records to uniqphotos2.");
 
             try
             {
@@ -256,12 +256,12 @@ public class UniqPhotosStore
                 prep = conn.prepareStatement("delete from uniqphotos1;");
                 prep.execute();
                 prep.close();
-                System.err.println("delete all records form uniqphotos1.");
+                logger.warn("delete all records form uniqphotos1.");
 
                 prep = conn.prepareStatement("insert into uniqphotos1 select * from uniqphotos2;");
                 prep.execute();
                 prep.close();
-                System.err.println("insert new records to uniqphotos1.");
+                logger.warn("insert new records to uniqphotos1.");
             }
             finally
             {

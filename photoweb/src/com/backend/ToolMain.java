@@ -31,10 +31,12 @@ public class ToolMain
             filecount.set(0);
             PerformanceStatistics.getInstance().reset();
             List<String> excludeDirs = AppConfig.getInstance().getExcludedir();
+            logger.warn("the exclude dirs are: " + excludeDirs);
             metaDataStore.scanAllRecords(excludeDirs);  
             PerformanceStatistics.getInstance().printPerformanceLog(System.currentTimeMillis());
             
             PerformanceStatistics.getInstance().reset();
+            logger.warn("start to scan the filesystem which specified by the config file: " + AppConfig.getInstance().getInputDir());
             for (String dir : AppConfig.getInstance().getInputDir())
             {
                 mapAllfiles(new File(dir), excludeDirs);
@@ -46,6 +48,7 @@ public class ToolMain
             }
 
             PerformanceStatistics.getInstance().printPerformanceLog(System.currentTimeMillis());
+            logger.warn("end to scan the filesystem.");
             
             photostore.getDupFiles();
             datestore.refreshDate();

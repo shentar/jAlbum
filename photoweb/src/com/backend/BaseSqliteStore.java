@@ -222,7 +222,8 @@ public class BaseSqliteStore
         ResultSet res = null;
         PreparedStatement prep = null;
         try
-        {
+        {   
+            logger.warn("start to check all records in the files table.");
             prep = conn.prepareStatement("select * from files;");
             res = prep.executeQuery();
             lock.readLock().unlock();
@@ -242,6 +243,7 @@ public class BaseSqliteStore
             }
 
             prep.close();
+            logger.warn("end checking all records in the files table.");
         }
         catch (Exception e)
         {
