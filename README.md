@@ -28,28 +28,23 @@ edit the jalbum.xml
 <br/><br/>
 ```xml
 <?xml version="1.0" encoding="utf-8" ?>  
-
 <config>
     <picfilesuffix>
         <suffix>jpg</suffix>
         <suffix>jpeg</suffix>
         <suffix>png</suffix>
     </picfilesuffix>   
-    
     <minfilesize>51200</minfilesize>
     <threadcount>20</threadcount>
     <hashalog>MD5</hashalog>
-    
     <inputdir>
         <dir>D:\</dir>
         <dir>C:\</dir>
     </inputdir>
-    
     <excludedir>
         <dir>C:\windows\</dir>
         <dir>C:\Program Files\</dir>
     </excludedir>
-    
 </config>
 ```
 ***picfilesuffix*** the file type with the suffix that can be scaned by the tool. It is ignorecase. <br/>
