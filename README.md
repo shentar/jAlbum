@@ -38,12 +38,12 @@ edit the jalbum.xml
     <threadcount>20</threadcount>
     <hashalog>MD5</hashalog>
     <inputdir>
-        <dir>D:\</dir>
-        <dir>C:\</dir>
+        <dir>D:\\</dir>
+        <dir>C:\\</dir>
     </inputdir>
     <excludedir>
-        <dir>C:\windows\</dir>
-        <dir>C:\Program Files\</dir>
+        <dir>C:\\windows\\</dir>
+        <dir>C:\\Program Files\\</dir>
     </excludedir>
 </config>
 ```
