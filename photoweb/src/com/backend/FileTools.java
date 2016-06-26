@@ -22,28 +22,15 @@ import javax.imageio.ImageIO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.utils.conf.AppConfig;
+
 public class FileTools
 {
     private static final Logger logger = LoggerFactory.getLogger(FileTools.class);
-    public static final String[] filesufixs = { ".jpg", ".jpeg", ".png" };
-    public static final String[] picsuffixs = { ".jpg", ".jpeg", ".png" };
-    public static String inputdir = System.getProperty("inputdir", "/");
     public static boolean usesqlite = "true".equals(System.getProperty("usesqlite", "true")) ? true : false;
     public static long lastScanTime = 0;
-    public static int minfilesize = 50 * 1024;
-    public static int threadcount = Integer.getInteger("threadcount", 20);
-    public static String hashalog = System.getProperty("hashalog", "SHA-256");
-    public static final ExecutorService threadPool = Executors.newFixedThreadPool(threadcount);
-
-    public static void readConfig()
-    {
-        if (FileTools.inputdir == null || FileTools.inputdir.isEmpty())
-        {
-            logger.error("input dir is empty.");
-            return;
-        }
-
-    }
+    public static final ExecutorService threadPool = Executors
+            .newFixedThreadPool(AppConfig.getInstance().getThreadCount());
 
     public static void readShortFileContent(byte[] buffer, File f) throws FileNotFoundException, IOException
     {
@@ -84,7 +71,7 @@ public class FileTools
         if (fi != null)
         {
             File f = new File(fi.getPath());
-            if (f.isFile() && f.length() > FileTools.minfilesize)
+            if (f.isFile() && f.length() > AppConfig.getInstance().getMinFileSize())
             {
                 if (fi.getcTime().getTime() == FileTools.getFileCreateTime(new File(fi.getPath())))
                 {

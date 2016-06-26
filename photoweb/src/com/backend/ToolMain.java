@@ -3,10 +3,13 @@ package com.backend;
 import java.io.File;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.utils.conf.AppConfig;
 
 public class ToolMain
 {
@@ -29,7 +32,12 @@ public class ToolMain
 
             metaDataStore.scanAllRecords();
 
-            mapAllfiles(new File(FileTools.inputdir));
+            List<String> excludeDirs = AppConfig.getInstance().getExcludedir();
+
+            for (String dir : AppConfig.getInstance().getInputDir())
+            {
+                mapAllfiles(new File(dir), excludeDirs);
+            }
 
             while (filecount.get() != 0)
             {
@@ -50,9 +58,10 @@ public class ToolMain
         }
     }
 
-    public static void mapAllfiles(final File f) throws IOException, InterruptedException, NoSuchAlgorithmException
+    public static void mapAllfiles(final File f, List<String> excludeDirs)
+            throws IOException, InterruptedException, NoSuchAlgorithmException
     {
-        if (f == null)
+        if (f == null || excludeDirs == null)
         {
             return;
         }
@@ -72,6 +81,15 @@ public class ToolMain
             }
             else
             {
+                for (String s : excludeDirs)
+                {
+                    if (f.getCanonicalPath().startsWith(s))
+                    {
+                        logger.info("this folder is execluded: " + f.getCanonicalPath());
+                        return;
+                    }
+                }
+
                 File[] files = f.listFiles();
                 if (files == null)
                 {
@@ -81,7 +99,7 @@ public class ToolMain
 
                 for (File cf : files)
                 {
-                    mapAllfiles(cf);
+                    mapAllfiles(cf, excludeDirs);
                 }
             }
         }
@@ -92,9 +110,9 @@ public class ToolMain
         try
         {
             boolean isCare = false;
-            for (String s : FileTools.filesufixs)
+            for (String s : AppConfig.getInstance().getFileSuffix())
             {
-                if (f.getName().toLowerCase().endsWith(s) && f.length() > FileTools.minfilesize)
+                if (f.getName().toLowerCase().endsWith(s) && f.length() > AppConfig.getInstance().getMinFileSize())
                 {
                     isCare = true;
                     if (metaDataStore.checkIfAlreadyExist(f))

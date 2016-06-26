@@ -8,6 +8,8 @@ import java.io.InputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+import com.utils.conf.AppConfig;
+
 public class FileSHA256Caculater
 {
     public static final int BUFFERED_SIZE = 1024 * 128;
@@ -19,7 +21,7 @@ public class FileSHA256Caculater
             return null;
         }
 
-        MessageDigest md = MessageDigest.getInstance(FileTools.hashalog);
+        MessageDigest md = MessageDigest.getInstance(AppConfig.getInstance().getHashAlog());
         InputStream in = null;
         try
         {

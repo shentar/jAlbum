@@ -6,11 +6,14 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.utils.conf.AppConfig;
 
 public class BaseSqliteStore
 {
@@ -166,7 +169,8 @@ public class BaseSqliteStore
 
     private void checkPhotoTime(FileInfo oldfi) throws IOException
     {
-        for (String s : FileTools.picsuffixs)
+        List<String> suffixs = AppConfig.getInstance().getFileSuffix();
+        for (String s : suffixs)
         {
             if (oldfi.getPath().toLowerCase().endsWith(s))
             {
