@@ -22,26 +22,57 @@ sh build.sh
 
 
 ## start
->### 0. For the Raspberry3 ubuntu-mate system
-cd jAlbum<br/>
-sh start_for_Raspberry3.sh
+>### 0. Configure the jalbum.xml file.
+cd jAlbum/dedup<br/>
+edit the jalbum.xml
 <br/><br/>
--Dinputdir=/media/Ent/<br/>
--Dthreadcount=4<br/>
--Dhashalog=MD5<br/>
--Dinputdir specify the folder which nedd to scan.<br/>
--Dthreadcount specify the size of thread pool.<br/>
--Dhashalog specify the file HASH fingerprint Algorithm.<br/>
+```xml
+<?xml version="1.0" encoding="utf-8" ?>  
+
+<config>
+    <picfilesuffix>
+        <suffix>jpg</suffix>
+        <suffix>jpeg</suffix>
+        <suffix>png</suffix>
+    </picfilesuffix>   
+    
+    <minfilesize>51200</minfilesize>
+    <threadcount>20</threadcount>
+    <hashalog>MD5</hashalog>
+    
+    <inputdir>
+        <dir>D:\</dir>
+        <dir>C:\</dir>
+    </inputdir>
+    
+    <excludedir>
+        <dir>C:\windows\</dir>
+        <dir>C:\Program Files\</dir>
+    </excludedir>
+    
+</config>
+```
+***picfilesuffix*** the file type with the suffix that can be scaned by the tool. It is ignorecase. <br/>
+***inputdir*** specify the folder which nedd to scan.<br/>
+***threadcount*** specify the size of thread pool.<br/>
+***hashalog*** specify the file HASH fingerprint Algorithm. The common algorithms are: SHA-256, MD5, SHA-1. You can find the stand algorithm names in [MessageDigest Algorithms](https://docs.oracle.com/javase/8/docs/technotes/guides/security/StandardNames.html#MessageDigest)<br/>
+***excludedir*** specify the folder which you do not like the tool scan and display the content of it.
 <br/>
 
->### 1. For other platforms 
-cd dedup<br/>
-java -Dinputdir=/media/Ent/ -Dthreadcount=64 -Dhashalog=SHA-256 -jar start.jar
+>### 1. Start the tool
+For the ARM platforms like Raspberry3 ubuntu-mate system: <br/>
+cd jAlbum<br/>
+sh start_for_Raspberry3.sh <br/> <br/>
+
+For other platforms: <br/>
+cd jAlbum/dedup <br/>
+java -jar start.jar <br/>
+
 
 ## access
 >###
 
-Open the url: http://ip:2148/ in any Web Browser to access the photo album .
+Open the url: http://ip:2148/ in any Web Browser to access the photo album.
 
 
 
