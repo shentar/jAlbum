@@ -53,6 +53,7 @@ public class ObjectService
                 builder.header("Expires", new Date(expirtime));
                 builder.header("Cache-Control", "max-age=" + expirAge);
                 builder.header("Content-Disposition", "filename=" + new File(f.getPath()).getName());
+                builder.header("PicFileFullPath", f.getPath());
                 logger.info("the file is: {}, Mime: {}", f, contenttype);
             }
             else
