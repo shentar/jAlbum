@@ -2,6 +2,6 @@
 
 cd dedup
 
-java start.jar >result.txt
+java -jar start.jar >result.txt
 
 pause
