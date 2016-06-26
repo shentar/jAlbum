@@ -58,15 +58,12 @@ edit the jalbum.xml
 For the ARM platforms like Raspberry3 ubuntu-mate system: <br/>
 cd jAlbum<br/>
 sh start_for_Raspberry3.sh <br/> <br/>
-
 For other platforms: <br/>
 cd jAlbum/dedup <br/>
 java -jar start.jar <br/>
 
-
 ## access
 >###
-
 Open the url: http://ip:2148/ in any Web Browser to access the photo album.
 
 
