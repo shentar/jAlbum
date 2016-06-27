@@ -56,7 +56,7 @@ public class GenerateHTML
             sb.append("<td width=\"20%\" height=\"18%\" bordercolor=\"#000000\"><br/>");
             sb.append("<a href=\"/photos/" + f.getHash256() + "\" target=\"_blank\">");
             sb.append("<img " + (restrictSize(f) ? "width" : "height") + "=\"340px\" src = \"/photos/" + f.getHash256()
-                    + "?content=true" + "\"></img>" + "</a></td>");
+                    + "?content=true&size=340" + "\"></img>" + "</a></td>");
 
             if ((i + 1) % 5 == 0)
             {
@@ -241,7 +241,7 @@ public class GenerateHTML
                 sb.append("<td width=\"25%\" height=\"31%\" bordercolor=\"#000000\">");
                 sb.append("<a href=\"/month/" + year + mo + "\" >");
                 sb.append("<img " + (restrictSize(f) ? "width" : "height") + "=\"280px\" src = \"/photos/" + pic
-                        + "?content=true" + "\"></img>" + "</a><br/><b>" + year + "-" + mo + "月份 (" + filecount
+                        + "?content=true&size=280" + "\"></img>" + "</a><br/><b>" + year + "-" + mo + "月份 (" + filecount
                         + "张)</b></td>");
             }
             if ((i + 1) % 4 == 0)
@@ -308,7 +308,7 @@ public class GenerateHTML
             sb.append("<td width=\"20%\" height=\"18%\" bordercolor=\"#000000\">");
             sb.append("<a href=\"/photos/" + f.getHash256() + "\" target=\"_blank\">");
             sb.append("<img " + (restrictSize(f) ? "width" : "height") + "=\"340px\" src = \"/photos/" + f.getHash256()
-                    + "?content=true" + "\"></img>" + "</a></td>");
+                    + "?content=true&size=340" + "\"></img>" + "</a></td>");
 
             if ((i + 1) % 5 == 0)
             {
@@ -364,7 +364,7 @@ public class GenerateHTML
                 sb.append("<td width=\"25%\" height=\"31%\" bordercolor=\"#000000\">");
                 sb.append("<a href=\"/day/" + monthstr + day + " \" >");
                 sb.append("<img " + (restrictSize(f) ? "width" : "height") + "=\"280px\" src = \"/photos/" + pic
-                        + "?content=true" + "\"></img>" + "</a><br/><b>" + monthstr + "-" + day + " ("
+                        + "?content=true&size=280" + "\"></img>" + "</a><br/><b>" + monthstr + "-" + day + " ("
                         + mr.getPiccount() + "张)</b></td>");
             }
             if ((i + 1) % 4 == 0)

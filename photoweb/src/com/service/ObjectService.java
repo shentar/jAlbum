@@ -4,6 +4,7 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -16,10 +17,12 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.backend.FileInfo;
+import com.backend.ThumbnailGenerator;
 import com.backend.UniqPhotosStore;
 import com.utils.web.GenerateHTML;
 
@@ -45,17 +48,31 @@ public class ObjectService
         {
             if (f != null)
             {
-                BufferedInputStream fi = new BufferedInputStream(new FileInputStream(new File(f.getPath())));
-                builder.entity(fi);
-                String contenttype = getContentType(f.getPath());
-                builder.header("Content-type", contenttype);
-                long expirAge = 3600 * 1000 * 24 * 7;
-                long expirtime = System.currentTimeMillis() + expirAge;
-                builder.header("Expires", new Date(expirtime));
-                builder.header("Cache-Control", "max-age=" + expirAge);
-                builder.header("Content-Disposition", "filename=" + new File(f.getPath()).getName());
-                builder.header("PicFileFullPath", URLEncoder.encode(f.getPath(), "UTF-8"));
-                logger.info("the file is: {}, Mime: {}", f, contenttype);
+                String sizestr = req.getParameter("size");
+                InputStream fi = null;
+                if (StringUtils.isNotBlank(sizestr))
+                {
+                    int size = Integer.parseInt(sizestr);
+                    fi = ThumbnailGenerator.generateThumbnail(f.getPath(), size, size, false);
+                }
+                else
+                {
+                    fi = new BufferedInputStream(new FileInputStream(new File(f.getPath())));
+                }
+
+                if (fi != null)
+                {
+                    builder.entity(fi);
+                    String contenttype = getContentType(f.getPath());
+                    builder.header("Content-type", contenttype);
+                    long expirAge = 3600 * 1000 * 24 * 7;
+                    long expirtime = System.currentTimeMillis() + expirAge;
+                    builder.header("Expires", new Date(expirtime));
+                    builder.header("Cache-Control", "max-age=" + expirAge);
+                    builder.header("Content-Disposition", "filename=" + new File(f.getPath()).getName());
+                    builder.header("PicFileFullPath", URLEncoder.encode(f.getPath(), "UTF-8"));
+                    logger.info("the file is: {}, Mime: {}", f, contenttype);
+                }
             }
             else
             {
