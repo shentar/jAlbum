@@ -55,7 +55,8 @@ public class ObjectService
                     int size = Integer.parseInt(sizestr);
                     fi = ThumbnailGenerator.generateThumbnail(f.getPath(), size, size, false);
                 }
-                else
+                
+                if (fi == null)
                 {
                     fi = new BufferedInputStream(new FileInputStream(new File(f.getPath())));
                 }
