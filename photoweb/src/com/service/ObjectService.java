@@ -46,7 +46,7 @@ public class ObjectService
         FileInfo f = meta.getOneFileByHashStr(id);
         if ("true".equalsIgnoreCase(req.getParameter("content")))
         {
-            if (f != null)
+            if (f != null && new File(f.getPath()).isFile())
             {
                 String sizestr = req.getParameter("size");
                 InputStream fi = null;
@@ -55,7 +55,7 @@ public class ObjectService
                     int size = Integer.parseInt(sizestr);
                     fi = ThumbnailGenerator.generateThumbnail(f.getPath(), size, size, false);
                 }
-                
+
                 if (fi == null)
                 {
                     fi = new BufferedInputStream(new FileInputStream(new File(f.getPath())));

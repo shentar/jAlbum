@@ -35,12 +35,14 @@ public class ThumbnailGenerator
                 if (imgFile.getName().indexOf(".") > -1)
                 {
                     suffix = imgFile.getName().substring(imgFile.getName().lastIndexOf(".") + 1);
-                } // 类型和图片后缀全部小写，然后判断后缀是否合法
+                }
+
                 if (suffix == null || types.toLowerCase().indexOf(suffix.toLowerCase()) < 0)
                 {
                     logger.error("Sorry, the image suffix is illegal. the standard image suffix is {}." + types);
                     return null;
                 }
+
                 logger.debug("target image's size, width:{}, height:{}.", w, h);
                 Image img = ImageIO.read(imgFile);
                 if (!force)
@@ -48,24 +50,26 @@ public class ThumbnailGenerator
                     // 根据原图与要求的缩略图比例，找到最合适的缩略图比例
                     int width = img.getWidth(null);
                     int height = img.getHeight(null);
-                    if ((width * 1.0) / w < (height * 1.0) / h)
+
+                    if (w > width || h > height)
                     {
-                        if (width > w)
-                        {
-                            h = Integer.parseInt(new java.text.DecimalFormat("0").format(height * w / (width * 1.0)));
-                            logger.debug("change image's height, width:{}, height:{}.", w, h);
-                        }
+                        // 照片本身比缩略图还小，则直接以照片本身当缩略图。
+                        return null;
+                    }
+
+                    if ((width * 1.0) / w > (height * 1.0) / h)
+                    {
+                        h = Integer.parseInt(new java.text.DecimalFormat("0").format(height * w / (width * 1.0)));
+                        logger.debug("change image's height, width:{}, height:{}.", w, h);
                     }
                     else
                     {
-                        if (height > h)
-                        {
-                            w = Integer.parseInt(new java.text.DecimalFormat("0").format(width * h / (height * 1.0)));
-                            logger.debug("change image's width, width:{}, height:{}.", w, h);
-                        }
+                        w = Integer.parseInt(new java.text.DecimalFormat("0").format(width * h / (height * 1.0)));
+                        logger.debug("change image's width, width:{}, height:{}.", w, h);
                     }
                 }
 
+                logger.info("the fixed width and height are: {}, {}", w, h);
                 ByteArrayOutputStream bf = new ByteArrayOutputStream();
                 BufferedImage bi = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
                 Graphics g = bi.getGraphics();
