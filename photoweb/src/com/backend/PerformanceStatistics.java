@@ -56,7 +56,6 @@ public class PerformanceStatistics
     public void printPerformanceLog(long now)
     {
         timenow.set(now);
-        logger.warn("now is: " + new Date() + " " + "total file count: " + totalFileCount.get()
-                + " checked file count: " + careFileCount.get());
+        logger.warn("total file count: " + totalFileCount.get() + " checked file count: " + careFileCount.get());
     }
 }
