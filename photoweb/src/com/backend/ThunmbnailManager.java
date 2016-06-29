@@ -105,7 +105,7 @@ public class ThunmbnailManager
             }
         }
 
-        if (tmpF.renameTo(new File(getPicThumbnailPath(id))))
+        if (!tmpF.renameTo(new File(getPicThumbnailPath(id))))
         {
             logger.warn("generate the Thumbnail file failed!");
         }
