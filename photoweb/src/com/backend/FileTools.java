@@ -4,9 +4,12 @@ import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
@@ -76,7 +79,7 @@ public class FileTools
             {
                 if (fi.getcTime().getTime() == FileTools.getFileCreateTime(new File(fi.getPath())))
                 {
-                    if (excludeDirs !=null)
+                    if (excludeDirs != null)
                     {
                         for (String dir : excludeDirs)
                         {
@@ -86,7 +89,7 @@ public class FileTools
                             }
                         }
                     }
-                    
+
                     return false;
                 }
 
@@ -177,5 +180,55 @@ public class FileTools
         {
             logger.warn("cause by: ", e);
         }
+    }
+
+    public static boolean copyFile(String src, String dst)
+    {
+        BufferedInputStream fis = null;
+        BufferedOutputStream fos = null;
+        try
+        {
+            byte[] iobuff = new byte[1024 * 16];
+            fis = new BufferedInputStream(new FileInputStream(src));
+            fos = new BufferedOutputStream(new FileOutputStream(dst));
+
+            int bytes = -1;
+            while ((bytes = fis.read(iobuff)) != -1)
+            {
+                fos.write(iobuff, 0, bytes);
+            }
+
+            return true;
+        }
+        catch (Exception e)
+        {
+            logger.warn("copy file failed!", e);
+        }
+        finally
+        {
+            if (fis != null)
+            {
+                try
+                {
+                    fis.close();
+                }
+                catch (IOException e)
+                {
+                    logger.warn("caused by: ", e);
+                }
+            }
+            if (fos != null)
+            {
+                try
+                {
+                    fos.close();
+                }
+                catch (IOException e)
+                {
+                    logger.warn("caused by: ", e);
+                }
+            }
+        }
+        return false;
     }
 }

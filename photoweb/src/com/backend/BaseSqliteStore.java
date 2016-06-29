@@ -57,17 +57,19 @@ public class BaseSqliteStore
         try
         {
             FileInfo fi = ReadEXIF.genAllInfos(f.getCanonicalPath(), true);
-
+            fi.setHash256(sha256);
             lock.writeLock().lock();
             prep = conn.prepareStatement("insert into files values(?,?,?,?,?,?,?);");
             prep.setString(1, fi.getPath());
-            prep.setString(2, sha256);
+            prep.setString(2, fi.getHash256());
             prep.setLong(3, fi.getSize());
             prep.setDate(4, fi.getcTime());
             prep.setDate(5, fi.getPhotoTime());
             prep.setLong(6, fi.getWidth());
             prep.setLong(7, fi.getHeight());
             prep.execute();
+
+            ThunmbnailManager.checkAndGenThumbnail(fi);
         }
         catch (SQLException e)
         {
@@ -222,7 +224,7 @@ public class BaseSqliteStore
         ResultSet res = null;
         PreparedStatement prep = null;
         try
-        {   
+        {
             logger.warn("start to check all records in the files table.");
             prep = conn.prepareStatement("select * from files;");
             res = prep.executeQuery();
@@ -238,6 +240,7 @@ public class BaseSqliteStore
                 }
                 else
                 {
+                    ThunmbnailManager.checkAndGenThumbnail(fi);
                     PerformanceStatistics.getInstance().addOneFile(false);
                 }
             }

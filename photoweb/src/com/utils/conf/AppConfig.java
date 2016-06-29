@@ -57,7 +57,7 @@ public class AppConfig
                 strList.add((String) s);
             }
         }
-        
+
         List<String> dirlst = new LinkedList<String>();
         for (String s : strList)
         {
@@ -67,7 +67,7 @@ public class AppConfig
                 dirlst.add(f.getCanonicalPath());
             }
         }
-        
+
         return dirlst;
     }
 
@@ -112,7 +112,7 @@ public class AppConfig
                 strList.add((String) s);
             }
         }
-        
+
         List<String> dirlst = new LinkedList<String>();
         for (String s : strList)
         {
@@ -122,7 +122,12 @@ public class AppConfig
                 dirlst.add(f.getCanonicalPath());
             }
         }
-        
+
         return dirlst;
+    }
+
+    public String getThumbnailDir()
+    {
+        return config.getString("thumbnaildir", "./thumbnail");
     }
 }
