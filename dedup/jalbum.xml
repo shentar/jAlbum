@@ -22,5 +22,5 @@
     </excludedir>
     <thumbnaildir>
 		./thumbnail
-	<thumbnaildir>
+	</thumbnaildir>
 </config>
