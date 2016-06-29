@@ -113,6 +113,11 @@ public class ThunmbnailManager
 
     public static InputStream getThumbnail(String id)
     {
+        if (!isBaseDriValid)
+        {
+            return null;
+        }
+
         String path = getPicThumbnailPath(id);
         File f = new File(path);
         if (f.isFile())
