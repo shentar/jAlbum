@@ -7,6 +7,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -24,6 +26,9 @@ public class BaseSqliteStore
     private ReadWriteLock lock = new ReentrantReadWriteLock(false);
 
     private static BaseSqliteStore instance = new BaseSqliteStore();
+
+    // 对于树莓派等系统，最多只能4个线程同时计算缩略图。
+    public static final ExecutorService threadPool = Executors.newFixedThreadPool(4);
 
     private BaseSqliteStore()
     {
@@ -264,7 +269,7 @@ public class BaseSqliteStore
 
     private void submitAnThumbnailTask(final FileInfo fi)
     {
-        FileTools.threadPool.submit(new Runnable()
+        threadPool.submit(new Runnable()
         {
             @Override
             public void run()
