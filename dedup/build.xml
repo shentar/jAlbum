@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<!--	Build file for Phone PhoneBoook application by Arun Chhatpar -->
+
 <project name="resttest" basedir="." default="jar">
 	<property name="dist.dir" location="dist" />
 	<property name="lib.dir" location="lib" />

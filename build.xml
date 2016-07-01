@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+
+<project name="jAlbum" basedir="." default="all">
+
+    <property name="dedup.dir" location="dedup" />
+    <property name="photoweb.dir" location="photoweb" />
+    <property name="distribute.dir" location="distribute" />
+    
+    <target name="all" >
+    <ant antfile="build.xml" dir="${dedup.dir}" target="jar"/>  
+    <ant antfile="build.xml" dir="${photoweb.dir}" target="war"/>  
+    
+    <mkdir dir="${distribute.dir}" />
+    <mkdir dir="${distribute.dir}/lib" />
+    <mkdir dir="${distribute.dir}/log" />
+    
+    <move todir="${distribute.dir}" overwrite="true">
+        <fileset dir="${dedup.dir}">
+            <include name="start.jar" />
+        </fileset>
+        <fileset dir="${photoweb.dir}/dist">
+            <include name="root.war" />
+        </fileset>          
+    </move>
+    
+    <copy todir="${distribute.dir}" overwrite="false">
+        <fileset dir="${dedup.dir}">
+            <include name="dedup.db" />
+            <include name="favicon.ico" />
+            <include name="jalbum.xml" />
+            <include name="log4j.xml" /> 
+        </fileset> 
+        <fileset dir="${basedir}">
+            <include name="start.sh" />
+            <include name="start.bat" />
+        </fileset> 
+    </copy>
+    
+    <copy todir="${distribute.dir}/lib" overwrite="true">
+        <fileset dir="${dedup.dir}/lib" />
+    </copy>
+    
+    <ant antfile="build.xml" dir="${dedup.dir}" target="clean"/>  
+    <ant antfile="build.xml" dir="${photoweb.dir}" target="clean"/>  
+    
+    </target>
+    
+</project>

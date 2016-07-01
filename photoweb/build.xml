@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<!--	Build file for Phone PhoneBoook application by Arun Chhatpar -->
+
 <project name="resttest" basedir="." default="war">
 	<property name="dist.dir" location="dist" />
 	<property name="lib.dir" location="lib" />
@@ -27,7 +27,7 @@
 	</target>
 
 	<target name="jar" depends="build">
-		<jar jarfile="${lib.dir}/resttest.jar" basedir="${bin.dir}" includes="**/*.*">
+		<jar jarfile="${dist.dir}/resttest.jar" basedir="${bin.dir}" includes="**/*.*">
 		</jar>
 	</target>
 
@@ -36,6 +36,9 @@
 			<lib dir="${lib.dir}">
 				<exclude name="jetty-io-8.0.0.M2.jar" />
 				<exclude name="jetty-server-8.0.0.M2.jar" />
+			</lib>
+            <lib dir="${dist.dir}">
+				<include name="resttest.jar" />
 			</lib>
 			<webinf dir="WEB-INF">
 				<exclude name="web.xml" />
