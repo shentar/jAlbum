@@ -1,5 +1,5 @@
 # jAlbum
-
+[![Build Status](https://travis-ci.org/shentar/jAlbum.svg?branch=master)](https://travis-ci.org/shentar/jAlbum)
 ==
 
 这是一个使用Java语言编写的本地照片管理系统。使用BS架构。服务端采用Servlet提供RESTful风格接口，供浏览器直接访问。服务端提供后台任务扫描指定目录，并收集指定后缀名的照片文件，生成照片库，识别照片HASH指纹、长宽比、拍摄时间等，最终按照拍摄时间生成年、月、日的归档页面。对于重复照片只会显示一份。
