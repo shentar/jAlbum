@@ -12,7 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.utils.conf.AppConfig;
-import com.utils.sys.GloableLockBaseOnString;
 
 public class ThumbnailManager
 {
