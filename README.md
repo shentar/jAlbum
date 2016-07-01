@@ -7,23 +7,21 @@
 This is a local photo management system written with the Java language. Using B/S architecture. Server Servlet provides a RESTful style interface, for direct access to the web browser. Service provides a background task scans the specified directory, and collect the specified suffix photos, then generate a photo gallery. HASH fingerprint is used to recognize the duplicate pic fils. The shooting time in Exif is used to sort all the files. By identifying the picture's aspect ratio, set the appropriate display size on a Web page. Eventually in time axis to generate a year, month, and day dimensions page.
 
 ## install
->### 0. For ARM platform, such as Raspberry3 ubuntu-mate system, compile jdbcsqlite native so first. Other platform may not need this.
-cd jdbcsqlitenative<br/>
-make
-
->### 1. Build start.jar
-cd dedup
-<br/>
+>### For ARM platform, such as Raspberry3 ubuntu-mate system, compile jdbcsqlite native so first. Other platform may not need this.
+```shell
+cd jAlbum<br/>
+ant -f build_for_Raspberry3.xml
+```
+For other platforms, such as Windows, X86 Linux etc. just run the command like:
+```shell
+cd jAlbum
 ant 
-
->### 2. Build root.war
-cd photoweb<br/>
-sh build.sh
-
+```
+The build target files are store in the jAlbum/distribute folder.
 
 ## start
 >### 0. Configure the jalbum.xml file.
-cd jAlbum/dedup<br/>
+cd jAlbum/distribute<br/>
 edit the jalbum.xml
 <br/><br/>
 ```xml
@@ -45,6 +43,9 @@ edit the jalbum.xml
         <dir>C:\\windows\\</dir>
         <dir>C:\\Program Files\\</dir>
     </excludedir>
+    <thumbnaildir>
+		./thumbnail
+	</thumbnaildir>
 </config>
 ```
 ***picfilesuffix*** the file type with the suffix that can be scaned by the tool. It is ignorecase. <br/>
@@ -52,14 +53,15 @@ edit the jalbum.xml
 ***threadcount*** specify the size of thread pool.<br/>
 ***hashalog*** specify the file HASH fingerprint Algorithm. The common algorithms are: SHA-256, MD5, SHA-1. You can find the stand algorithm names in [MessageDigest Algorithms](https://docs.oracle.com/javase/8/docs/technotes/guides/security/StandardNames.html#MessageDigest).<br/>
 ***excludedir*** specify the folder which you do not like the tool scan and display the content of it.
+***thumbnaildir*** specify the folder which to store the thumbnail to.
 <br/>
 
 >### 1. Start the tool
 For the ARM platforms like Raspberry3 ubuntu-mate system: <br/>
-cd jAlbum<br/>
+cd jAlbum/distribute<br/>
 sh start_for_Raspberry3.sh <br/> <br/>
 For other platforms: <br/>
-cd jAlbum/dedup <br/>
+cd jAlbum/distribute <br/>
 java -jar start.jar <br/>
 
 ## access
