@@ -254,7 +254,6 @@ public class BaseSqliteStore
                     else
                     {
                         submitAnThumbnailTask(fi);
-                        PerformanceStatistics.getInstance().addOneFile(true);
                     }
                 }
             }
@@ -276,6 +275,7 @@ public class BaseSqliteStore
         if (!isdone)
         {
             logger.warn("the task of pic id [{}] is already being done.", fi.getHash256());
+            PerformanceStatistics.getInstance().addOneFile(false);
             return;
         }
 
@@ -294,6 +294,7 @@ public class BaseSqliteStore
                 }
             }
         });
+        PerformanceStatistics.getInstance().addOneFile(true);
     }
 
     private void deleteOneRecord(FileInfo fi)
