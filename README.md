@@ -58,11 +58,15 @@ edit the jalbum.xml
 
 >### 1. Start the tool
 For the ARM platforms like Raspberry3 ubuntu-mate system: <br/>
-cd jAlbum/distribute<br/>
-sh start_for_Raspberry3.sh <br/> <br/>
-For other platforms: <br/>
-cd jAlbum/distribute <br/>
-java -jar start.jar <br/>
+```shell
+cd jAlbum/distribute
+sh start_for_Raspberry3.sh
+```
+For other platforms: 
+```shell
+cd jAlbum/distribute
+java -jar start.jar 
+```
 
 ## access
 >###
