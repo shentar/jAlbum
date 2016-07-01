@@ -69,7 +69,7 @@ public class BaseSqliteStore
             prep.setLong(7, fi.getHeight());
             prep.execute();
 
-            ThunmbnailManager.checkAndGenThumbnail(fi);
+            submitAnThumbnailTask(fi);
         }
         catch (SQLException e)
         {
@@ -240,8 +240,16 @@ public class BaseSqliteStore
                 }
                 else
                 {
-                    ThunmbnailManager.checkAndGenThumbnail(fi);
-                    PerformanceStatistics.getInstance().addOneFile(false);
+                    if (ThumbnailManager.checkTheThumbnailExist(fi.getHash256()))
+                    {
+                        PerformanceStatistics.getInstance().addOneFile(false);
+                        continue;
+                    }
+                    else
+                    {
+                        submitAnThumbnailTask(fi);
+                        PerformanceStatistics.getInstance().addOneFile(true);
+                    }
                 }
             }
 
@@ -252,6 +260,18 @@ public class BaseSqliteStore
         {
             logger.error("caught: ", e);
         }
+    }
+
+    private void submitAnThumbnailTask(final FileInfo fi)
+    {
+        FileTools.threadPool.submit(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                ThumbnailManager.checkAndGenThumbnail(fi);
+            }
+        });
     }
 
     private void deleteOneRecord(FileInfo fi)
