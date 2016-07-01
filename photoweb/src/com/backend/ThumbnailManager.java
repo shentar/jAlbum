@@ -83,51 +83,32 @@ public class ThumbnailManager
             return;
         }
 
-        boolean isdone = false;
-
-        try
+        if (checkTheThumbnailExist(id))
         {
-            isdone = GloableLockBaseOnString.getInstance().tryToDo(fi.getHash256());
-            if (!isdone)
+            logger.debug("the thumbnail of pic ({}) is alread exist.", id);
+            return;
+        }
+
+        File thumbnailFile = new File(getPicThumbnailPath(id));
+        File parentDir = thumbnailFile.getParentFile();
+        if (!parentDir.exists())
+        {
+            parentDir.mkdirs();
+        }
+
+        String tmpFile = "." + File.separator + fi.getHash256();
+        File tmpF = new File(tmpFile);
+        if (!ThumbnailGenerator.createThumbnail(fi.getPath(), tmpFile, 400, 400, false))
+        {
+            if (!FileTools.copyFile(fi.getPath(), tmpFile))
             {
-                logger.warn("the task of pic id [{}] is already being done.", fi.getHash256());
                 return;
-            }
-            
-            if (checkTheThumbnailExist(id))
-            {
-                logger.debug("the thumbnail of pic ({}) is alread exist.", id);
-                return;
-            }
-
-            File thumbnailFile = new File(getPicThumbnailPath(id));
-            File parentDir = thumbnailFile.getParentFile();
-            if (!parentDir.exists())
-            {
-                parentDir.mkdirs();
-            }
-
-            String tmpFile = "." + File.separator + fi.getHash256();
-            File tmpF = new File(tmpFile);
-            if (!ThumbnailGenerator.createThumbnail(fi.getPath(), tmpFile, 400, 400, false))
-            {
-                if (!FileTools.copyFile(fi.getPath(), tmpFile))
-                {
-                    return;
-                }
-            }
-
-            if (!tmpF.renameTo(new File(getPicThumbnailPath(id))))
-            {
-                logger.warn("generate the Thumbnail file failed!");
             }
         }
-        finally
+
+        if (!tmpF.renameTo(new File(getPicThumbnailPath(id))))
         {
-            if (isdone)
-            {
-                GloableLockBaseOnString.getInstance().done(id);
-            }
+            logger.warn("generate the Thumbnail file failed!");
         }
     }
 

@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.utils.conf.AppConfig;
+import com.utils.sys.GloableLockBaseOnString;
 
 public class BaseSqliteStore
 {
@@ -269,12 +270,28 @@ public class BaseSqliteStore
 
     private void submitAnThumbnailTask(final FileInfo fi)
     {
+        boolean isdone = false;
+
+        isdone = GloableLockBaseOnString.getInstance().tryToDo(fi.getHash256());
+        if (!isdone)
+        {
+            logger.warn("the task of pic id [{}] is already being done.", fi.getHash256());
+            return;
+        }
+
         threadPool.submit(new Runnable()
         {
             @Override
             public void run()
             {
-                ThumbnailManager.checkAndGenThumbnail(fi);
+                try
+                {
+                    ThumbnailManager.checkAndGenThumbnail(fi);
+                }
+                finally
+                {
+                    GloableLockBaseOnString.getInstance().done(fi.getHash256());
+                }
             }
         });
     }
