@@ -9,7 +9,7 @@
     <target name="all" >
         <ant antfile="build.xml" dir="${dedup.dir}" target="jar"/>  
         <ant antfile="build.xml" dir="${photoweb.dir}" target="war"/>  
-        <exec dir="${jdbc.dir}" executable="make" os="Linux"  failonerror="true">
+        <exec dir="${jdbc.dir}" executable="make" os="Linux"  failonerror="true" />
         
         <mkdir dir="${distribute.dir}" />
         <mkdir dir="${distribute.dir}/lib" />
