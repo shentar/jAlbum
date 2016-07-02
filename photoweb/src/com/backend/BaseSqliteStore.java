@@ -29,7 +29,7 @@ public class BaseSqliteStore
     private static BaseSqliteStore instance = new BaseSqliteStore();
 
     // 对于树莓派等系统，最多只能4个线程同时计算缩略图。
-    public static final ExecutorService threadPool = Executors.newFixedThreadPool(4);
+    public static final ExecutorService threadPool = Executors.newFixedThreadPool(2);
 
     private BaseSqliteStore()
     {
@@ -79,11 +79,11 @@ public class BaseSqliteStore
         }
         catch (SQLException e)
         {
-            logger.error("caught: ", e);
+            logger.error("caught: " + f, e);
         }
         catch (IOException e)
         {
-            logger.error("caught: ", e);
+            logger.error("caught: " + f, e);
         }
         finally
         {
@@ -123,15 +123,21 @@ public class BaseSqliteStore
                     checkPhotoTime(oldfi);
                     return true;
                 }
+                else
+                {
+                    logger.warn("the file was changed, rebuild the record: " + oldfi);
+                    deleteOneRecord(oldfi);
+                    return false;
+                }
             }
         }
         catch (SQLException e)
         {
-            logger.error("caught: ", e);
+            logger.error("caught: " + f, e);
         }
         catch (IOException e)
         {
-            logger.error("caught: ", e);
+            logger.error("caught: " + f, e);
         }
         finally
         {
@@ -274,7 +280,7 @@ public class BaseSqliteStore
         isdone = GloableLockBaseOnString.getInstance().tryToDo(fi.getHash256());
         if (!isdone)
         {
-            logger.warn("the task of pic id [{}] is already being done.", fi.getHash256());
+            logger.info("the task of pic id [{}] is already being done.", fi.getHash256());
             PerformanceStatistics.getInstance().addOneFile(false);
             return;
         }
@@ -310,7 +316,7 @@ public class BaseSqliteStore
         }
         catch (Exception e)
         {
-            logger.error("caught: ", e);
+            logger.error("caught: " + fi, e);
         }
         finally
         {
