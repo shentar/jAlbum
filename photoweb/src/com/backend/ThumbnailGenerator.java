@@ -27,6 +27,10 @@ public class ThumbnailGenerator
 
         logger.debug("target image's size, width:{}, height:{}.", w, h);
         Image img = ImageIO.read(imgFile);
+        if (img == null)
+        {
+            return null;
+        }
         if (!force)
         {
             // 根据原图与要求的缩略图比例，找到最合适的缩略图比例
@@ -109,6 +113,11 @@ public class ThumbnailGenerator
         {
             String suffix = checkPicType(new File(fpath));
             BufferedImage bi = generateThumbnail(fpath, w, h, force);
+            if (bi == null)
+            {
+                return false;
+            }
+
             ImageIO.write(bi, suffix, new File(thumbnailPath));
             return true;
         }

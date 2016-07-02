@@ -22,7 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.backend.FileInfo;
-import com.backend.ThunmbnailManager;
+import com.backend.ThumbnailManager;
 import com.backend.UniqPhotosStore;
 import com.utils.web.GenerateHTML;
 
@@ -52,7 +52,7 @@ public class ObjectService
                 InputStream fi = null;
                 if (StringUtils.isNotBlank(sizestr))
                 {
-                    fi = ThunmbnailManager.getThumbnail(id);
+                    fi = ThumbnailManager.getThumbnail(id);
                 }
 
                 if (fi == null)

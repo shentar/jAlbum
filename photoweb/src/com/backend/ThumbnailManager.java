@@ -13,9 +13,9 @@ import org.slf4j.LoggerFactory;
 
 import com.utils.conf.AppConfig;
 
-public class ThunmbnailManager
+public class ThumbnailManager
 {
-    private static final Logger logger = LoggerFactory.getLogger(ThunmbnailManager.class);
+    private static final Logger logger = LoggerFactory.getLogger(ThumbnailManager.class);
 
     private static boolean isBaseDriValid = false;
 

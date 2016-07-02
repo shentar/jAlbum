@@ -112,15 +112,14 @@ public class ToolMain
     {
         try
         {
-            boolean isCare = false;
             for (String s : AppConfig.getInstance().getFileSuffix())
             {
                 if (f.getName().toLowerCase().endsWith(s) && f.length() > AppConfig.getInstance().getMinFileSize())
                 {
-                    isCare = true;
                     if (metaDataStore.checkIfAlreadyExist(f))
                     {
-                        return;
+                        PerformanceStatistics.getInstance().addOneFile(false);
+                        break;
                     }
                     else
                     {
@@ -129,7 +128,7 @@ public class ToolMain
                     break;
                 }
             }
-            PerformanceStatistics.getInstance().addOneFile(isCare);
+            
         }
         catch (Exception e)
         {

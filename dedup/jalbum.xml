@@ -20,5 +20,7 @@
         <dir>C:\\windows\\</dir>
         <dir>C:\\Program Files\\</dir>
     </excludedir>
-    
+    <thumbnaildir>
+		./thumbnail
+	</thumbnaildir>
 </config>
