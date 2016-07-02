@@ -29,7 +29,7 @@ public class BaseSqliteStore
     private static BaseSqliteStore instance = new BaseSqliteStore();
 
     // 对于树莓派等系统，最多只能4个线程同时计算缩略图。
-    public static final ExecutorService threadPool = Executors.newFixedThreadPool(4);
+    public static final ExecutorService threadPool = Executors.newFixedThreadPool(2);
 
     private BaseSqliteStore()
     {

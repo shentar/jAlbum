@@ -62,7 +62,6 @@ public class ThumbnailGenerator
         g.drawImage(img, 0, 0, w, h, Color.LIGHT_GRAY, null);
         g.dispose();
         return bi;
-
     }
 
     private static String checkPicType(File imgFile) throws IOException
@@ -119,6 +118,7 @@ public class ThumbnailGenerator
             }
 
             ImageIO.write(bi, suffix, new File(thumbnailPath));
+            
             return true;
         }
         catch (Exception e)
