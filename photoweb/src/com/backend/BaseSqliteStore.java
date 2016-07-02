@@ -125,6 +125,7 @@ public class BaseSqliteStore
                 }
                 else
                 {
+                    logger.warn("the file was changed, rebuild the record: " + oldfi);
                     deleteOneRecord(oldfi);
                     return false;
                 }
