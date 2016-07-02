@@ -123,6 +123,11 @@ public class BaseSqliteStore
                     checkPhotoTime(oldfi);
                     return true;
                 }
+                else
+                {
+                    deleteOneRecord(oldfi);
+                    return false;
+                }
             }
         }
         catch (SQLException e)
