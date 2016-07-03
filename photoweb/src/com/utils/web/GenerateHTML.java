@@ -279,7 +279,10 @@ public class GenerateHTML
         sb.append(getHtmlHead());
         sb.append("<table style=\"text-align: center;\" width=\"100%\" "
                 + "height=\"100%\" border=\"0\" bordercolor=\"#000000\">");
-        sb.append("<tr><td width=\"20%\"></td><td width=\"20%\">");
+        sb.append("<tr><td width=\"20%\">");
+        sb.append("<a href=\"/month/" + day.substring(0, 6) + "\">返回" + day.substring(0, 4) + "年" + day.substring(4, 6)
+                + "月</a>");
+        sb.append("</td><td width=\"20%\">");
         if (StringUtils.isNotBlank(prevDay))
         {
             sb.append("<a href=\"/day/" + prevDay + "\">" + "上一天</a>");
@@ -339,12 +342,15 @@ public class GenerateHTML
         sb.append(getHtmlHead());
         sb.append("<table style=\"text-align: center;\" width=\"100%\" "
                 + "height=\"100%\" border=\"0\" bordercolor=\"#000000\">");
-        sb.append("<tr>" + "<td width=\"20%\"></td>" + "<td width=\"20%\">");
+        sb.append("<tr>" + "<td width=\"20%\">");
+        sb.append("<a href=\"/year/" + monthstr.substring(0, 4) + "\">返回" + monthstr.substring(0, 4) + "年</a>");
+        sb.append("</td>" + "<td width=\"20%\">");
         if (StringUtils.isNotBlank(prevMonth))
         {
             sb.append("<a href=\"/month/" + prevMonth + "\">" + "上一月</a>");
         }
-        sb.append("</td>" + "<td width=\"20%\"></td>" + "<td width=\"20%\">");
+        sb.append("</td>");
+        sb.append("<td  width=\"20%\" style=\"text-align:center\">" + monthstr + "月" + "</td><td width=\"20%\">");
         if (StringUtils.isNotBlank(nextMonth))
         {
             sb.append("<a href=\"/month/" + nextMonth + "\">" + "下一月</a>");
