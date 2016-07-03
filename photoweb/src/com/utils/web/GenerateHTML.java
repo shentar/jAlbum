@@ -7,6 +7,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.TreeMap;
+
+import org.apache.commons.lang.StringUtils;
 
 import com.backend.DateRecords;
 import com.backend.DateTableDao;
@@ -86,7 +89,8 @@ public class GenerateHTML
                 + "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"/> "
                 + "<title>相册</title></head><body>";
 
-        Map<String, Map<String, Map<String, DateRecords>>> allrecords = DateTableDao.getInstance().getAllDateRecord();
+        TreeMap<String, TreeMap<String, TreeMap<String, DateRecords>>> allrecords = DateTableDao.getInstance()
+                .getAllDateRecord();
         if (allrecords != null && !allrecords.isEmpty())
         {
             StringBuffer ylst = new StringBuffer(
@@ -129,7 +133,7 @@ public class GenerateHTML
                 ylst.append("</tr>");
             }
 
-            ylst.append("</table><br/>");
+            ylst.append("</table>");
 
             hh += ylst;
         }
@@ -175,16 +179,16 @@ public class GenerateHTML
         {
             StringBuffer sb = new StringBuffer(getHtmlHead());
 
-            sb.append(
-                    "<table style=\"text-align: center;\" width=\"100%\" height=\"100%\" border=\"0\" bordercolor=\"#000000\">");
+            sb.append("<table style=\"text-align: center;\" width=\"100%\" "
+                    + "height=\"100%\" border=\"0\" bordercolor=\"#000000\">");
             sb.append("<tr><td width=\"33%\" bordercolor=\"#000000\"><a href=\"/?prev=" + f.getHash256() + "&count=1"
                     + "\">上一张</a></td>");
             sb.append("<td width=\"33%\" bordercolor=\"#000000\">" + f.getPhotoTime() + "</td>");
             sb.append("<td width=\"33%\" bordercolor=\"#000000\"><a href=\"/?next=" + f.getHash256() + "&count=1"
                     + "\">下一张</a></td></tr></table>");
             sb.append("<br/><br/>");
-            sb.append(
-                    "<table style=\"text-align: center;\" width=\"100%\" height=\"100%\" border=\"0\" bordercolor=\"#000000\">");
+            sb.append("<table style=\"text-align: center;\" width=\"100%\" "
+                    + "height=\"100%\" border=\"0\" bordercolor=\"#000000\">");
             sb.append("<tr>");
 
             sb.append("<td width=\"100%\" height=\"100%\" bordercolor=\"#000000\"><br/>");
@@ -197,28 +201,28 @@ public class GenerateHTML
         }
     }
 
-    public static String generateYearPage(String year, Map<String, Map<String, DateRecords>> yearmap)
+    public static String generateYearPage(String year, TreeMap<String, TreeMap<String, DateRecords>> currentyear)
     {
-        if (yearmap == null || yearmap.isEmpty())
+        if (currentyear == null || currentyear.isEmpty())
         {
             return generate404Notfound();
         }
 
         StringBuffer sb = new StringBuffer();
         sb.append(getHtmlHead());
-        sb.append(
-                "<table style=\"text-align: center;\" width=\"100%\" height=\"100%\" border=\"0\" bordercolor=\"#000000\">");
+        sb.append("<table style=\"text-align: center;\" width=\"100%\" "
+                + "height=\"100%\" border=\"0\" bordercolor=\"#000000\">");
 
         int i = 0;
         int start = 0;
         int end = 0;
 
-        List<String> arrayList = getSortedKeyList(yearmap.keySet());
+        List<String> arrayList = getSortedKeyList(currentyear.keySet());
 
         for (String mo : arrayList)
         {
             int filecount = 0;
-            Map<String, DateRecords> mr = yearmap.get(mo);
+            Map<String, DateRecords> mr = currentyear.get(mo);
             String pic = null;
             for (Entry<String, DateRecords> en : mr.entrySet())
             {
@@ -264,25 +268,7 @@ public class GenerateHTML
         return sb.toString();
     }
 
-    public static boolean restrictSize(FileInfo f)
-    {
-        if (f.getHeight() > 0 && f.getWidth() > 0)
-        {
-            double rate = (((double) f.getWidth()) / f.getHeight());
-            if (rate > 1)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    public static String generateDayPage(String day, List<FileInfo> flst)
+    public static String generateDayPage(String day, String prevDay, String nextDay, List<FileInfo> flst)
     {
         if (flst == null || flst.isEmpty())
         {
@@ -293,7 +279,18 @@ public class GenerateHTML
         sb.append(getHtmlHead());
         sb.append("<table style=\"text-align: center;\" width=\"100%\" "
                 + "height=\"100%\" border=\"0\" bordercolor=\"#000000\">");
-        sb.append("<tr><td></td><td></td><td style=\"text-align:center\">" + day + "</td><td></td><td></td></tr>");
+        sb.append("<tr><td width=\"20%\"></td><td width=\"20%\">");
+        if (StringUtils.isNotBlank(prevDay))
+        {
+            sb.append("<a href=\"/day/" + prevDay + "\">" + "上一天</a>");
+        }
+        sb.append("</td>");
+        sb.append("<td  width=\"20%\" style=\"text-align:center\">" + day + "</td><td width=\"20%\">");
+        if (StringUtils.isNotBlank(nextDay))
+        {
+            sb.append("<a href=\"/day/" + nextDay + "\">" + "下一天</a>");
+        }
+        sb.append("</td><td width=\"20%\"></td></tr>");
         int i = 0;
         int start = 0;
         int end = 0;
@@ -330,7 +327,8 @@ public class GenerateHTML
         return sb.toString();
     }
 
-    public static Object generateMonthPage(String monthstr, Map<String, DateRecords> map)
+    public static Object generateMonthPage(String monthstr, String nextMonth, String prevMonth,
+            TreeMap<String, DateRecords> map)
     {
         if (map == null || map.isEmpty())
         {
@@ -341,14 +339,26 @@ public class GenerateHTML
         sb.append(getHtmlHead());
         sb.append("<table style=\"text-align: center;\" width=\"100%\" "
                 + "height=\"100%\" border=\"0\" bordercolor=\"#000000\">");
+        sb.append("<tr>" + "<td width=\"20%\"></td>" + "<td width=\"20%\">");
+        if (StringUtils.isNotBlank(prevMonth))
+        {
+            sb.append("<a href=\"/month/" + prevMonth + "\">" + "上一月</a>");
+        }
+        sb.append("</td>" + "<td width=\"20%\"></td>" + "<td width=\"20%\">");
+        if (StringUtils.isNotBlank(nextMonth))
+        {
+            sb.append("<a href=\"/month/" + nextMonth + "\">" + "下一月</a>");
+        }
+        sb.append("</td>" + "<td width=\"20%\"></td>" + "</tr>" + "</table>");
+
+        sb.append("<table style=\"text-align: center;\" width=\"100%\" "
+                + "height=\"100%\" border=\"0\" bordercolor=\"#000000\">");
 
         int i = 0;
         int start = 0;
         int end = 0;
 
-        List<String> arrayList = getSortedKeyList(map.keySet());
-
-        for (String day : arrayList)
+        for (String day : map.keySet())
         {
             DateRecords mr = map.get(day);
             String pic = mr.getFirstpic();
@@ -390,6 +400,24 @@ public class GenerateHTML
     public static String generate404Notfound()
     {
         return getHtmlHead() + "404 not found" + getHtmlFoot();
+    }
+
+    public static boolean restrictSize(FileInfo f)
+    {
+        if (f.getHeight() > 0 && f.getWidth() > 0)
+        {
+            double rate = (((double) f.getWidth()) / f.getHeight());
+            if (rate > 1)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 
 }

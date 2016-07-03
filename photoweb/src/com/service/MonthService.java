@@ -1,6 +1,6 @@
 package com.service;
 
-import java.util.Map;
+import java.util.TreeMap;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -9,6 +9,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,10 +32,11 @@ public class MonthService
     public Response getMonthIndex(@Context HttpServletRequest req, @Context HttpServletResponse response)
     {
         ResponseBuilder builder = Response.status(200);
-        Map<String, Map<String, Map<String, DateRecords>>> allrecords = DateTableDao.getInstance().getAllDateRecord();
+        TreeMap<String, TreeMap<String, TreeMap<String, DateRecords>>> allrecords = DateTableDao.getInstance()
+                .getAllDateRecord();
         String year = month.substring(0, 4);
         String smonth = month.substring(4, 6);
-        Map<String, Map<String, DateRecords>> currentyear = allrecords.get(year);
+        TreeMap<String, TreeMap<String, DateRecords>> currentyear = allrecords.get(year);
         if (currentyear == null || currentyear.isEmpty())
         {
             logger.info("there is no photos in this year: " + year);
@@ -44,7 +46,27 @@ public class MonthService
         }
         else
         {
-            builder.entity(GenerateHTML.generateMonthPage(month, currentyear.get(smonth)));
+            String prevMonth = currentyear.lowerKey(smonth);
+            if (StringUtils.isNotBlank(prevMonth))
+            {
+                prevMonth = year + prevMonth;
+            }
+            else
+            {
+                prevMonth = null;
+            }
+
+            String nextMonth = currentyear.higherKey(smonth);
+            if (StringUtils.isNotBlank(nextMonth))
+            {
+                nextMonth = year + nextMonth;
+            }
+            else
+            {
+                nextMonth = null;
+            }
+
+            builder.entity(GenerateHTML.generateMonthPage(month, nextMonth, prevMonth, currentyear.get(smonth)));
             return builder.build();
         }
     }

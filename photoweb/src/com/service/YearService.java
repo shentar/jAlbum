@@ -1,6 +1,6 @@
 package com.service;
 
-import java.util.Map;
+import java.util.TreeMap;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -31,8 +31,9 @@ public class YearService
     public Response getYearIndex(@Context HttpServletRequest req, @Context HttpServletResponse response)
     {
         ResponseBuilder builder = Response.status(200);
-        Map<String, Map<String, Map<String, DateRecords>>> allrecords = DateTableDao.getInstance().getAllDateRecord();
-        Map<String, Map<String, DateRecords>> currentyear = allrecords.get(year);
+        TreeMap<String, TreeMap<String, TreeMap<String, DateRecords>>> allrecords = DateTableDao.getInstance()
+                .getAllDateRecord();
+        TreeMap<String, TreeMap<String, DateRecords>> currentyear = allrecords.get(year);
         if (currentyear == null || currentyear.isEmpty() || year.length() != 4)
         {
             logger.info("there is no photos in this year: " + year);

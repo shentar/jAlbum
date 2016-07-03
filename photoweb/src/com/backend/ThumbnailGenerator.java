@@ -118,7 +118,7 @@ public class ThumbnailGenerator
             }
 
             ImageIO.write(bi, suffix, new File(thumbnailPath));
-            
+
             return true;
         }
         catch (Exception e)

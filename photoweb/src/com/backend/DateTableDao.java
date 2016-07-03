@@ -4,9 +4,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.TreeMap;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -34,9 +34,9 @@ public class DateTableDao
         return instance;
     }
 
-    public Map<String, Map<String, Map<String, DateRecords>>> getAllDateRecord()
+    public TreeMap<String, TreeMap<String, TreeMap<String, DateRecords>>> getAllDateRecord()
     {
-        Map<String, Map<String, Map<String, DateRecords>>> allrecords = new HashMap<String, Map<String, Map<String, DateRecords>>>();
+        TreeMap<String, TreeMap<String, TreeMap<String, DateRecords>>> allrecords = new TreeMap<String, TreeMap<String, TreeMap<String, DateRecords>>>();
         lock.readLock().lock();
         PreparedStatement prep = null;
         ResultSet res = null;
@@ -58,17 +58,17 @@ public class DateTableDao
                 String month = date.substring(4, 6);
                 String year = date.substring(0, 4);
 
-                Map<String, Map<String, DateRecords>> myear = allrecords.get(year);
+                TreeMap<String, TreeMap<String, DateRecords>> myear = allrecords.get(year);
                 if (myear == null)
                 {
-                    myear = new HashMap<String, Map<String, DateRecords>>();
+                    myear = new TreeMap<String, TreeMap<String, DateRecords>>();
                     allrecords.put(year, myear);
                 }
 
-                Map<String, DateRecords> mmonth = myear.get(month);
+                TreeMap<String, DateRecords> mmonth = myear.get(month);
                 if (mmonth == null)
                 {
-                    mmonth = new HashMap<String, DateRecords>();
+                    mmonth = new TreeMap<String, DateRecords>();
                     myear.put(month, mmonth);
                 }
 
