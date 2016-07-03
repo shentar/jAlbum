@@ -34,6 +34,7 @@ edit the jalbum.xml
     </picfilesuffix>   
     <minfilesize>51200</minfilesize>
     <threadcount>20</threadcount>
+    <maxpicsperonepage>60</maxpicsperonepage>
     <hashalog>MD5</hashalog>
     <inputdir>
         <dir>D:\\</dir>
@@ -50,6 +51,8 @@ edit the jalbum.xml
 ```
 ***picfilesuffix*** the file type with the suffix that can be scaned by the tool. It is ignorecase. <br/>
 ***inputdir*** specify the folder which nedd to scan.<br/>
+***minfilesize*** specify the min size of Pic file in byte.<br/>
+***maxpicsperonepage*** specify the max pic count of one index page.</br>
 ***threadcount*** specify the size of thread pool.<br/>
 ***hashalog*** specify the file HASH fingerprint Algorithm. The common algorithms are: SHA-256, MD5, SHA-1. You can find the stand algorithm names in [MessageDigest Algorithms](https://docs.oracle.com/javase/8/docs/technotes/guides/security/StandardNames.html#MessageDigest).<br/>
 ***excludedir*** specify the folder which you do not like the tool scan and display the content of it.<br/>
