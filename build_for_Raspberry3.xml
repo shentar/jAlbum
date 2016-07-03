@@ -25,9 +25,6 @@
             <fileset dir="${jdbc.dir}">
                 <include name="libsqlite.so" />
             </fileset>  
-            <fileset dir="${basedir}">
-                <include name="start_for_Raspberry3.sh" />
-            </fileset>            
         </move>
         
         <copy todir="${distribute.dir}" overwrite="false">
@@ -37,6 +34,9 @@
                 <include name="jalbum.xml" />
                 <include name="log4j.xml" /> 
             </fileset> 
+            <fileset dir="${basedir}">
+                <include name="start_for_Raspberry3.sh" />
+            </fileset>  			
         </copy>
         
         <copy todir="${distribute.dir}/lib" overwrite="true">
