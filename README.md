@@ -75,7 +75,6 @@ java -jar start.jar
 >###
 Open the url: http://ip:2148/ in any Web Browser to access the photo album.
 
-
-
-
+## screenshot
+![jAlbum Screenshot](http://shentar.qiniudn.com/wp-content/uploads/2016/07/snapshot1.png)
 
