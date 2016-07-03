@@ -20,7 +20,7 @@ thumbnaildir specify the folder which to store the thumbnail to.
     
     <minfilesize>51200</minfilesize>
     <threadcount>20</threadcount>
-	<maxpicsperonepage>25</maxpicsperonepage>
+    <maxpicsperonepage>25</maxpicsperonepage>
     <hashalog>MD5</hashalog>
     
     <inputdir>
@@ -33,6 +33,6 @@ thumbnaildir specify the folder which to store the thumbnail to.
         <dir>C:\\Program Files\\</dir>
     </excludedir>
     <thumbnaildir>
-		./thumbnail
+        ./thumbnail
 	</thumbnaildir>
 </config>
