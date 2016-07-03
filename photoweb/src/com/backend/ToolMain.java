@@ -33,7 +33,6 @@ public class ToolMain
             List<String> excludeDirs = AppConfig.getInstance().getExcludedir();
             logger.warn("the exclude dirs are: " + excludeDirs);
             metaDataStore.scanAllRecords(excludeDirs);
-            PerformanceStatistics.getInstance().printPerformanceLog(System.currentTimeMillis());
 
             PerformanceStatistics.getInstance().reset();
             logger.warn("start to scan the filesystem which specified by the config file: "

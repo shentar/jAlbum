@@ -263,8 +263,8 @@ public class BaseSqliteStore
                     }
                 }
             }
-
             prep.close();
+            PerformanceStatistics.getInstance().printPerformanceLog(System.currentTimeMillis());            
             logger.warn("end checking all records in the files table.");
         }
         catch (Exception e)
