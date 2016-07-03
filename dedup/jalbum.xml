@@ -1,5 +1,16 @@
 <?xml version="1.0" encoding="utf-8" ?>  
 
+<!--
+picfilesuffix the file type with the suffix that can be scaned by the tool. It is ignorecase. 
+inputdir specify the folder which nedd to scan.
+minfilesize specify the min size of Pic file in byte.
+maxpicsperonepage specify the max pic count of one index page.
+threadcount specify the size of thread pool.
+hashalog specify the file HASH fingerprint Algorithm. The common algorithms are: SHA-256, MD5, SHA-1. You can find the stand algorithm names in MessageDigest Algorithms.
+excludedir specify the folder which you do not like the tool scan and display the content of it.
+thumbnaildir specify the folder which to store the thumbnail to. 
+-->
+
 <config>
     <picfilesuffix>
         <suffix>jpg</suffix>
