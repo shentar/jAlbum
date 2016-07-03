@@ -9,6 +9,7 @@
     
     <minfilesize>51200</minfilesize>
     <threadcount>20</threadcount>
+	<maxpicsperonepage>25</maxpicsperonepage>
     <hashalog>MD5</hashalog>
     
     <inputdir>

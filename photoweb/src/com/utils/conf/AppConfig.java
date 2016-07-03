@@ -130,4 +130,9 @@ public class AppConfig
     {
         return config.getString("thumbnaildir", "./thumbnail");
     }
+
+    public int getMaxCountOfPicInOnePage(int defaultValue)
+    {
+        return config.getInt("maxpicsperonepage", defaultValue);
+    }
 }

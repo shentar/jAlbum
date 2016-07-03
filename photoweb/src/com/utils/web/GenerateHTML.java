@@ -15,6 +15,7 @@ import com.backend.DateRecords;
 import com.backend.DateTableDao;
 import com.backend.FileInfo;
 import com.backend.UniqPhotosStore;
+import com.utils.conf.AppConfig;
 
 public class GenerateHTML
 {
@@ -36,12 +37,12 @@ public class GenerateHTML
         sb.append(getHtmlHead());
         sb.append(
                 "<table style=\"text-align: center;\" width=\"100%\" height=\"100%\" border=\"0\" bordercolor=\"#000000\">");
-        sb.append("<tr><td width=\"33%\" bordercolor=\"#000000\"><a href=\"?prev=" + firstP.getHash256() + "&count=25"
-                + "\">上一页</a></td>");
+        sb.append("<tr><td width=\"33%\" bordercolor=\"#000000\"><a href=\"?prev=" + firstP.getHash256() + "&count="
+                + AppConfig.getInstance().getMaxCountOfPicInOnePage(25) + "\">上一页</a></td>");
         sb.append("<td width=\"33%\" bordercolor=\"#000000\">" + firstP.getPhotoTime() + " ~ " + endP.getPhotoTime()
                 + "</td>");
-        sb.append("<td width=\"33%\" bordercolor=\"#000000\"><a href=\"?next=" + endP.getHash256() + "&count=25"
-                + "\">下一页</a></td></tr></table>");
+        sb.append("<td width=\"33%\" bordercolor=\"#000000\"><a href=\"?next=" + endP.getHash256() + "&count="
+                + AppConfig.getInstance().getMaxCountOfPicInOnePage(25) + "\">下一页</a></td></tr></table>");
         sb.append("<br/><br/>");
         sb.append(
                 "<table style=\"text-align: center;\" width=\"100%\" height=\"100%\" border=\"0\" bordercolor=\"#000000\">");

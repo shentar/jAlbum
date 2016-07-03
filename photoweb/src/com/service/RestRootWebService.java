@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 
 import com.backend.FileInfo;
 import com.backend.UniqPhotosStore;
+import com.utils.conf.AppConfig;
 import com.utils.web.GenerateHTML;
 
 @Produces(value = { "text/xml", "application/json", "application/xml", "text/html" })
@@ -79,7 +80,7 @@ public class RestRootWebService extends HttpServlet
     {
         List<FileInfo> lst = null;
 
-        int count = 25;
+        int count = AppConfig.getInstance().getMaxCountOfPicInOnePage(25);
         String countStr = req.getParameter("count");
         if (StringUtils.isNotBlank(countStr))
         {
