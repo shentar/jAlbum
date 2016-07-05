@@ -1,5 +1,5 @@
-@rem cd /d %~dp0
+@ cd /d %~dp0
 
-java -jar start.jar
+java -Xms512M -Xmx512M -jar start.jar
 
 pause
