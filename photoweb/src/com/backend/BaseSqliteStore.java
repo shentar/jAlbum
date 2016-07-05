@@ -28,7 +28,7 @@ public class BaseSqliteStore
 
     private static BaseSqliteStore instance = new BaseSqliteStore();
 
-    // 对于树莓派等系统，最多只能4个线程同时计算缩略图。
+    // 对于树莓派等系统，最多只能2个线程同时计算缩略图。
     public static final ExecutorService threadPool = Executors.newFixedThreadPool(2);
 
     private BaseSqliteStore()
@@ -281,7 +281,6 @@ public class BaseSqliteStore
         if (!isdone)
         {
             logger.info("the task of pic id [{}] is already being done.", fi.getHash256());
-            PerformanceStatistics.getInstance().addOneFile(false);
             return;
         }
 
@@ -300,7 +299,6 @@ public class BaseSqliteStore
                 }
             }
         });
-        PerformanceStatistics.getInstance().addOneFile(true);
     }
 
     private void deleteOneRecord(FileInfo fi)

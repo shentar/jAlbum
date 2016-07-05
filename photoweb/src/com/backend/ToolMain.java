@@ -111,22 +111,25 @@ public class ToolMain
     {
         try
         {
+            boolean isCare = false;
             for (String s : AppConfig.getInstance().getFileSuffix())
             {
                 if (f.getName().toLowerCase().endsWith(s) && f.length() > AppConfig.getInstance().getMinFileSize())
                 {
                     if (metaDataStore.checkIfAlreadyExist(f))
                     {
-                        PerformanceStatistics.getInstance().addOneFile(false);
+
                         break;
                     }
                     else
                     {
+                        isCare = true;
                         metaDataStore.dealWithOneHash(f, FileSHA256Caculater.calFileSha256(f));
                     }
                     break;
                 }
             }
+            PerformanceStatistics.getInstance().addOneFile(isCare);
 
         }
         catch (Exception e)
