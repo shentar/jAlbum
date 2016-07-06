@@ -365,7 +365,7 @@ public class GenerateHTML
         int start = 0;
         int end = 0;
 
-        for (String day : map.keySet())
+        for (String day : getSortedKeyList(map.keySet()))
         {
             DateRecords mr = map.get(day);
             String pic = mr.getFirstpic();
