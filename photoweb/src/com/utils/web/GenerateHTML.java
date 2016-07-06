@@ -153,11 +153,11 @@ public class GenerateHTML
             {
                 if (arg0 != null)
                 {
-                    return arg0.compareTo(arg1);
+                    return 0 - arg0.compareTo(arg1);
                 }
                 else
                 {
-                    return -1;
+                    return 1;
                 }
             }
         });
