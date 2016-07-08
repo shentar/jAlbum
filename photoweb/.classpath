@@ -68,5 +68,6 @@
 	<classpathentry kind="lib" path="lib/log4j-1.2.17.jar"/>
 	<classpathentry kind="lib" path="lib/jcl-over-slf4j-1.7.21.jar"/>
 	<classpathentry kind="lib" path="lib/commons-configuration-1.10.jar" sourcepath="C:/Users/tyanq/Desktop/commons-configuration-1.10-sources.jar"/>
+	<classpathentry kind="lib" path="lib/commons-io-2.5.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

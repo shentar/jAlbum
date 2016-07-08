@@ -107,7 +107,7 @@ public class ToolMain
         }
     }
 
-    private static void checkOneFile(File f)
+    public static void checkOneFile(File f)
     {
         try
         {
@@ -118,7 +118,6 @@ public class ToolMain
                 {
                     if (metaDataStore.checkIfAlreadyExist(f))
                     {
-
                         break;
                     }
                     else

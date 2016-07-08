@@ -12,6 +12,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,6 +64,11 @@ public class BaseSqliteStore
         try
         {
             FileInfo fi = ReadEXIF.genAllInfos(f.getCanonicalPath(), true);
+            if (fi == null)
+            {
+                logger.warn("error file" + f.getCanonicalPath());
+                return;
+            }
             fi.setHash256(sha256);
             lock.writeLock().lock();
             prep = conn.prepareStatement("insert into files values(?,?,?,?,?,?,?);");
@@ -264,7 +270,7 @@ public class BaseSqliteStore
                 }
             }
             prep.close();
-            PerformanceStatistics.getInstance().printPerformanceLog(System.currentTimeMillis());            
+            PerformanceStatistics.getInstance().printPerformanceLog(System.currentTimeMillis());
             logger.warn("end checking all records in the files table.");
         }
         catch (Exception e)
@@ -301,8 +307,14 @@ public class BaseSqliteStore
         });
     }
 
-    private void deleteOneRecord(FileInfo fi)
+    public void deleteOneRecord(FileInfo fi)
     {
+        if (fi == null || StringUtils.isBlank(fi.getPath()))
+        {
+            logger.warn("input file's path is empty.");
+            return;
+        }
+
         PreparedStatement prep = null;
         try
         {
@@ -315,6 +327,33 @@ public class BaseSqliteStore
         catch (Exception e)
         {
             logger.error("caught: " + fi, e);
+        }
+        finally
+        {
+            lock.writeLock().unlock();
+        }
+    }
+
+    public void deleteRecordsInDirs(String dir)
+    {
+        if (StringUtils.isBlank(dir))
+        {
+            return;
+        }
+
+        PreparedStatement prep = null;
+        try
+        {
+            lock.writeLock().lock();
+            prep = conn.prepareStatement("delete from files where path like ?;");
+            prep.setString(1, dir + "%");
+
+            prep.execute();
+            prep.close();
+        }
+        catch (Exception e)
+        {
+            logger.error("caught: " + dir, e);
         }
         finally
         {
