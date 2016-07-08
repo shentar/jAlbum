@@ -70,7 +70,14 @@ public class SpecialListener implements ServletContextListener
             final List<String> elst = AppConfig.getInstance().getExcludedir();
             for (final String dir : AppConfig.getInstance().getInputDir())
             {
-                watchAnDir(elst, dir);
+                new Thread()
+                {
+                    public void run()
+                    {
+                        watchAnDir(elst, dir);
+                    }
+                }.start();
+                
             }
         }
         catch (IOException e)
