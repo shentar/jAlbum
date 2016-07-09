@@ -99,7 +99,10 @@ public class DirWatchService
         }
 
         File[] files = f.listFiles();
-
+        if (files == null)
+        {
+            return;
+        }
         for (File file : files)
         {
             mapDirs(file, excludeDirs);
@@ -212,7 +215,7 @@ public class DirWatchService
 
                 boolean valid = watchKey.reset();
                 {
-                    if (valid)
+                    if (!valid)
                     {
                         logger.warn("the key is invalid: " + rootPath);
                     }

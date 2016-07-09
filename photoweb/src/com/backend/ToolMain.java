@@ -63,9 +63,13 @@ public class ToolMain
 
     public static void renewTheData()
     {
-        photostore.getDupFiles();
-        datestore.refreshDate();
-        logger.warn("completed one roundle.");
+        boolean needFresh = RefreshFlag.getInstance().getAndSet(false);
+        if (needFresh)
+        {
+            photostore.getDupFiles();
+            datestore.refreshDate();
+            logger.warn("completed one roundle.");
+        }
     }
 
     public static void mapAllfiles(final File f, List<String> excludeDirs)
