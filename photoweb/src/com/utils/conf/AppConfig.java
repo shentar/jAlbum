@@ -1,7 +1,6 @@
 package com.utils.conf;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -46,26 +45,33 @@ public class AppConfig
         }
     }
 
-    public List<String> getInputDir() throws IOException
+    public List<String> getInputDir()
     {
-        List<String> strList = new LinkedList<String>();
-        List<Object> lst = config.getList("inputdir.dir");
-        for (Object s : lst)
+        List<String> dirlst = new LinkedList<String>();
+        try
         {
-            if (s instanceof String)
+            List<String> strList = new LinkedList<String>();
+            List<Object> lst = config.getList("inputdir.dir");
+            for (Object s : lst)
             {
-                strList.add((String) s);
+                if (s instanceof String)
+                {
+                    strList.add((String) s);
+                }
+            }
+
+            for (String s : strList)
+            {
+                File f = new File(s);
+                if (f.exists() && f.isDirectory())
+                {
+                    dirlst.add(f.getCanonicalPath());
+                }
             }
         }
-
-        List<String> dirlst = new LinkedList<String>();
-        for (String s : strList)
+        catch (Exception e)
         {
-            File f = new File(s);
-            if (f.exists() && f.isDirectory())
-            {
-                dirlst.add(f.getCanonicalPath());
-            }
+            logger.warn("exception: ", e);
         }
 
         return dirlst;
@@ -101,28 +107,35 @@ public class AppConfig
         return config.getLong("config.minfilesize", 1024 * 50);
     }
 
-    public List<String> getExcludedir() throws IOException
+    public List<String> getExcludedir()
     {
-        List<String> strList = new LinkedList<String>();
-        List<Object> lst = config.getList("excludedir.dir");
-        for (Object s : lst)
-        {
-            if (s instanceof String)
-            {
-                strList.add((String) s);
-            }
-        }
-
         List<String> dirlst = new LinkedList<String>();
-        for (String s : strList)
+
+        try
         {
-            File f = new File(s);
-            if (f.exists() && f.isDirectory())
+            List<String> strList = new LinkedList<String>();
+            List<Object> lst = config.getList("excludedir.dir");
+            for (Object s : lst)
             {
-                dirlst.add(f.getCanonicalPath());
+                if (s instanceof String)
+                {
+                    strList.add((String) s);
+                }
+            }
+
+            for (String s : strList)
+            {
+                File f = new File(s);
+                if (f.exists() && f.isDirectory())
+                {
+                    dirlst.add(f.getCanonicalPath());
+                }
             }
         }
-
+        catch (Exception e)
+        {
+            logger.warn("excption: ", e);
+        }
         return dirlst;
     }
 

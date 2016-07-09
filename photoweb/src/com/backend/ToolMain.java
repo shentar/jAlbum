@@ -23,41 +23,49 @@ public class ToolMain
 
     private static AtomicLong filecount = new AtomicLong(0);
 
+    private static boolean firstRun = true;
+
     public static void scanfiles()
     {
         try
         {
-            logger.warn("start one roundle.");
-            filecount.set(0);
-            PerformanceStatistics.getInstance().reset();
-            List<String> excludeDirs = AppConfig.getInstance().getExcludedir();
-            logger.warn("the exclude dirs are: " + excludeDirs);
-            metaDataStore.scanAllRecords(excludeDirs);
-
-            PerformanceStatistics.getInstance().reset();
-            logger.warn("start to scan the filesystem which specified by the config file: "
-                    + AppConfig.getInstance().getInputDir());
-            for (String dir : AppConfig.getInstance().getInputDir())
+            if (firstRun)
             {
-                mapAllfiles(new File(dir), excludeDirs);
+                firstRun = false;
+                logger.warn("start one roundle.");
+                filecount.set(0);
+                PerformanceStatistics.getInstance().reset();
+                List<String> excludeDirs = AppConfig.getInstance().getExcludedir();
+                logger.warn("the exclude dirs are: " + excludeDirs);
+                metaDataStore.scanAllRecords(excludeDirs);
+
+                PerformanceStatistics.getInstance().reset();
+                logger.warn("start to scan the filesystem which specified by the config file: "
+                        + AppConfig.getInstance().getInputDir());
+                for (String dir : AppConfig.getInstance().getInputDir())
+                {
+                    mapAllfiles(new File(dir), excludeDirs);
+                }
+
+                while (filecount.get() != 0)
+                {
+                    Thread.sleep(100);
+                }
+                PerformanceStatistics.getInstance().printPerformanceLog(System.currentTimeMillis());
+                logger.warn("end to scan the filesystem.");
             }
-
-            while (filecount.get() != 0)
-            {
-                Thread.sleep(100);
-            }
-
-            PerformanceStatistics.getInstance().printPerformanceLog(System.currentTimeMillis());
-            logger.warn("end to scan the filesystem.");
-
-            photostore.getDupFiles();
-            datestore.refreshDate();
-            logger.warn("completed one roundle.");
         }
         catch (Throwable th)
         {
             logger.error("caught: ", th);
         }
+    }
+
+    public static void renewTheData()
+    {
+        photostore.getDupFiles();
+        datestore.refreshDate();
+        logger.warn("completed one roundle.");
     }
 
     public static void mapAllfiles(final File f, List<String> excludeDirs)

@@ -81,6 +81,8 @@ public class BaseSqliteStore
             prep.setLong(7, fi.getHeight());
             prep.execute();
 
+            RefreshFlag.getInstance().getAndSet(true);
+
             submitAnThumbnailTask(fi);
         }
         catch (SQLException e)
@@ -225,6 +227,7 @@ public class BaseSqliteStore
             prep.setString(4, fi.getPath());
             prep.execute();
             prep.close();
+            RefreshFlag.getInstance().getAndSet(true);
         }
         catch (Exception e)
         {
@@ -323,6 +326,7 @@ public class BaseSqliteStore
             prep.setString(1, fi.getPath());
             prep.execute();
             prep.close();
+            RefreshFlag.getInstance().getAndSet(true);
         }
         catch (Exception e)
         {
@@ -350,6 +354,7 @@ public class BaseSqliteStore
 
             prep.execute();
             prep.close();
+            RefreshFlag.getInstance().getAndSet(true);
         }
         catch (Exception e)
         {
