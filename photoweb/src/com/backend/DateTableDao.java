@@ -16,7 +16,8 @@ import org.slf4j.LoggerFactory;
 
 public class DateTableDao
 {
-    private static final Logger logger = LoggerFactory.getLogger(DateTableDao.class);
+    private static final Logger logger = LoggerFactory
+            .getLogger(DateTableDao.class);
 
     private Connection conn = SqliteConnManger.getInstance().getConn();
 
@@ -58,7 +59,8 @@ public class DateTableDao
                 String month = date.substring(4, 6);
                 String year = date.substring(0, 4);
 
-                TreeMap<String, TreeMap<String, DateRecords>> myear = allrecords.get(year);
+                TreeMap<String, TreeMap<String, DateRecords>> myear = allrecords
+                        .get(year);
                 if (myear == null)
                 {
                     myear = new TreeMap<String, TreeMap<String, DateRecords>>();
@@ -106,7 +108,8 @@ public class DateTableDao
         ResultSet res = null;
         try
         {
-            prep = conn.prepareStatement("select * from daterecords where datestr=?;");
+            prep = conn.prepareStatement(
+                    "select * from daterecords where datestr=?;");
             prep.setString(1, day);
             res = prep.executeQuery();
 
@@ -138,7 +141,8 @@ public class DateTableDao
     {
         logger.warn("refresh all date record.");
 
-        Map<String, DateRecords> dst = UniqPhotosStore.getInstance().genAllDateRecords();
+        Map<String, DateRecords> dst = UniqPhotosStore.getInstance()
+                .genAllDateRecords();
         if (dst == null || dst.isEmpty())
         {
             logger.warn("there is no pic.");
@@ -153,7 +157,8 @@ public class DateTableDao
             prep.execute();
             prep.close();
 
-            prep = conn.prepareStatement("insert into daterecords values(?,?,?);");
+            prep = conn
+                    .prepareStatement("insert into daterecords values(?,?,?);");
             for (Entry<String, DateRecords> dr : dst.entrySet())
             {
                 prep.setString(1, dr.getKey());

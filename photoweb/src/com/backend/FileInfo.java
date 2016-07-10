@@ -50,7 +50,8 @@ public class FileInfo
 
     public String toString()
     {
-        return "[path: " + path + "; hahstr: " + hash256 + "; phototime: " + photoTime + "]";
+        return "[path: " + path + "; hahstr: " + hash256 + "; phototime: "
+                + photoTime + "]";
     }
 
     public long getHeight()

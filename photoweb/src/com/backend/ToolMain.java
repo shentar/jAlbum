@@ -9,13 +9,16 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.backend.dirwathch.DirWatchService;
 import com.utils.conf.AppConfig;
 
 public class ToolMain
 {
-    private static final Logger logger = LoggerFactory.getLogger(ToolMain.class);
+    private static final Logger logger = LoggerFactory
+            .getLogger(ToolMain.class);
 
-    private static BaseSqliteStore metaDataStore = BaseSqliteStore.getInstance();
+    private static BaseSqliteStore metaDataStore = BaseSqliteStore
+            .getInstance();
 
     private static UniqPhotosStore photostore = UniqPhotosStore.getInstance();
 
@@ -32,16 +35,20 @@ public class ToolMain
             if (firstRun)
             {
                 firstRun = false;
-                logger.warn("start one roundle.");
+                logger.warn(
+                        "start to scan the base table one time after the program start.");
                 filecount.set(0);
                 PerformanceStatistics.getInstance().reset();
-                List<String> excludeDirs = AppConfig.getInstance().getExcludedir();
+                List<String> excludeDirs = AppConfig.getInstance()
+                        .getExcludedir();
                 logger.warn("the exclude dirs are: " + excludeDirs);
                 metaDataStore.scanAllRecords(excludeDirs);
+                logger.warn("end to scan the base table.");
 
                 PerformanceStatistics.getInstance().reset();
-                logger.warn("start to scan the filesystem which specified by the config file: "
-                        + AppConfig.getInstance().getInputDir());
+                logger.warn(
+                        "start to scan the filesystem which specified by the config file: "
+                                + AppConfig.getInstance().getInputDir());
                 for (String dir : AppConfig.getInstance().getInputDir())
                 {
                     mapAllfiles(new File(dir), excludeDirs);
@@ -51,7 +58,8 @@ public class ToolMain
                 {
                     Thread.sleep(100);
                 }
-                PerformanceStatistics.getInstance().printPerformanceLog(System.currentTimeMillis());
+                PerformanceStatistics.getInstance()
+                        .printPerformanceLog(System.currentTimeMillis());
                 logger.warn("end to scan the filesystem.");
             }
         }
@@ -71,6 +79,8 @@ public class ToolMain
             datestore.refreshDate();
             logger.warn("completed one roundle.");
         }
+        logger.warn("the count of dir which is monitered is "
+                + DirWatchService.getInstance().getTheWatchDirCount() + ".");
     }
 
     public static void mapAllfiles(final File f, List<String> excludeDirs)
@@ -100,7 +110,8 @@ public class ToolMain
                 {
                     if (f.getCanonicalPath().startsWith(s))
                     {
-                        logger.info("this folder is execluded: " + f.getCanonicalPath());
+                        logger.info("this folder is execluded: "
+                                + f.getCanonicalPath());
                         return;
                     }
                 }
@@ -127,7 +138,8 @@ public class ToolMain
             boolean isCare = false;
             for (String s : AppConfig.getInstance().getFileSuffix())
             {
-                if (f.getName().toLowerCase().endsWith(s) && f.length() > AppConfig.getInstance().getMinFileSize())
+                if (f.getName().toLowerCase().endsWith(s) && f
+                        .length() > AppConfig.getInstance().getMinFileSize())
                 {
                     if (metaDataStore.checkIfAlreadyExist(f))
                     {
@@ -136,7 +148,8 @@ public class ToolMain
                     else
                     {
                         isCare = true;
-                        metaDataStore.dealWithOneHash(f, FileSHA256Caculater.calFileSha256(f));
+                        metaDataStore.dealWithOneHash(f,
+                                FileSHA256Caculater.calFileSha256(f));
                     }
                     break;
                 }

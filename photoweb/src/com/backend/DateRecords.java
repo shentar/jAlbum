@@ -53,7 +53,8 @@ public class DateRecords
         final int prime = 31;
         int result = 1;
         result = prime * result + ((datestr == null) ? 0 : datestr.hashCode());
-        result = prime * result + ((datetype == null) ? 0 : datetype.hashCode());
+        result = prime * result
+                + ((datetype == null) ? 0 : datetype.hashCode());
         return result;
     }
 

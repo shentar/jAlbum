@@ -24,7 +24,8 @@ import com.utils.conf.AppConfig;
 
 public class DirWatchService
 {
-    private static final Logger logger = LoggerFactory.getLogger(DirWatchService.class);
+    private static final Logger logger = LoggerFactory
+            .getLogger(DirWatchService.class);
     private ConcurrentHashMap<WatchKey, String> keyMap = new ConcurrentHashMap<WatchKey, String>();
     private WatchService ws = null;
     private static DirWatchService instance = new DirWatchService();
@@ -39,7 +40,8 @@ public class DirWatchService
         return instance;
     }
 
-    public void init(final List<String> inputDirs, final List<String> excludeDirs)
+    public void init(final List<String> inputDirs,
+            final List<String> excludeDirs)
     {
         try
         {
@@ -122,7 +124,9 @@ public class DirWatchService
         {
             try
             {
-                WatchKey k = p.register(ws, StandardWatchEventKinds.ENTRY_MODIFY, StandardWatchEventKinds.ENTRY_CREATE,
+                WatchKey k = p.register(ws,
+                        StandardWatchEventKinds.ENTRY_MODIFY,
+                        StandardWatchEventKinds.ENTRY_CREATE,
                         StandardWatchEventKinds.ENTRY_DELETE);
                 if (StringUtils.isNotBlank(path))
                 {
@@ -171,11 +175,13 @@ public class DirWatchService
                             {
                                 try
                                 {
-                                    ToolMain.mapAllfiles(cf, AppConfig.getInstance().getExcludedir());
+                                    ToolMain.mapAllfiles(cf, AppConfig
+                                            .getInstance().getExcludedir());
                                 }
                                 catch (Exception e)
                                 {
-                                    logger.warn("map all files of: " + fullPath + " failed, ", e);
+                                    logger.warn("map all files of: " + fullPath
+                                            + " failed, ", e);
                                 }
                             }
                         });
@@ -188,7 +194,8 @@ public class DirWatchService
                             @Override
                             public void run()
                             {
-                                BaseSqliteStore.getInstance().deleteRecordsInDirs(fullPath);
+                                BaseSqliteStore.getInstance()
+                                        .deleteRecordsInDirs(fullPath);
                             }
                         });
                     }
@@ -202,7 +209,8 @@ public class DirWatchService
                                 @Override
                                 public void run()
                                 {
-                                    BaseSqliteStore.getInstance().checkIfAlreadyExist(cf);
+                                    BaseSqliteStore.getInstance()
+                                            .checkIfAlreadyExist(cf);
                                 }
                             });
                         }
@@ -227,5 +235,10 @@ public class DirWatchService
             }
 
         }
+    }
+
+    public long getTheWatchDirCount()
+    {
+        return keyMap.size();
     }
 }

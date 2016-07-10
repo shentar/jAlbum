@@ -21,7 +21,8 @@ import com.utils.sys.GloableLockBaseOnString;
 
 public class BaseSqliteStore
 {
-    private static final Logger logger = LoggerFactory.getLogger(BaseSqliteStore.class);
+    private static final Logger logger = LoggerFactory
+            .getLogger(BaseSqliteStore.class);
 
     private Connection conn = SqliteConnManger.getInstance().getConn();
 
@@ -30,7 +31,8 @@ public class BaseSqliteStore
     private static BaseSqliteStore instance = new BaseSqliteStore();
 
     // 对于树莓派等系统，最多只能2个线程同时计算缩略图。
-    public static final ExecutorService threadPool = Executors.newFixedThreadPool(2);
+    public static final ExecutorService threadPool = Executors
+            .newFixedThreadPool(2);
 
     private BaseSqliteStore()
     {
@@ -79,7 +81,7 @@ public class BaseSqliteStore
         {
             lock.readLock().unlock();
         }
-        
+
         return null;
     }
 
@@ -112,7 +114,8 @@ public class BaseSqliteStore
             }
             fi.setHash256(sha256);
             lock.writeLock().lock();
-            prep = conn.prepareStatement("insert into files values(?,?,?,?,?,?,?);");
+            prep = conn.prepareStatement(
+                    "insert into files values(?,?,?,?,?,?,?);");
             prep.setString(1, fi.getPath());
             prep.setString(2, fi.getHash256());
             prep.setLong(3, fi.getSize());
@@ -167,14 +170,16 @@ public class BaseSqliteStore
             {
                 FileInfo oldfi = getFileInfoFromTable(res);
                 if (oldfi.getSize() == f.length() && oldfi.getcTime() != null
-                        && oldfi.getcTime().getTime() == FileTools.getFileCreateTime(f))
+                        && oldfi.getcTime().getTime() == FileTools
+                                .getFileCreateTime(f))
                 {
                     checkPhotoTime(oldfi);
                     return true;
                 }
                 else
                 {
-                    logger.warn("the file was changed, rebuild the record: " + oldfi);
+                    logger.warn("the file was changed, rebuild the record: "
+                            + oldfi);
                     deleteOneRecord(oldfi);
                     return false;
                 }
@@ -239,7 +244,8 @@ public class BaseSqliteStore
             {
                 boolean bneedupdate = false;
                 if (oldfi.getPhotoTime() == null || oldfi.getcTime() == null
-                        || oldfi.getPhotoTime().getTime() > System.currentTimeMillis())
+                        || oldfi.getPhotoTime().getTime() > System
+                                .currentTimeMillis())
                 {
                     oldfi = ReadEXIF.genAllInfos(oldfi.getPath(), true);
                     bneedupdate = true;
@@ -260,8 +266,8 @@ public class BaseSqliteStore
         try
         {
             lock.writeLock().lock();
-            PreparedStatement prep = conn
-                    .prepareStatement("update files set phototime=?,width=?,height=? where path=?;");
+            PreparedStatement prep = conn.prepareStatement(
+                    "update files set phototime=?,width=?,height=? where path=?;");
             prep.setDate(1, fi.getPhotoTime());
             prep.setLong(2, fi.getWidth());
             prep.setLong(3, fi.getHeight());
@@ -302,7 +308,8 @@ public class BaseSqliteStore
                 }
                 else
                 {
-                    if (ThumbnailManager.checkTheThumbnailExist(fi.getHash256()))
+                    if (ThumbnailManager
+                            .checkTheThumbnailExist(fi.getHash256()))
                     {
                         PerformanceStatistics.getInstance().addOneFile(false);
                         continue;
@@ -314,7 +321,8 @@ public class BaseSqliteStore
                 }
             }
             prep.close();
-            PerformanceStatistics.getInstance().printPerformanceLog(System.currentTimeMillis());
+            PerformanceStatistics.getInstance()
+                    .printPerformanceLog(System.currentTimeMillis());
             logger.warn("end checking all records in the files table.");
         }
         catch (Exception e)
@@ -330,7 +338,8 @@ public class BaseSqliteStore
         isdone = GloableLockBaseOnString.getInstance().tryToDo(fi.getHash256());
         if (!isdone)
         {
-            logger.info("the task of pic id [{}] is already being done.", fi.getHash256());
+            logger.info("the task of pic id [{}] is already being done.",
+                    fi.getHash256());
             return;
         }
 
@@ -390,7 +399,8 @@ public class BaseSqliteStore
         try
         {
             lock.writeLock().lock();
-            prep = conn.prepareStatement("delete from files where path like ?;");
+            prep = conn
+                    .prepareStatement("delete from files where path like ?;");
             prep.setString(1, dir + "%");
 
             prep.execute();

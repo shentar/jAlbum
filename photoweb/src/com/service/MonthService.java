@@ -19,7 +19,8 @@ import com.utils.web.GenerateHTML;
 
 public class MonthService
 {
-    private static final Logger logger = LoggerFactory.getLogger(MonthService.class);
+    private static final Logger logger = LoggerFactory
+            .getLogger(MonthService.class);
 
     private String month;
 
@@ -29,14 +30,16 @@ public class MonthService
     }
 
     @GET
-    public Response getMonthIndex(@Context HttpServletRequest req, @Context HttpServletResponse response)
+    public Response getMonthIndex(@Context HttpServletRequest req,
+            @Context HttpServletResponse response)
     {
         ResponseBuilder builder = Response.status(200);
-        TreeMap<String, TreeMap<String, TreeMap<String, DateRecords>>> allrecords = DateTableDao.getInstance()
-                .getAllDateRecord();
+        TreeMap<String, TreeMap<String, TreeMap<String, DateRecords>>> allrecords = DateTableDao
+                .getInstance().getAllDateRecord();
         String year = month.substring(0, 4);
         String smonth = month.substring(4, 6);
-        TreeMap<String, TreeMap<String, DateRecords>> currentyear = allrecords.get(year);
+        TreeMap<String, TreeMap<String, DateRecords>> currentyear = allrecords
+                .get(year);
         if (currentyear == null || currentyear.isEmpty())
         {
             logger.info("there is no photos in this year: " + year);
@@ -66,7 +69,8 @@ public class MonthService
                 nextMonth = null;
             }
 
-            builder.entity(GenerateHTML.generateMonthPage(month, nextMonth, prevMonth, currentyear.get(smonth)));
+            builder.entity(GenerateHTML.generateMonthPage(month, nextMonth,
+                    prevMonth, currentyear.get(smonth)));
             return builder.build();
         }
     }

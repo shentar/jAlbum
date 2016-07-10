@@ -18,9 +18,11 @@ import org.slf4j.LoggerFactory;
 
 public class ThumbnailGenerator
 {
-    private static final Logger logger = LoggerFactory.getLogger(ThumbnailGenerator.class);
+    private static final Logger logger = LoggerFactory
+            .getLogger(ThumbnailGenerator.class);
 
-    public static BufferedImage generateThumbnail(String fpath, int w, int h, boolean force) throws IOException
+    public static BufferedImage generateThumbnail(String fpath, int w, int h,
+            boolean force) throws IOException
     {
         File imgFile = new File(fpath);
         checkPicType(imgFile);
@@ -45,13 +47,17 @@ public class ThumbnailGenerator
 
             if ((width * 1.0) / w > (height * 1.0) / h)
             {
-                h = Integer.parseInt(new java.text.DecimalFormat("0").format(height * w / (width * 1.0)));
-                logger.debug("change image's height, width:{}, height:{}.", w, h);
+                h = Integer.parseInt(new java.text.DecimalFormat("0")
+                        .format(height * w / (width * 1.0)));
+                logger.debug("change image's height, width:{}, height:{}.", w,
+                        h);
             }
             else
             {
-                w = Integer.parseInt(new java.text.DecimalFormat("0").format(width * h / (height * 1.0)));
-                logger.debug("change image's width, width:{}, height:{}.", w, h);
+                w = Integer.parseInt(new java.text.DecimalFormat("0")
+                        .format(width * h / (height * 1.0)));
+                logger.debug("change image's width, width:{}, height:{}.", w,
+                        h);
             }
         }
 
@@ -73,19 +79,24 @@ public class ThumbnailGenerator
         // 获取图片后缀
         if (imgFile.getName().indexOf(".") > -1)
         {
-            suffix = imgFile.getName().substring(imgFile.getName().lastIndexOf(".") + 1);
+            suffix = imgFile.getName()
+                    .substring(imgFile.getName().lastIndexOf(".") + 1);
         }
 
-        if (suffix == null || types.toLowerCase().indexOf(suffix.toLowerCase()) < 0)
+        if (suffix == null
+                || types.toLowerCase().indexOf(suffix.toLowerCase()) < 0)
         {
-            logger.error("Sorry, the image suffix is illegal. the standard image suffix is {}." + types);
+            logger.error(
+                    "Sorry, the image suffix is illegal. the standard image suffix is {}."
+                            + types);
             throw new IOException("the file type is not supported!");
         }
 
         return suffix;
     }
 
-    public static InputStream generateThumbnailInputStream(String fpath, int w, int h, boolean force)
+    public static InputStream generateThumbnailInputStream(String fpath, int w,
+            int h, boolean force)
     {
         try
         {
@@ -106,7 +117,8 @@ public class ThumbnailGenerator
         return null;
     }
 
-    public static boolean createThumbnail(String fpath, String thumbnailPath, int w, int h, boolean force)
+    public static boolean createThumbnail(String fpath, String thumbnailPath,
+            int w, int h, boolean force)
     {
         try
         {

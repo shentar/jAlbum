@@ -18,7 +18,8 @@ import com.utils.web.GenerateHTML;
 
 public class YearService
 {
-    private static final Logger logger = LoggerFactory.getLogger(YearService.class);
+    private static final Logger logger = LoggerFactory
+            .getLogger(YearService.class);
 
     private String year;
 
@@ -28,12 +29,14 @@ public class YearService
     }
 
     @GET
-    public Response getYearIndex(@Context HttpServletRequest req, @Context HttpServletResponse response)
+    public Response getYearIndex(@Context HttpServletRequest req,
+            @Context HttpServletResponse response)
     {
         ResponseBuilder builder = Response.status(200);
-        TreeMap<String, TreeMap<String, TreeMap<String, DateRecords>>> allrecords = DateTableDao.getInstance()
-                .getAllDateRecord();
-        TreeMap<String, TreeMap<String, DateRecords>> currentyear = allrecords.get(year);
+        TreeMap<String, TreeMap<String, TreeMap<String, DateRecords>>> allrecords = DateTableDao
+                .getInstance().getAllDateRecord();
+        TreeMap<String, TreeMap<String, DateRecords>> currentyear = allrecords
+                .get(year);
         if (currentyear == null || currentyear.isEmpty() || year.length() != 4)
         {
             logger.info("there is no photos in this year: " + year);

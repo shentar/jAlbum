@@ -28,7 +28,8 @@ import com.utils.web.GenerateHTML;
 
 public class ObjectService
 {
-    private static final Logger logger = LoggerFactory.getLogger(ObjectService.class);
+    private static final Logger logger = LoggerFactory
+            .getLogger(ObjectService.class);
 
     private String id;
 
@@ -38,8 +39,8 @@ public class ObjectService
     }
 
     @GET
-    public Response getPhotoData(@Context HttpServletRequest req, @Context HttpServletResponse response)
-            throws IOException
+    public Response getPhotoData(@Context HttpServletRequest req,
+            @Context HttpServletResponse response) throws IOException
     {
         ResponseBuilder builder = Response.status(200);
         BaseSqliteStore meta = BaseSqliteStore.getInstance();
@@ -57,7 +58,8 @@ public class ObjectService
 
                 if (fi == null)
                 {
-                    fi = new BufferedInputStream(new FileInputStream(new File(f.getPath())));
+                    fi = new BufferedInputStream(
+                            new FileInputStream(new File(f.getPath())));
                 }
 
                 if (fi != null)
@@ -69,8 +71,10 @@ public class ObjectService
                     long expirtime = System.currentTimeMillis() + expirAge;
                     builder.header("Expires", new Date(expirtime));
                     builder.header("Cache-Control", "max-age=" + expirAge);
-                    builder.header("Content-Disposition", "filename=" + new File(f.getPath()).getName());
-                    builder.header("PicFileFullPath", URLEncoder.encode(f.getPath(), "UTF-8"));
+                    builder.header("Content-Disposition",
+                            "filename=" + new File(f.getPath()).getName());
+                    builder.header("PicFileFullPath",
+                            URLEncoder.encode(f.getPath(), "UTF-8"));
                     logger.info("the file is: {}, Mime: {}", f, contenttype);
                 }
             }

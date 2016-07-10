@@ -19,7 +19,8 @@ import org.slf4j.LoggerFactory;
 
 public class UniqPhotosStore
 {
-    private static final Logger logger = LoggerFactory.getLogger(UniqPhotosStore.class);
+    private static final Logger logger = LoggerFactory
+            .getLogger(UniqPhotosStore.class);
 
     private Connection conn = SqliteConnManger.getInstance().getConn();
 
@@ -46,7 +47,8 @@ public class UniqPhotosStore
             ResultSet res = null;
             try
             {
-                prep = conn.prepareStatement("select * from uniqphotos1 where hashstr=?;");
+                prep = conn.prepareStatement(
+                        "select * from uniqphotos1 where hashstr=?;");
                 prep.setString(1, id);
                 res = prep.executeQuery();
 
@@ -138,12 +140,15 @@ public class UniqPhotosStore
 
                 if (fi != null)
                 {
-                    prep = conn.prepareStatement("select * from uniqphotos1 where phototime<? limit " + count + ";");
+                    prep = conn.prepareStatement(
+                            "select * from uniqphotos1 where phototime<? limit "
+                                    + count + ";");
                     prep.setDate(1, fi.getPhotoTime());
                 }
                 else
                 {
-                    prep = conn.prepareStatement("select * from uniqphotos1 limit " + count + ";");
+                    prep = conn.prepareStatement(
+                            "select * from uniqphotos1 limit " + count + ";");
                 }
 
                 res = prep.executeQuery();
@@ -192,13 +197,15 @@ public class UniqPhotosStore
                 if (fi != null)
                 {
                     prep = conn.prepareStatement(
-                            "select * from uniqphotos1 where phototime>? order by phototime asc limit " + count + ";");
+                            "select * from uniqphotos1 where phototime>? order by phototime asc limit "
+                                    + count + ";");
                     prep.setDate(1, fi.getPhotoTime());
                 }
                 else
                 {
-                    prep = conn
-                            .prepareStatement("select * from uniqphotos1 order by phototime asc limit " + count + ";");
+                    prep = conn.prepareStatement(
+                            "select * from uniqphotos1 order by phototime asc limit "
+                                    + count + ";");
                 }
 
                 res = prep.executeQuery();
@@ -243,7 +250,8 @@ public class UniqPhotosStore
             logger.warn("delete all records form uniqphotos2.");
 
             prep = conn.prepareStatement(
-                    "insert into uniqphotos2(path,hashstr,size,phototime,width,height) " + "select path,sha256,size,"
+                    "insert into uniqphotos2(path,hashstr,size,phototime,width,height) "
+                            + "select path,sha256,size,"
                             + "phototime,width,height from files where sha256 in(select sha256 from files group by sha256) "
                             + "group by sha256 ORDER BY phototime DESC");
             prep.execute();
@@ -258,7 +266,8 @@ public class UniqPhotosStore
                 prep.close();
                 logger.warn("delete all records form uniqphotos1.");
 
-                prep = conn.prepareStatement("insert into uniqphotos1 select * from uniqphotos2;");
+                prep = conn.prepareStatement(
+                        "insert into uniqphotos1 select * from uniqphotos2;");
                 prep.execute();
                 prep.close();
                 logger.warn("insert new records to uniqphotos1.");
@@ -321,7 +330,8 @@ public class UniqPhotosStore
             Date dend = new Date(d.getTime() + 24 * 3600 * 1000);
             try
             {
-                prep = conn.prepareStatement("select * from uniqphotos1 where phototime>=? and phototime<?;");
+                prep = conn.prepareStatement(
+                        "select * from uniqphotos1 where phototime>=? and phototime<?;");
                 prep.setDate(1, dstart);
                 prep.setDate(2, dend);
                 res = prep.executeQuery();

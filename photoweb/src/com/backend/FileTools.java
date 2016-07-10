@@ -30,13 +30,16 @@ import com.utils.conf.AppConfig;
 
 public class FileTools
 {
-    private static final Logger logger = LoggerFactory.getLogger(FileTools.class);
-    public static boolean usesqlite = "true".equals(System.getProperty("usesqlite", "true")) ? true : false;
+    private static final Logger logger = LoggerFactory
+            .getLogger(FileTools.class);
+    public static boolean usesqlite = "true"
+            .equals(System.getProperty("usesqlite", "true")) ? true : false;
     public static long lastScanTime = 0;
     public static final ExecutorService threadPool = Executors
             .newFixedThreadPool(AppConfig.getInstance().getThreadCount());
 
-    public static void readShortFileContent(byte[] buffer, File f) throws FileNotFoundException, IOException
+    public static void readShortFileContent(byte[] buffer, File f)
+            throws FileNotFoundException, IOException
     {
         int maxLen = buffer.length;
         FileInputStream fin = null;
@@ -70,14 +73,17 @@ public class FileTools
         }
     }
 
-    public static boolean checkFileDeleted(final FileInfo fi, List<String> excludeDirs) throws IOException
+    public static boolean checkFileDeleted(final FileInfo fi,
+            List<String> excludeDirs) throws IOException
     {
         if (fi != null)
         {
             File f = new File(fi.getPath());
-            if (f.isFile() && f.length() > AppConfig.getInstance().getMinFileSize())
+            if (f.isFile()
+                    && f.length() > AppConfig.getInstance().getMinFileSize())
             {
-                if (fi.getcTime().getTime() == FileTools.getFileCreateTime(new File(fi.getPath())))
+                if (fi.getcTime().getTime() == FileTools
+                        .getFileCreateTime(new File(fi.getPath())))
                 {
                     if (excludeDirs != null)
                     {
@@ -116,7 +122,8 @@ public class FileTools
         {
             String tmpFilePath = fi.getPath() + "_tmpfile";
             new File(fi.getPath()).renameTo(new File(tmpFilePath));
-            ExifCreator.addExifDate(new String[] { tmpFilePath, fi.getPath(), sf.format(fi.getPhotoTime()) });
+            ExifCreator.addExifDate(new String[] { tmpFilePath, fi.getPath(),
+                    sf.format(fi.getPhotoTime()) });
 
         }
         catch (Exception e)
@@ -132,8 +139,10 @@ public class FileTools
             return -1;
         }
 
-        Path path = FileSystems.getDefault().getPath(f.getParent(), f.getName());
-        BasicFileAttributes attrs = Files.readAttributes(path, BasicFileAttributes.class, LinkOption.NOFOLLOW_LINKS);
+        Path path = FileSystems.getDefault().getPath(f.getParent(),
+                f.getName());
+        BasicFileAttributes attrs = Files.readAttributes(path,
+                BasicFileAttributes.class, LinkOption.NOFOLLOW_LINKS);
         return attrs.creationTime().toMillis();
     }
 
@@ -163,10 +172,12 @@ public class FileTools
 
             Rectangle rect_des = new Rectangle(new Dimension(swidth, sheight));
 
-            BufferedImage res = new BufferedImage(rect_des.width, rect_des.height, BufferedImage.TYPE_INT_RGB);
+            BufferedImage res = new BufferedImage(rect_des.width,
+                    rect_des.height, BufferedImage.TYPE_INT_RGB);
             Graphics2D g2 = res.createGraphics();
 
-            g2.translate((rect_des.width - src_width) / 2, (rect_des.height - src_height) / 2);
+            g2.translate((rect_des.width - src_width) / 2,
+                    (rect_des.height - src_height) / 2);
             g2.rotate(Math.toRadians(angel), src_width / 2, src_height / 2);
 
             g2.drawImage(src, null, null);

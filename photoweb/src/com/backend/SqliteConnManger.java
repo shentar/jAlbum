@@ -9,7 +9,8 @@ import org.slf4j.LoggerFactory;
 
 public class SqliteConnManger
 {
-    private static final Logger logger = LoggerFactory.getLogger(SqliteConnManger.class);
+    private static final Logger logger = LoggerFactory
+            .getLogger(SqliteConnManger.class);
 
     private Connection conn;
 

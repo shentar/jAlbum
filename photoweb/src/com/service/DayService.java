@@ -22,7 +22,8 @@ import com.utils.web.GenerateHTML;
 
 public class DayService
 {
-    private static final Logger logger = LoggerFactory.getLogger(MonthService.class);
+    private static final Logger logger = LoggerFactory
+            .getLogger(MonthService.class);
 
     private String day;
 
@@ -32,11 +33,12 @@ public class DayService
     }
 
     @GET
-    public Response getDayIndex(@Context HttpServletRequest req, @Context HttpServletResponse response)
+    public Response getDayIndex(@Context HttpServletRequest req,
+            @Context HttpServletResponse response)
     {
         ResponseBuilder builder = Response.status(200);
-        TreeMap<String, TreeMap<String, TreeMap<String, DateRecords>>> map = DateTableDao.getInstance()
-                .getAllDateRecord();
+        TreeMap<String, TreeMap<String, TreeMap<String, DateRecords>>> map = DateTableDao
+                .getInstance().getAllDateRecord();
         String year = day.substring(0, 4);
         String month = day.substring(4, 6);
         String sday = day.substring(6, 8);
@@ -76,8 +78,10 @@ public class DayService
         }
         else
         {
-            List<FileInfo> flst = UniqPhotosStore.getInstance().getAllPhotosBy(day);
-            builder.entity(GenerateHTML.generateDayPage(day, prevDay, nextDay, flst));
+            List<FileInfo> flst = UniqPhotosStore.getInstance()
+                    .getAllPhotosBy(day);
+            builder.entity(
+                    GenerateHTML.generateDayPage(day, prevDay, nextDay, flst));
             return builder.build();
         }
     }

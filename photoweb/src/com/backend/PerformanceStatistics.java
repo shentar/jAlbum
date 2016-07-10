@@ -7,10 +7,12 @@ import org.slf4j.LoggerFactory;
 
 public class PerformanceStatistics
 {
-    private static final Logger logger = LoggerFactory.getLogger(PerformanceStatistics.class);
+    private static final Logger logger = LoggerFactory
+            .getLogger(PerformanceStatistics.class);
     private volatile AtomicLong totalFileCount = new AtomicLong(0);
     private volatile AtomicLong careFileCount = new AtomicLong(0);
-    private volatile AtomicLong timenow = new AtomicLong(System.currentTimeMillis());
+    private volatile AtomicLong timenow = new AtomicLong(
+            System.currentTimeMillis());
 
     private static PerformanceStatistics instance = new PerformanceStatistics();
 
@@ -55,6 +57,7 @@ public class PerformanceStatistics
     public void printPerformanceLog(long now)
     {
         timenow.set(now);
-        logger.warn("total file count: " + totalFileCount.get() + " checked file count: " + careFileCount.get());
+        logger.warn("total file count: " + totalFileCount.get()
+                + " checked file count: " + careFileCount.get());
     }
 }

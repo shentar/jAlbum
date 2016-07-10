@@ -37,12 +37,18 @@ public class GenerateHTML
         sb.append(getHtmlHead());
         sb.append(
                 "<table style=\"text-align: center;\" width=\"100%\" height=\"100%\" border=\"0\" bordercolor=\"#000000\">");
-        sb.append("<tr><td width=\"33%\" bordercolor=\"#000000\"><a href=\"?prev=" + firstP.getHash256() + "&count="
-                + AppConfig.getInstance().getMaxCountOfPicInOnePage(25) + "\">上一页</a></td>");
-        sb.append("<td width=\"33%\" bordercolor=\"#000000\">" + firstP.getPhotoTime() + " ~ " + endP.getPhotoTime()
+        sb.append(
+                "<tr><td width=\"33%\" bordercolor=\"#000000\"><a href=\"?prev="
+                        + firstP.getHash256() + "&count="
+                        + AppConfig.getInstance().getMaxCountOfPicInOnePage(25)
+                        + "\">上一页</a></td>");
+        sb.append("<td width=\"33%\" bordercolor=\"#000000\">"
+                + firstP.getPhotoTime() + " ~ " + endP.getPhotoTime()
                 + "</td>");
-        sb.append("<td width=\"33%\" bordercolor=\"#000000\"><a href=\"?next=" + endP.getHash256() + "&count="
-                + AppConfig.getInstance().getMaxCountOfPicInOnePage(25) + "\">下一页</a></td></tr></table>");
+        sb.append("<td width=\"33%\" bordercolor=\"#000000\"><a href=\"?next="
+                + endP.getHash256() + "&count="
+                + AppConfig.getInstance().getMaxCountOfPicInOnePage(25)
+                + "\">下一页</a></td></tr></table>");
         sb.append("<br/><br/>");
         sb.append(
                 "<table style=\"text-align: center;\" width=\"100%\" height=\"100%\" border=\"0\" bordercolor=\"#000000\">");
@@ -57,9 +63,12 @@ public class GenerateHTML
                 sb.append("<tr>");
             }
 
-            sb.append("<td width=\"20%\" height=\"18%\" bordercolor=\"#000000\"><br/>");
-            sb.append("<a href=\"/photos/" + f.getHash256() + "\" target=\"_blank\">");
-            sb.append("<img " + (restrictSize(f) ? "width" : "height") + "=\"340px\" src = \"/photos/" + f.getHash256()
+            sb.append(
+                    "<td width=\"20%\" height=\"18%\" bordercolor=\"#000000\"><br/>");
+            sb.append("<a href=\"/photos/" + f.getHash256()
+                    + "\" target=\"_blank\">");
+            sb.append("<img " + (restrictSize(f) ? "width" : "height")
+                    + "=\"340px\" src = \"/photos/" + f.getHash256()
                     + "?content=true&size=340" + "\"></img>" + "</a></td>");
 
             if ((i + 1) % 5 == 0)
@@ -90,8 +99,8 @@ public class GenerateHTML
                 + "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"/> "
                 + "<title>相册</title></head><body>";
 
-        TreeMap<String, TreeMap<String, TreeMap<String, DateRecords>>> allrecords = DateTableDao.getInstance()
-                .getAllDateRecord();
+        TreeMap<String, TreeMap<String, TreeMap<String, DateRecords>>> allrecords = DateTableDao
+                .getInstance().getAllDateRecord();
         if (allrecords != null && !allrecords.isEmpty())
         {
             StringBuffer ylst = new StringBuffer(
@@ -113,7 +122,8 @@ public class GenerateHTML
 
                 if (i == 0)
                 {
-                    ylst.append("<td width=\"5%\" height=\"30px\" bordercolor=\"#000000\">");
+                    ylst.append(
+                            "<td width=\"5%\" height=\"30px\" bordercolor=\"#000000\">");
                     ylst.append("<a href=\"/\">首页</a></td>");
                     i++;
                 }
@@ -182,19 +192,26 @@ public class GenerateHTML
 
             sb.append("<table style=\"text-align: center;\" width=\"100%\" "
                     + "height=\"100%\" border=\"0\" bordercolor=\"#000000\">");
-            sb.append("<tr><td width=\"33%\" bordercolor=\"#000000\"><a href=\"/?prev=" + f.getHash256() + "&count=1"
-                    + "\">上一张</a></td>");
-            sb.append("<td width=\"33%\" bordercolor=\"#000000\">" + f.getPhotoTime() + "</td>");
-            sb.append("<td width=\"33%\" bordercolor=\"#000000\"><a href=\"/?next=" + f.getHash256() + "&count=1"
-                    + "\">下一张</a></td></tr></table>");
+            sb.append(
+                    "<tr><td width=\"33%\" bordercolor=\"#000000\"><a href=\"/?prev="
+                            + f.getHash256() + "&count=1" + "\">上一张</a></td>");
+            sb.append("<td width=\"33%\" bordercolor=\"#000000\">"
+                    + f.getPhotoTime() + "</td>");
+            sb.append(
+                    "<td width=\"33%\" bordercolor=\"#000000\"><a href=\"/?next="
+                            + f.getHash256() + "&count=1"
+                            + "\">下一张</a></td></tr></table>");
             sb.append("<br/><br/>");
             sb.append("<table style=\"text-align: center;\" width=\"100%\" "
                     + "height=\"100%\" border=\"0\" bordercolor=\"#000000\">");
             sb.append("<tr>");
 
-            sb.append("<td width=\"100%\" height=\"100%\" bordercolor=\"#000000\"><br/>");
-            sb.append("<a href=\"/photos/" + f.getHash256() + "?content=true" + "\" target=\"_blank\">");
-            sb.append("<img " + (restrictSize(f) ? "width" : "height") + "=\"900px\" src = \"/photos/" + f.getHash256()
+            sb.append(
+                    "<td width=\"100%\" height=\"100%\" bordercolor=\"#000000\"><br/>");
+            sb.append("<a href=\"/photos/" + f.getHash256() + "?content=true"
+                    + "\" target=\"_blank\">");
+            sb.append("<img " + (restrictSize(f) ? "width" : "height")
+                    + "=\"900px\" src = \"/photos/" + f.getHash256()
                     + "?content=true" + "\"></img>" + "</a></td></tr></table>");
 
             sb.append(getHtmlFoot());
@@ -202,7 +219,8 @@ public class GenerateHTML
         }
     }
 
-    public static String generateYearPage(String year, TreeMap<String, TreeMap<String, DateRecords>> currentyear)
+    public static String generateYearPage(String year,
+            TreeMap<String, TreeMap<String, DateRecords>> currentyear)
     {
         if (currentyear == null || currentyear.isEmpty())
         {
@@ -243,10 +261,13 @@ public class GenerateHTML
             FileInfo f = UniqPhotosStore.getInstance().getOneFileByHashStr(pic);
             if (f != null)
             {
-                sb.append("<td width=\"25%\" height=\"31%\" bordercolor=\"#000000\">");
+                sb.append(
+                        "<td width=\"25%\" height=\"31%\" bordercolor=\"#000000\">");
                 sb.append("<a href=\"/month/" + year + mo + "\" >");
-                sb.append("<img " + (restrictSize(f) ? "width" : "height") + "=\"280px\" src = \"/photos/" + pic
-                        + "?content=true&size=280" + "\"></img>" + "</a><br/><b>" + year + "-" + mo + "月份 (" + filecount
+                sb.append("<img " + (restrictSize(f) ? "width" : "height")
+                        + "=\"280px\" src = \"/photos/" + pic
+                        + "?content=true&size=280" + "\"></img>"
+                        + "</a><br/><b>" + year + "-" + mo + "月份 (" + filecount
                         + "张)</b></td>");
             }
             if ((i + 1) % 4 == 0)
@@ -269,7 +290,8 @@ public class GenerateHTML
         return sb.toString();
     }
 
-    public static String generateDayPage(String day, String prevDay, String nextDay, List<FileInfo> flst)
+    public static String generateDayPage(String day, String prevDay,
+            String nextDay, List<FileInfo> flst)
     {
         if (flst == null || flst.isEmpty())
         {
@@ -281,15 +303,16 @@ public class GenerateHTML
         sb.append("<table style=\"text-align: center;\" width=\"100%\" "
                 + "height=\"100%\" border=\"0\" bordercolor=\"#000000\">");
         sb.append("<tr><td width=\"20%\">");
-        sb.append("<a href=\"/month/" + day.substring(0, 6) + "\">返回" + day.substring(0, 4) + "年" + day.substring(4, 6)
-                + "月</a>");
+        sb.append("<a href=\"/month/" + day.substring(0, 6) + "\">返回"
+                + day.substring(0, 4) + "年" + day.substring(4, 6) + "月</a>");
         sb.append("</td><td width=\"20%\">");
         if (StringUtils.isNotBlank(prevDay))
         {
             sb.append("<a href=\"/day/" + prevDay + "\">" + "上一天</a>");
         }
         sb.append("</td>");
-        sb.append("<td  width=\"20%\" style=\"text-align:center\">" + day + "</td><td width=\"20%\">");
+        sb.append("<td  width=\"20%\" style=\"text-align:center\">" + day
+                + "</td><td width=\"20%\">");
         if (StringUtils.isNotBlank(nextDay))
         {
             sb.append("<a href=\"/day/" + nextDay + "\">" + "下一天</a>");
@@ -306,9 +329,12 @@ public class GenerateHTML
                 sb.append("<tr>");
             }
 
-            sb.append("<td width=\"20%\" height=\"18%\" bordercolor=\"#000000\">");
-            sb.append("<a href=\"/photos/" + f.getHash256() + "\" target=\"_blank\">");
-            sb.append("<img " + (restrictSize(f) ? "width" : "height") + "=\"340px\" src = \"/photos/" + f.getHash256()
+            sb.append(
+                    "<td width=\"20%\" height=\"18%\" bordercolor=\"#000000\">");
+            sb.append("<a href=\"/photos/" + f.getHash256()
+                    + "\" target=\"_blank\">");
+            sb.append("<img " + (restrictSize(f) ? "width" : "height")
+                    + "=\"340px\" src = \"/photos/" + f.getHash256()
                     + "?content=true&size=340" + "\"></img>" + "</a></td>");
 
             if ((i + 1) % 5 == 0)
@@ -331,8 +357,8 @@ public class GenerateHTML
         return sb.toString();
     }
 
-    public static Object generateMonthPage(String monthstr, String nextMonth, String prevMonth,
-            TreeMap<String, DateRecords> map)
+    public static Object generateMonthPage(String monthstr, String nextMonth,
+            String prevMonth, TreeMap<String, DateRecords> map)
     {
         if (map == null || map.isEmpty())
         {
@@ -344,14 +370,16 @@ public class GenerateHTML
         sb.append("<table style=\"text-align: center;\" width=\"100%\" "
                 + "height=\"100%\" border=\"0\" bordercolor=\"#000000\">");
         sb.append("<tr>" + "<td width=\"20%\">");
-        sb.append("<a href=\"/year/" + monthstr.substring(0, 4) + "\">返回" + monthstr.substring(0, 4) + "年</a>");
+        sb.append("<a href=\"/year/" + monthstr.substring(0, 4) + "\">返回"
+                + monthstr.substring(0, 4) + "年</a>");
         sb.append("</td>" + "<td width=\"20%\">");
         if (StringUtils.isNotBlank(prevMonth))
         {
             sb.append("<a href=\"/month/" + prevMonth + "\">" + "上一月</a>");
         }
         sb.append("</td>");
-        sb.append("<td  width=\"20%\" style=\"text-align:center\">" + monthstr + "月" + "</td><td width=\"20%\">");
+        sb.append("<td  width=\"20%\" style=\"text-align:center\">" + monthstr
+                + "月" + "</td><td width=\"20%\">");
         if (StringUtils.isNotBlank(nextMonth))
         {
             sb.append("<a href=\"/month/" + nextMonth + "\">" + "下一月</a>");
@@ -378,10 +406,13 @@ public class GenerateHTML
             FileInfo f = UniqPhotosStore.getInstance().getOneFileByHashStr(pic);
             if (f != null)
             {
-                sb.append("<td width=\"25%\" height=\"31%\" bordercolor=\"#000000\">");
+                sb.append(
+                        "<td width=\"25%\" height=\"31%\" bordercolor=\"#000000\">");
                 sb.append("<a href=\"/day/" + monthstr + day + " \" >");
-                sb.append("<img " + (restrictSize(f) ? "width" : "height") + "=\"280px\" src = \"/photos/" + pic
-                        + "?content=true&size=280" + "\"></img>" + "</a><br/><b>" + monthstr + "-" + day + " ("
+                sb.append("<img " + (restrictSize(f) ? "width" : "height")
+                        + "=\"280px\" src = \"/photos/" + pic
+                        + "?content=true&size=280" + "\"></img>"
+                        + "</a><br/><b>" + monthstr + "-" + day + " ("
                         + mr.getPiccount() + "张)</b></td>");
             }
             if ((i + 1) % 4 == 0)

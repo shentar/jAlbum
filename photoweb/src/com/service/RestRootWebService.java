@@ -27,16 +27,19 @@ import com.backend.UniqPhotosStore;
 import com.utils.conf.AppConfig;
 import com.utils.web.GenerateHTML;
 
-@Produces(value = { "text/xml", "application/json", "application/xml", "text/html" })
+@Produces(value = { "text/xml", "application/json", "application/xml",
+        "text/html" })
 public class RestRootWebService extends HttpServlet
 {
-    private static final Logger logger = LoggerFactory.getLogger(RestRootWebService.class);
+    private static final Logger logger = LoggerFactory
+            .getLogger(RestRootWebService.class);
 
     private static final long serialVersionUID = -7748065720779404006L;
 
     @GET
     @Path("/favicon.ico")
-    public Response getFavicon(@Context HttpServletRequest req, @Context HttpServletResponse response)
+    public Response getFavicon(@Context HttpServletRequest req,
+            @Context HttpServletResponse response)
     {
         logger.debug("getFavicon in!");
         ResponseBuilder builder = null;
@@ -58,7 +61,8 @@ public class RestRootWebService extends HttpServlet
 
     @GET
     @Path("/")
-    public Response getMsg(@Context HttpServletRequest req, @Context HttpServletResponse response) throws IOException
+    public Response getMsg(@Context HttpServletRequest req,
+            @Context HttpServletResponse response) throws IOException
     {
         ResponseBuilder builder = Response.status(200);
         String body = GenerateHTML.genneateIndex(getFileList(req));
@@ -91,10 +95,12 @@ public class RestRootWebService extends HttpServlet
 
         if (StringUtils.isNotBlank(next))
         {
-            lst = UniqPhotosStore.getInstance().getNextNineFileByHashStr(next, count);
+            lst = UniqPhotosStore.getInstance().getNextNineFileByHashStr(next,
+                    count);
             if (lst == null || lst.isEmpty())
             {
-                lst = UniqPhotosStore.getInstance().getNextNineFileByHashStr(null, count);
+                lst = UniqPhotosStore.getInstance()
+                        .getNextNineFileByHashStr(null, count);
             }
 
             return lst;
@@ -103,21 +109,26 @@ public class RestRootWebService extends HttpServlet
         String prev = req.getParameter("prev");
         if (StringUtils.isNotBlank(prev))
         {
-            lst = UniqPhotosStore.getInstance().getPrevNineFileByHashStr(prev, count);
+            lst = UniqPhotosStore.getInstance().getPrevNineFileByHashStr(prev,
+                    count);
             if (lst == null || lst.isEmpty())
             {
-                lst = UniqPhotosStore.getInstance().getPrevNineFileByHashStr(null, count);
+                lst = UniqPhotosStore.getInstance()
+                        .getPrevNineFileByHashStr(null, count);
             }
 
             return lst;
         }
 
-        return UniqPhotosStore.getInstance().getNextNineFileByHashStr(null, count);
+        return UniqPhotosStore.getInstance().getNextNineFileByHashStr(null,
+                count);
     }
 
     @Path("/photos/{id}")
-    public Object getPhoto(@PathParam("id") String id, @Context HttpServletRequest req,
-            @Context HttpServletResponse response, @Context HttpHeaders headers, InputStream body)
+    public Object getPhoto(@PathParam("id") String id,
+            @Context HttpServletRequest req,
+            @Context HttpServletResponse response, @Context HttpHeaders headers,
+            InputStream body)
     {
         if (StringUtils.isNotBlank(id))
         {
@@ -130,8 +141,10 @@ public class RestRootWebService extends HttpServlet
     }
 
     @Path("/year/{year}")
-    public Object getYearView(@PathParam("year") String year, @Context HttpServletRequest req,
-            @Context HttpServletResponse response, @Context HttpHeaders headers, InputStream body)
+    public Object getYearView(@PathParam("year") String year,
+            @Context HttpServletRequest req,
+            @Context HttpServletResponse response, @Context HttpHeaders headers,
+            InputStream body)
     {
         if (StringUtils.isNotBlank(year))
         {
@@ -144,8 +157,10 @@ public class RestRootWebService extends HttpServlet
     }
 
     @Path("/month/{month}")
-    public Object getMonthView(@PathParam("month") String month, @Context HttpServletRequest req,
-            @Context HttpServletResponse response, @Context HttpHeaders headers, InputStream body)
+    public Object getMonthView(@PathParam("month") String month,
+            @Context HttpServletRequest req,
+            @Context HttpServletResponse response, @Context HttpHeaders headers,
+            InputStream body)
     {
         if (StringUtils.isNotBlank(month) && month.length() == 6)
         {
@@ -158,8 +173,10 @@ public class RestRootWebService extends HttpServlet
     }
 
     @Path("/day/{day}")
-    public Object getDayView(@PathParam("day") String day, @Context HttpServletRequest req,
-            @Context HttpServletResponse response, @Context HttpHeaders headers, InputStream body)
+    public Object getDayView(@PathParam("day") String day,
+            @Context HttpServletRequest req,
+            @Context HttpServletResponse response, @Context HttpHeaders headers,
+            InputStream body)
     {
         if (StringUtils.isNotBlank(day) && day.length() == 8)
         {

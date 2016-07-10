@@ -29,7 +29,8 @@ import mediautil.image.jpeg.LLJTran;
 public class ExifCreator
 {
 
-    private static final Logger logger = LoggerFactory.getLogger(ExifCreator.class);
+    private static final Logger logger = LoggerFactory
+            .getLogger(ExifCreator.class);
 
     public static void addExifDate(String[] args) throws Exception
     {
@@ -88,7 +89,8 @@ public class ExifCreator
         if (!(imageInfo instanceof Exif))
         {
             logger.info("Adding a Dummy Exif Header");
-            llj.addAppx(LLJTran.dummyExifHeader, 0, LLJTran.dummyExifHeader.length, true);
+            llj.addAppx(LLJTran.dummyExifHeader, 0,
+                    LLJTran.dummyExifHeader.length, true);
             imageInfo = llj.getImageInfo(); // This would have changed
 
             Exif exif = (Exif) imageInfo;
@@ -118,7 +120,8 @@ public class ExifCreator
         }
 
         // 4. Set the new Thumbnail
-        if (llj.setThumbnail(newThumbnail, 0, newThumbnail.length, ImageResources.EXT_JPG))
+        if (llj.setThumbnail(newThumbnail, 0, newThumbnail.length,
+                ImageResources.EXT_JPG))
             logger.info("Successfully Set New Thumbnail");
         else
             logger.info("Error Setting New Thumbnail");
@@ -126,7 +129,8 @@ public class ExifCreator
         // 5. Transfer the image from inputFile to outputFile replacing the new
         // Exif with the Thumbnail so that outputFile has a Thumbnail.
         fip = new BufferedInputStream(new FileInputStream(args[0]));
-        OutputStream out = new BufferedOutputStream(new FileOutputStream(args[1]));
+        OutputStream out = new BufferedOutputStream(
+                new FileOutputStream(args[1]));
         // Replace the new Exif Header in llj while copying the image from fip
         // to out
         llj.xferInfo(fip, out, LLJTran.REPLACE, LLJTran.RETAIN);
@@ -168,7 +172,8 @@ public class ExifCreator
             factor = factor1;
         AffineTransform tx = new AffineTransform();
         tx.scale(factor, factor);
-        AffineTransformOp affineOp = new AffineTransformOp(tx, AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
+        AffineTransformOp affineOp = new AffineTransformOp(tx,
+                AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
         image = affineOp.filter(image, null);
 
         // Write Out the Scaled Image to a ByteArrayOutputStream and return the

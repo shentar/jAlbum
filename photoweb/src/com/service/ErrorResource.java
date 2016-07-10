@@ -11,7 +11,8 @@ import javax.ws.rs.core.Response;
 public class ErrorResource
 {
     @GET
-    public Response get(@Context HttpServletRequest req, @Context HttpServletResponse response, InputStream body)
+    public Response get(@Context HttpServletRequest req,
+            @Context HttpServletResponse response, InputStream body)
     {
         return Response.status(500).entity("500 internel error!").build();
     }

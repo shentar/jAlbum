@@ -18,7 +18,8 @@ import com.utils.conf.AppConfig;
 
 public class SpecialListener implements ServletContextListener
 {
-    private static Logger logger = LoggerFactory.getLogger(SpecialListener.class);
+    private static Logger logger = LoggerFactory
+            .getLogger(SpecialListener.class);
 
     private static Future<?> f = null;
 
@@ -43,9 +44,10 @@ public class SpecialListener implements ServletContextListener
 
     private void startBackGroundTask()
     {
-        DirWatchService.getInstance().init(AppConfig.getInstance().getInputDir(),
+        DirWatchService.getInstance().init(
+                AppConfig.getInstance().getInputDir(),
                 AppConfig.getInstance().getExcludedir());
-        
+
         // 全盘扫描，每次启动时执行一次。
         new Thread()
         {
@@ -63,19 +65,20 @@ public class SpecialListener implements ServletContextListener
         }.start();
 
         // 300秒定期刷新新数据表。
-        f = new ScheduledThreadPoolExecutor(1).scheduleWithFixedDelay(new Runnable()
-        {
-            public void run()
-            {
-                try
+        f = new ScheduledThreadPoolExecutor(1)
+                .scheduleWithFixedDelay(new Runnable()
                 {
-                    ToolMain.renewTheData();
-                }
-                catch (Throwable e)
-                {
-                    logger.error("caught: ", e);
-                }
-            }
-        }, 10, 300, TimeUnit.SECONDS);
+                    public void run()
+                    {
+                        try
+                        {
+                            ToolMain.renewTheData();
+                        }
+                        catch (Throwable e)
+                        {
+                            logger.error("caught: ", e);
+                        }
+                    }
+                }, 10, 300, TimeUnit.SECONDS);
     }
 }
