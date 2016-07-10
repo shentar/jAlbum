@@ -225,6 +225,8 @@ public class DirWatchService
                     if (!valid)
                     {
                         logger.warn("the key is invalid: " + rootPath);
+                        // 删除失效的KEY。
+                        keyMap.remove(watchKey);
                     }
                 }
             }
