@@ -85,6 +85,14 @@ public class BaseSqliteStore
         return null;
     }
 
+    /**
+     * 该方法并没有做同步，相比于并发性能，这里选择不做题同步，数据表主键相同会自动互斥。
+     * 
+     * @param f
+     *            文件对象
+     * @param sha256
+     *            文件hash值。
+     */
     public void dealWithOneHash(File f, String sha256)
     {
         if (f == null || sha256 == null)
