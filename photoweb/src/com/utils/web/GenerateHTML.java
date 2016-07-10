@@ -19,7 +19,7 @@ import com.utils.conf.AppConfig;
 
 public class GenerateHTML
 {
-    public static String genneateIndex(List<FileInfo> flst)
+    public static String genIndexPage(List<FileInfo> flst)
     {
         if (flst == null || flst.isEmpty())
         {
@@ -37,20 +37,8 @@ public class GenerateHTML
         sb.append(getHtmlHead());
         String yearNavigate = genYearNavigate();
         sb.append(yearNavigate);
-        sb.append(
-                "<table style=\"text-align: center;\" width=\"100%\" height=\"100%\" border=\"0\" bordercolor=\"#000000\">");
-        sb.append(
-                "<tr><td width=\"33%\" bordercolor=\"#000000\"><a href=\"?prev="
-                        + firstP.getHash256() + "&count="
-                        + AppConfig.getInstance().getMaxCountOfPicInOnePage(25)
-                        + "\">上一页</a></td>");
-        sb.append("<td width=\"33%\" bordercolor=\"#000000\">"
-                + firstP.getPhotoTime() + " ~ " + endP.getPhotoTime()
-                + "</td>");
-        sb.append("<td width=\"33%\" bordercolor=\"#000000\"><a href=\"?next="
-                + endP.getHash256() + "&count="
-                + AppConfig.getInstance().getMaxCountOfPicInOnePage(25)
-                + "\">下一页</a></td></tr></table>");
+        String indexPageNavi = genIndexNavigate(firstP, endP);
+        sb.append(indexPageNavi);
         sb.append("<br/><br/>");
         sb.append(
                 "<table style=\"text-align: center;\" width=\"100%\" height=\"100%\" border=\"0\" bordercolor=\"#000000\">");
@@ -87,10 +75,32 @@ public class GenerateHTML
         }
 
         sb.append("</table>");
+        sb.append(indexPageNavi);
         sb.append(yearNavigate);
         sb.append(getHtmlFoot());
 
         return sb.toString();
+    }
+
+    private static String genIndexNavigate(FileInfo firstP, FileInfo endP)
+    {
+        StringBuffer indexPageNavi = new StringBuffer();
+        indexPageNavi.append(
+                "<table style=\"text-align: center;\" width=\"100%\" height=\"100%\" border=\"0\" bordercolor=\"#000000\">");
+        indexPageNavi
+                .append("<tr><td width=\"33%\" bordercolor=\"#000000\"><a href=\"?prev="
+                        + firstP.getHash256() + "&count="
+                        + AppConfig.getInstance().getMaxCountOfPicInOnePage(25)
+                        + "\">上一页</a></td>");
+        indexPageNavi.append("<td width=\"33%\" bordercolor=\"#000000\">"
+                + firstP.getPhotoTime() + " ~ " + endP.getPhotoTime()
+                + "</td>");
+        indexPageNavi
+                .append("<td width=\"33%\" bordercolor=\"#000000\"><a href=\"?next="
+                        + endP.getHash256() + "&count="
+                        + AppConfig.getInstance().getMaxCountOfPicInOnePage(25)
+                        + "\">下一页</a></td></tr></table>");
+        return indexPageNavi.toString();
     }
 
     public static String genYearNavigate()

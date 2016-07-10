@@ -65,7 +65,7 @@ public class RestRootWebService extends HttpServlet
             @Context HttpServletResponse response) throws IOException
     {
         ResponseBuilder builder = Response.status(200);
-        String body = GenerateHTML.genneateIndex(getFileList(req));
+        String body = GenerateHTML.genIndexPage(getFileList(req));
         if (StringUtils.isNotBlank(body))
         {
             builder.entity(body);
