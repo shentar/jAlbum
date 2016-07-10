@@ -144,7 +144,7 @@ public class DirWatchService
             try
             {
                 watchKey = ws.take();
-                String rootPath = keyMap.get(watchKey);
+                String rootPath = keyMap.get(watchKey) + File.separator;
                 if (StringUtils.isBlank(rootPath))
                 {
                     continue;

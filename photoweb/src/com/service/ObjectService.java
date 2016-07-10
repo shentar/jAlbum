@@ -21,6 +21,7 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.backend.BaseSqliteStore;
 import com.backend.FileInfo;
 import com.backend.ThumbnailManager;
 import com.backend.UniqPhotosStore;
@@ -42,8 +43,8 @@ public class ObjectService
             throws IOException
     {
         ResponseBuilder builder = Response.status(200);
-        UniqPhotosStore meta = UniqPhotosStore.getInstance();
-        FileInfo f = meta.getOneFileByHashStr(id);
+        BaseSqliteStore meta = BaseSqliteStore.getInstance();
+        FileInfo f = meta.getOneFileByHashID(id);
         if ("true".equalsIgnoreCase(req.getParameter("content")))
         {
             if (f != null && new File(f.getPath()).isFile())

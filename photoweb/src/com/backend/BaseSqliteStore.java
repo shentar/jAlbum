@@ -42,6 +42,47 @@ public class BaseSqliteStore
         return instance;
     }
 
+    public FileInfo getOneFileByHashID(String id)
+    {
+        if (StringUtils.isBlank(id))
+        {
+            return null;
+        }
+
+        PreparedStatement prep = null;
+        ResultSet res = null;
+        try
+        {
+            lock.readLock().lock();
+            prep = conn.prepareStatement("select * from files where sha256=?;");
+            prep.setString(1, id);
+            res = prep.executeQuery();
+
+            while (res.next())
+            {
+                FileInfo f = getFileInfoFromTable(res);
+                if (new File(f.getPath()).isFile())
+                {
+                    return f;
+                }
+            }
+
+            prep.close();
+            res.close();
+        }
+        catch (SQLException e)
+        {
+            logger.error("caught: " + id, e);
+        }
+
+        finally
+        {
+            lock.readLock().unlock();
+        }
+        
+        return null;
+    }
+
     public void dealWithOneHash(File f, String sha256)
     {
         if (f == null || sha256 == null)
