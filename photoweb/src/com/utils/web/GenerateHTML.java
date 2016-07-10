@@ -35,6 +35,8 @@ public class GenerateHTML
         FileInfo endP = flst.get(flst.size() - 1);
         StringBuffer sb = new StringBuffer();
         sb.append(getHtmlHead());
+        String yearNavigate = genYearNavigate();
+        sb.append(yearNavigate);
         sb.append(
                 "<table style=\"text-align: center;\" width=\"100%\" height=\"100%\" border=\"0\" bordercolor=\"#000000\">");
         sb.append(
@@ -85,20 +87,14 @@ public class GenerateHTML
         }
 
         sb.append("</table>");
+        sb.append(yearNavigate);
         sb.append(getHtmlFoot());
 
         return sb.toString();
     }
 
-    public static String getHtmlHead()
+    public static String genYearNavigate()
     {
-        String hh = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" "
-                + "\"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">"
-                + "<html xmlns=\"http://www.w3.org/1999/xhtml\" lang=\"zh-CN\">"
-                + "<head profile=\"http://gmpg.org/xfn/11\">"
-                + "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"/> "
-                + "<title>相册</title></head><body>";
-
         TreeMap<String, TreeMap<String, TreeMap<String, DateRecords>>> allrecords = DateTableDao
                 .getInstance().getAllDateRecord();
         if (allrecords != null && !allrecords.isEmpty())
@@ -145,10 +141,20 @@ public class GenerateHTML
             }
 
             ylst.append("</table>");
-
-            hh += ylst;
+            return ylst.toString();
         }
 
+        return "";
+    }
+
+    public static String getHtmlHead()
+    {
+        String hh = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" "
+                + "\"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">"
+                + "<html xmlns=\"http://www.w3.org/1999/xhtml\" lang=\"zh-CN\">"
+                + "<head profile=\"http://gmpg.org/xfn/11\">"
+                + "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"/> "
+                + "<title>相册</title></head><body>";
         return hh;
     }
 
@@ -189,6 +195,8 @@ public class GenerateHTML
         else
         {
             StringBuffer sb = new StringBuffer(getHtmlHead());
+            String yearNavigage = genYearNavigate();
+            sb.append(yearNavigage);
 
             sb.append("<table style=\"text-align: center;\" width=\"100%\" "
                     + "height=\"100%\" border=\"0\" bordercolor=\"#000000\">");
@@ -214,6 +222,7 @@ public class GenerateHTML
                     + "=\"900px\" src = \"/photos/" + f.getHash256()
                     + "?content=true" + "\"></img>" + "</a></td></tr></table>");
 
+            sb.append(yearNavigage);
             sb.append(getHtmlFoot());
             return sb.toString();
         }
@@ -229,6 +238,8 @@ public class GenerateHTML
 
         StringBuffer sb = new StringBuffer();
         sb.append(getHtmlHead());
+        String yearNavigete = genYearNavigate();
+        sb.append(yearNavigete);
         sb.append("<table style=\"text-align: center;\" width=\"100%\" "
                 + "height=\"100%\" border=\"0\" bordercolor=\"#000000\">");
 
@@ -285,6 +296,7 @@ public class GenerateHTML
         }
 
         sb.append("</table>");
+        sb.append(yearNavigete);
         sb.append(getHtmlFoot());
 
         return sb.toString();
@@ -300,24 +312,12 @@ public class GenerateHTML
 
         StringBuffer sb = new StringBuffer();
         sb.append(getHtmlHead());
+        String yearNavigate = genYearNavigate();
+        sb.append(yearNavigate);
         sb.append("<table style=\"text-align: center;\" width=\"100%\" "
                 + "height=\"100%\" border=\"0\" bordercolor=\"#000000\">");
-        sb.append("<tr><td width=\"20%\">");
-        sb.append("<a href=\"/month/" + day.substring(0, 6) + "\">返回"
-                + day.substring(0, 4) + "年" + day.substring(4, 6) + "月</a>");
-        sb.append("</td><td width=\"20%\">");
-        if (StringUtils.isNotBlank(prevDay))
-        {
-            sb.append("<a href=\"/day/" + prevDay + "\">" + "上一天</a>");
-        }
-        sb.append("</td>");
-        sb.append("<td  width=\"20%\" style=\"text-align:center\">" + day
-                + "</td><td width=\"20%\">");
-        if (StringUtils.isNotBlank(nextDay))
-        {
-            sb.append("<a href=\"/day/" + nextDay + "\">" + "下一天</a>");
-        }
-        sb.append("</td><td width=\"20%\"></td></tr>");
+        String dayNavigate = genDayNavigate(day, prevDay, nextDay);
+        sb.append(dayNavigate);
         int i = 0;
         int start = 0;
         int end = 0;
@@ -350,11 +350,35 @@ public class GenerateHTML
         {
             sb.append("</tr>");
         }
-
+        sb.append(dayNavigate);
         sb.append("</table>");
+        sb.append(yearNavigate);
         sb.append(getHtmlFoot());
 
         return sb.toString();
+    }
+
+    private static String genDayNavigate(String day, String prevDay,
+            String nextDay)
+    {
+        StringBuffer dayNavigate = new StringBuffer();
+        dayNavigate.append("<tr><td width=\"20%\">");
+        dayNavigate.append("<a href=\"/month/" + day.substring(0, 6) + "\">返回"
+                + day.substring(0, 4) + "年" + day.substring(4, 6) + "月</a>");
+        dayNavigate.append("</td><td width=\"20%\">");
+        if (StringUtils.isNotBlank(prevDay))
+        {
+            dayNavigate.append("<a href=\"/day/" + prevDay + "\">" + "上一天</a>");
+        }
+        dayNavigate.append("</td>");
+        dayNavigate.append("<td  width=\"20%\" style=\"text-align:center\">"
+                + day + "</td><td width=\"20%\">");
+        if (StringUtils.isNotBlank(nextDay))
+        {
+            dayNavigate.append("<a href=\"/day/" + nextDay + "\">" + "下一天</a>");
+        }
+        dayNavigate.append("</td><td width=\"20%\"></td></tr>");
+        return dayNavigate.toString();
     }
 
     public static Object generateMonthPage(String monthstr, String nextMonth,
@@ -367,25 +391,10 @@ public class GenerateHTML
 
         StringBuffer sb = new StringBuffer();
         sb.append(getHtmlHead());
-        sb.append("<table style=\"text-align: center;\" width=\"100%\" "
-                + "height=\"100%\" border=\"0\" bordercolor=\"#000000\">");
-        sb.append("<tr>" + "<td width=\"20%\">");
-        sb.append("<a href=\"/year/" + monthstr.substring(0, 4) + "\">返回"
-                + monthstr.substring(0, 4) + "年</a>");
-        sb.append("</td>" + "<td width=\"20%\">");
-        if (StringUtils.isNotBlank(prevMonth))
-        {
-            sb.append("<a href=\"/month/" + prevMonth + "\">" + "上一月</a>");
-        }
-        sb.append("</td>");
-        sb.append("<td  width=\"20%\" style=\"text-align:center\">" + monthstr
-                + "月" + "</td><td width=\"20%\">");
-        if (StringUtils.isNotBlank(nextMonth))
-        {
-            sb.append("<a href=\"/month/" + nextMonth + "\">" + "下一月</a>");
-        }
-        sb.append("</td>" + "<td width=\"20%\"></td>" + "</tr>" + "</table>");
-
+        String yearNavigate = genYearNavigate();
+        sb.append(yearNavigate);
+        String monthNavigate = genMonthNavigate(monthstr, nextMonth, prevMonth);
+        sb.append(monthNavigate);
         sb.append("<table style=\"text-align: center;\" width=\"100%\" "
                 + "height=\"100%\" border=\"0\" bordercolor=\"#000000\">");
 
@@ -430,9 +439,40 @@ public class GenerateHTML
         }
 
         sb.append("</table>");
+        sb.append(monthNavigate);
+        sb.append(yearNavigate);
         sb.append(getHtmlFoot());
 
         return sb.toString();
+    }
+
+    private static String genMonthNavigate(String monthstr, String nextMonth,
+            String prevMonth)
+    {
+        StringBuffer monthNavigate = new StringBuffer();
+        monthNavigate
+                .append("<table style=\"text-align: center;\" width=\"100%\" "
+                        + "height=\"100%\" border=\"0\" bordercolor=\"#000000\">");
+        monthNavigate.append("<tr>" + "<td width=\"20%\">");
+        monthNavigate.append("<a href=\"/year/" + monthstr.substring(0, 4)
+                + "\">返回" + monthstr.substring(0, 4) + "年</a>");
+        monthNavigate.append("</td>" + "<td width=\"20%\">");
+        if (StringUtils.isNotBlank(prevMonth))
+        {
+            monthNavigate.append(
+                    "<a href=\"/month/" + prevMonth + "\">" + "上一月</a>");
+        }
+        monthNavigate.append("</td>");
+        monthNavigate.append("<td  width=\"20%\" style=\"text-align:center\">"
+                + monthstr + "月" + "</td><td width=\"20%\">");
+        if (StringUtils.isNotBlank(nextMonth))
+        {
+            monthNavigate.append(
+                    "<a href=\"/month/" + nextMonth + "\">" + "下一月</a>");
+        }
+        monthNavigate.append(
+                "</td>" + "<td width=\"20%\"></td>" + "</tr>" + "</table>");
+        return monthNavigate.toString();
     }
 
     public static String generate404Notfound()

@@ -77,37 +77,36 @@ public class DirWatchService
             return;
         }
 
-        if (excludeDirs != null)
+        try
         {
-            for (String exd : excludeDirs)
+            String filepath = f.getCanonicalPath();
+            if (excludeDirs != null)
             {
-                String filepath = null;
-                try
+                for (String exd : excludeDirs)
                 {
-                    filepath = f.getCanonicalPath();
                     if (filepath.startsWith(exd))
                     {
                         return;
                     }
                 }
-                catch (IOException e)
-                {
-                    logger.warn("caught exception when add listener: " + f);
-                    continue;
-                }
+            }
 
-                addListener(filepath);
+            addListener(filepath);
+
+            File[] files = f.listFiles();
+            if (files == null)
+            {
+                return;
+            }
+
+            for (File file : files)
+            {
+                mapDirs(file, excludeDirs);
             }
         }
-
-        File[] files = f.listFiles();
-        if (files == null)
+        catch (IOException e)
         {
-            return;
-        }
-        for (File file : files)
-        {
-            mapDirs(file, excludeDirs);
+            logger.warn("caught exception when add listener: " + f);
         }
     }
 
