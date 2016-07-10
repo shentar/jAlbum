@@ -47,7 +47,6 @@ public class SpecialListener implements ServletContextListener
                 AppConfig.getInstance().getExcludedir());
         
         // 全盘扫描，每次启动时执行一次。
-        /*
         new Thread()
         {
             public void run()
@@ -61,7 +60,7 @@ public class SpecialListener implements ServletContextListener
                     logger.error("caught: ", e);
                 }
             }
-        }.start();*/
+        }.start();
 
         // 300秒定期刷新新数据表。
         f = new ScheduledThreadPoolExecutor(1).scheduleWithFixedDelay(new Runnable()
