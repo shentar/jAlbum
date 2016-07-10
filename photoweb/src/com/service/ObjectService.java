@@ -24,7 +24,6 @@ import org.slf4j.LoggerFactory;
 import com.backend.BaseSqliteStore;
 import com.backend.FileInfo;
 import com.backend.ThumbnailManager;
-import com.backend.UniqPhotosStore;
 import com.utils.web.GenerateHTML;
 
 public class ObjectService

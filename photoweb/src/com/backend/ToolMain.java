@@ -66,6 +66,7 @@ public class ToolMain
         boolean needFresh = RefreshFlag.getInstance().getAndSet(false);
         if (needFresh)
         {
+            logger.warn("start to refresh all tables.");
             photostore.getDupFiles();
             datestore.refreshDate();
             logger.warn("completed one roundle.");
