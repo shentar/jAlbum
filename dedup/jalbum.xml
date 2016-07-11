@@ -26,6 +26,7 @@ thumbnaildir specify the folder which to store the thumbnail to.
     <inputdir>
         <dir>D:\\</dir>
         <dir>C:\\</dir>
+        <dir>.\\</dir>
     </inputdir>
     
     <excludedir>
