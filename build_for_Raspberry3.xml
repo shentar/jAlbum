@@ -42,6 +42,10 @@
         <copy todir="${distribute.dir}/lib" overwrite="true">
             <fileset dir="${dedup.dir}/lib" />
         </copy>
+
+        <copy todir="${distribute.dir}/js" overwrite="true">
+            <fileset dir="${dedup.dir}/js" />
+        </copy>
         
         <ant antfile="build.xml" dir="${dedup.dir}" target="clean"/>  
         <ant antfile="build.xml" dir="${photoweb.dir}" target="clean"/>
