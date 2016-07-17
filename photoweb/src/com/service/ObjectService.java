@@ -9,9 +9,11 @@ import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Date;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
@@ -24,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import com.backend.BaseSqliteStore;
 import com.backend.FileInfo;
 import com.backend.ThumbnailManager;
+import com.backend.UniqPhotosStore;
 import com.utils.web.GenerateHTML;
 
 public class ObjectService
@@ -91,6 +94,31 @@ public class ObjectService
             logger.info("the page is {}", bodyContent);
         }
 
+        return builder.build();
+    }
+
+    @DELETE
+    public Response deletePhotoData(@Context HttpServletRequest req,
+            @Context HttpServletResponse response) throws IOException
+    {
+        ResponseBuilder builder = Response.status(200);
+
+        BaseSqliteStore meta = BaseSqliteStore.getInstance();
+        meta.setPhotoToDelByID(id);
+
+        UniqPhotosStore umeta = UniqPhotosStore.getInstance();
+        List<FileInfo> fnext = umeta.getNextNineFileByHashStr(id, 1);
+        umeta.deleteRecordByID(id);
+        
+        if (fnext!= null && !fnext.isEmpty())
+        {
+            // 刷新整个页面。
+            String bodyContent = GenerateHTML.generateSinglePhoto(fnext.get(0));
+            builder.header("Content-type", "text/html");
+            builder.entity(bodyContent);
+            logger.info("the page is {}", bodyContent);
+        }
+        
         return builder.build();
     }
 

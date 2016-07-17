@@ -56,7 +56,7 @@ public class BaseSqliteStore
         try
         {
             lock.readLock().lock();
-            prep = conn.prepareStatement("select * from files where sha256=?;");
+            prep = conn.prepareStatement("select * from files where sha256=? and (deleted <> 'true' or deleted is null);");
             prep.setString(1, id);
             res = prep.executeQuery();
 
@@ -86,7 +86,7 @@ public class BaseSqliteStore
     }
 
     /**
-     * 该方法并没有做同步，相比于并发性能，这里选择不做题同步，数据表主键相同会自动互斥。
+     * 相比于并发性能，这里选择不做同步，数据表主键相同会自动互斥。
      * 
      * @param f
      *            文件对象
@@ -120,10 +120,11 @@ public class BaseSqliteStore
                 logger.warn("error file" + f.getCanonicalPath());
                 return;
             }
+            fi.setDel(false);
             fi.setHash256(sha256);
             lock.writeLock().lock();
             prep = conn.prepareStatement(
-                    "insert into files values(?,?,?,?,?,?,?);");
+                    "insert into files values(?,?,?,?,?,?,?,?);");
             prep.setString(1, fi.getPath());
             prep.setString(2, fi.getHash256());
             prep.setLong(3, fi.getSize());
@@ -131,6 +132,7 @@ public class BaseSqliteStore
             prep.setDate(5, fi.getPhotoTime());
             prep.setLong(6, fi.getWidth());
             prep.setLong(7, fi.getHeight());
+            prep.setString(8, fi.isDel() ? "true" : "false");
             prep.execute();
 
             RefreshFlag.getInstance().getAndSet(true);
@@ -240,6 +242,7 @@ public class BaseSqliteStore
         fi.setPhotoTime(res.getDate("phototime"));
         fi.setWidth(res.getLong("width"));
         fi.setHeight(res.getLong("height"));
+        fi.setDel("true".equalsIgnoreCase(res.getString("deleted")));
         return fi;
     }
 
@@ -302,7 +305,7 @@ public class BaseSqliteStore
         try
         {
             logger.warn("start to check all records in the files table.");
-            prep = conn.prepareStatement("select * from files;");
+            prep = conn.prepareStatement("select * from files where deleted is null or deleted <> 'true';");
             res = prep.executeQuery();
             lock.readLock().unlock();
 
@@ -368,6 +371,34 @@ public class BaseSqliteStore
         });
     }
 
+    public void deleteRecordsByID(String id)
+    {
+        if (id == null || StringUtils.isBlank(id))
+        {
+            logger.warn("input file's path is empty.");
+            return;
+        }
+
+        PreparedStatement prep = null;
+        try
+        {
+            lock.writeLock().lock();
+            prep = conn.prepareStatement("delete from files where sha256=?;");
+            prep.setString(1, id);
+            prep.execute();
+            prep.close();
+            RefreshFlag.getInstance().getAndSet(true);
+        }
+        catch (Exception e)
+        {
+            logger.error("caught: " + id, e);
+        }
+        finally
+        {
+            lock.writeLock().unlock();
+        }
+    }
+
     public void deleteOneRecord(FileInfo fi)
     {
         if (fi == null || StringUtils.isBlank(fi.getPath()))
@@ -418,6 +449,35 @@ public class BaseSqliteStore
         catch (Exception e)
         {
             logger.error("caught: " + dir, e);
+        }
+        finally
+        {
+            lock.writeLock().unlock();
+        }
+    }
+
+    public void setPhotoToDelByID(String id)
+    {
+        if (id == null || StringUtils.isBlank(id))
+        {
+            logger.warn("input id is empty.");
+            return;
+        }
+
+        PreparedStatement prep = null;
+        try
+        {
+            lock.writeLock().lock();
+            prep = conn.prepareStatement(
+                    "update files set deleted='true' where sha256=?;");
+            prep.setString(1, id);
+            prep.execute();
+            prep.close();
+            RefreshFlag.getInstance().getAndSet(true);
+        }
+        catch (Exception e)
+        {
+            logger.error("caught: " + id, e);
         }
         finally
         {

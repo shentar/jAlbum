@@ -17,6 +17,8 @@ public class FileInfo
     private long height = 0;
 
     private long size;
+    
+    private boolean isDel = false;
 
     public String getPath()
     {
@@ -92,5 +94,15 @@ public class FileInfo
     public void setcTime(Date cTime)
     {
         this.cTime = cTime;
+    }
+
+    public boolean isDel()
+    {
+        return isDel;
+    }
+
+    public void setDel(boolean isDel)
+    {
+        this.isDel = isDel;
     }
 }

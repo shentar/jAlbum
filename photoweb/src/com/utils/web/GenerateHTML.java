@@ -164,6 +164,7 @@ public class GenerateHTML
                 + "<html xmlns=\"http://www.w3.org/1999/xhtml\" lang=\"zh-CN\">"
                 + "<head profile=\"http://gmpg.org/xfn/11\">"
                 + "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"/> "
+                + "<script type=\"text/javascript\" src=\"/js/jquery-3.1.0.js\"></script>"
                 + "<title>相册</title></head><body>";
         return hh;
     }
@@ -208,6 +209,11 @@ public class GenerateHTML
             String yearNavigage = genYearNavigate();
             sb.append(yearNavigage);
 
+            sb.append("<script type=\"text/javascript\">"
+                    + "function deletephoto(path){$.ajax({url:path,type:'DELETE',"
+                    + "success:function(result){$(\"html\").html(result);}});};"
+                    + "</script>");
+
             sb.append("<table style=\"text-align: center;\" width=\"100%\" "
                     + "height=\"100%\" border=\"0\" bordercolor=\"#000000\">");
             sb.append(
@@ -222,15 +228,20 @@ public class GenerateHTML
             sb.append("<br/><br/>");
             sb.append("<table style=\"text-align: center;\" width=\"100%\" "
                     + "height=\"100%\" border=\"0\" bordercolor=\"#000000\">");
-            sb.append("<tr>");
-
             sb.append(
-                    "<td width=\"100%\" height=\"100%\" bordercolor=\"#000000\"><br/>");
-            sb.append("<a href=\"/photos/" + f.getHash256() + "?content=true"
-                    + "\" target=\"_blank\">");
+                    "<tr><td width=\"100%\" height=\"100%\" bordercolor=\"#000000\"><br/>");
+            // sb.append("<a href=\"/photos/" + f.getHash256() + "?content=true"
+            // + "\" target=\"_blank\">");
             sb.append("<img " + (restrictSize(f) ? "width" : "height")
                     + "=\"900px\" src = \"/photos/" + f.getHash256()
-                    + "?content=true" + "\"></img>" + "</a></td></tr></table>");
+                    + "?content=true" + "\"></img>");
+            // sb.append("</a>");
+            sb.append("</td></tr>");
+
+            sb.append("<tr><td><a href=\"javascript:deletephoto(" + "\'/photos/"
+                    + f.getHash256() + "'" + ");\">删除</a></td><tr>");
+
+            sb.append("</table>");
 
             sb.append(yearNavigage);
             sb.append(getHtmlFoot());

@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -252,7 +253,8 @@ public class UniqPhotosStore
             prep = conn.prepareStatement(
                     "insert into uniqphotos2(path,hashstr,size,phototime,width,height) "
                             + "select path,sha256,size,"
-                            + "phototime,width,height from files where sha256 in(select sha256 from files group by sha256) "
+                            + "phototime,width,height from files where (deleted <>'true' or deleted is null) and "
+                            + "sha256 in(select sha256 from files group by sha256) "
                             + "group by sha256 ORDER BY phototime DESC");
             prep.execute();
             prep.close();
@@ -356,5 +358,34 @@ public class UniqPhotosStore
             lock.readLock().unlock();
         }
         return null;
+    }
+
+    public void deleteRecordByID(String id)
+    {
+        if (id == null || StringUtils.isBlank(id))
+        {
+            logger.warn("input file's path is empty.");
+            return;
+        }
+
+        PreparedStatement prep = null;
+        try
+        {
+            lock.writeLock().lock();
+            prep = conn.prepareStatement(
+                    "delete from uniqphotos1 where hashstr=?;");
+            prep.setString(1, id);
+            prep.execute();
+            prep.close();
+            RefreshFlag.getInstance().getAndSet(true);
+        }
+        catch (Exception e)
+        {
+            logger.error("caught: " + id, e);
+        }
+        finally
+        {
+            lock.writeLock().unlock();
+        }
     }
 }
