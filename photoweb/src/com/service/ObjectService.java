@@ -101,6 +101,7 @@ public class ObjectService
     public Response deletePhotoData(@Context HttpServletRequest req,
             @Context HttpServletResponse response) throws IOException
     {
+        logger.warn("try to delete the photo: " + id);
         ResponseBuilder builder = Response.status(200);
 
         BaseSqliteStore meta = BaseSqliteStore.getInstance();
@@ -118,7 +119,7 @@ public class ObjectService
             builder.entity(bodyContent);
             logger.info("the page is {}", bodyContent);
         }
-        
+        logger.warn("deleted the photo: " + id);
         return builder.build();
     }
 

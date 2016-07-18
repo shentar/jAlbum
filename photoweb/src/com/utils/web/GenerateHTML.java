@@ -210,8 +210,13 @@ public class GenerateHTML
             sb.append(yearNavigage);
 
             sb.append("<script type=\"text/javascript\">"
-                    + "function deletephoto(path){$.ajax({url:path,type:'DELETE',"
-                    + "success:function(result){$(\"html\").html(result);}});};"
+                    + "function changeUrl(url){window.history.pushState({},0,'http://'+window.location.host+'/'+url);};"
+                    + "window.onload=changeUrl(" + "'photos/" + f.getHash256()
+                    + "');" + "function deletephoto(path){changeUrl("
+                    + "'?next=" + f.getHash256() + "&count=1'"
+                    + ");window.location.reload();"
+                    + "$.ajax({url:path,type:'DELETE',"
+                    + "success:function(result){$(\"html\").html(result);}});}"
                     + "</script>");
 
             sb.append("<table style=\"text-align: center;\" width=\"100%\" "
@@ -244,6 +249,7 @@ public class GenerateHTML
             sb.append("</table>");
 
             sb.append(yearNavigage);
+
             sb.append(getHtmlFoot());
             return sb.toString();
         }
