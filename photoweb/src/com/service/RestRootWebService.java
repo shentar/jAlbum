@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServlet;
@@ -46,6 +47,7 @@ public class RestRootWebService extends HttpServlet
             FileInputStream fp = new FileInputStream(new File("favicon.ico"));
             builder.entity(fp);
             builder.header("Content-type", "image/x-icon");
+            setExpiredTime(builder);
             logger.debug("getFavicon out!");
         }
         catch (Exception e)
@@ -54,6 +56,14 @@ public class RestRootWebService extends HttpServlet
         }
 
         return builder.build();
+    }
+
+    private void setExpiredTime(ResponseBuilder builder)
+    {
+        long expirAge = 3600 * 1000 * 24 * 7;
+        long expirtime = System.currentTimeMillis() + expirAge;
+        builder.header("Expires", new Date(expirtime));
+        builder.header("Cache-Control", "max-age=" + expirAge);
     }
 
     @GET
@@ -72,6 +82,7 @@ public class RestRootWebService extends HttpServlet
                 FileInputStream fp = new FileInputStream(filepath);
                 builder.entity(fp);
                 builder.header("Content-type", "application/javascript");
+                setExpiredTime(builder);
                 logger.debug("getFavicon out!");
             }
             else
