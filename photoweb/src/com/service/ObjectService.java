@@ -102,15 +102,16 @@ public class ObjectService
             @Context HttpServletResponse response) throws IOException
     {
         logger.warn("try to delete the photo: " + id);
-        ResponseBuilder builder = Response.status(200);
+        ResponseBuilder builder = Response.status(204);
 
         BaseSqliteStore meta = BaseSqliteStore.getInstance();
         meta.setPhotoToDelByID(id);
 
         UniqPhotosStore umeta = UniqPhotosStore.getInstance();
-        List<FileInfo> fnext = umeta.getNextNineFileByHashStr(id, 1);
+        // List<FileInfo> fnext = umeta.getNextNineFileByHashStr(id, 1);
         umeta.deleteRecordByID(id);
         
+        /*
         if (fnext!= null && !fnext.isEmpty())
         {
             // 刷新整个页面。
@@ -119,6 +120,7 @@ public class ObjectService
             builder.entity(bodyContent);
             logger.info("the page is {}", bodyContent);
         }
+        */
         logger.warn("deleted the photo: " + id);
         return builder.build();
     }
