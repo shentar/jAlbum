@@ -216,7 +216,7 @@ public class GenerateHTML
                     + "'?next=" + f.getHash256() + "&count=1'"
                     + ");window.location.reload();"
                     + "$.ajax({url:path,type:'DELETE',"
-                    + "success:function(result){$(\"html\").html(result);}});}"
+                    + "success:function(result){}});}"
                     + "</script>");
 
             sb.append("<table style=\"text-align: center;\" width=\"100%\" "
