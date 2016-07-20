@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServlet;
@@ -51,7 +50,7 @@ public class RestRootWebService extends HttpServlet
             FileInputStream fp = new FileInputStream(new File("favicon.ico"));
             builder.entity(fp);
             builder.header("Content-type", "image/x-icon");
-            setExpiredTime(builder);
+            HeadUtils.setExpiredTime(builder);
             logger.debug("getFavicon out!");
         }
         catch (Exception e)
@@ -79,7 +78,7 @@ public class RestRootWebService extends HttpServlet
                 FileInputStream fp = new FileInputStream(filepath);
                 builder.entity(fp);
                 builder.header("Content-type", "application/javascript");
-                setExpiredTime(builder);
+                HeadUtils.setExpiredTime(builder);
                 logger.debug("getFavicon out!");
             }
             else
@@ -122,7 +121,17 @@ public class RestRootWebService extends HttpServlet
     {
         List<FileInfo> lst = null;
 
-        int count = AppConfig.getInstance().getMaxCountOfPicInOnePage(25);
+        int count = 25;
+
+        if (HeadUtils.checkMobile(req))
+        {
+            count = 9;
+        }
+        else
+        {
+            count = AppConfig.getInstance().getMaxCountOfPicInOnePage(25);
+        }
+        
         String countStr = req.getParameter("count");
         if (StringUtils.isNotBlank(countStr))
         {
@@ -224,13 +233,5 @@ public class RestRootWebService extends HttpServlet
         {
             return new ErrorResource();
         }
-    }
-
-    private void setExpiredTime(ResponseBuilder builder)
-    {
-        long expirAge = 3600 * 1000 * 24 * 7;
-        long expirtime = System.currentTimeMillis() + expirAge;
-        builder.header("Expires", new Date(expirtime));
-        builder.header("Cache-Control", "max-age=" + expirAge);
     }
 }

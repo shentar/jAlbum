@@ -8,7 +8,6 @@ import java.io.InputStream;
 import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -27,6 +26,7 @@ import com.backend.FileInfo;
 import com.backend.ThumbnailManager;
 import com.backend.UniqPhotosStore;
 import com.utils.web.GenerateHTML;
+import com.utils.web.HeadUtils;
 
 public class ObjectService
 {
@@ -69,10 +69,7 @@ public class ObjectService
                     builder.entity(fi);
                     String contenttype = getContentType(f.getPath());
                     builder.header("Content-type", contenttype);
-                    long expirAge = 3600 * 1000 * 24 * 7;
-                    long expirtime = System.currentTimeMillis() + expirAge;
-                    builder.header("Expires", new Date(expirtime));
-                    builder.header("Cache-Control", "max-age=" + expirAge);
+                    HeadUtils.setExpiredTime(builder);
                     builder.header("Content-Disposition",
                             "filename=" + new File(f.getPath()).getName());
                     builder.header("PicFileFullPath",

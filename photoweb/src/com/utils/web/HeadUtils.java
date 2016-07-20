@@ -1,6 +1,9 @@
 package com.utils.web;
 
+import java.util.Date;
+
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.Response.ResponseBuilder;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -21,5 +24,18 @@ public class HeadUtils
         }
 
         return true;
+    }
+    
+    public static void setExpiredTime(ResponseBuilder builder)
+    {
+        if (builder == null)
+        {
+            return;
+        }
+        
+        long expirAge = 3600 * 1000 * 24 * 7;
+        long expirtime = System.currentTimeMillis() + expirAge;
+        builder.header("Expires", new Date(expirtime));
+        builder.header("Cache-Control", "max-age=" + expirAge);
     }
 }
