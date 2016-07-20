@@ -215,6 +215,10 @@ public class GenerateHTML
             String yearNavigage = genYearNavigate();
             sb.append(yearNavigage);
 
+            sb.append(
+                    "<script type=\"text/javascript\" src=\"/js/jQueryRotate.js\"></script>");
+            sb.append(
+                    "<script type=\"text/javascript\" src=\"/js/rotate.js\"></script>");
             sb.append("<script type=\"text/javascript\">"
                     + "function changeUrl(url){window.history.pushState({},0,'http://'+window.location.host+'/'+url);};"
                     + "window.onload=changeUrl(" + "'photos/" + f.getHash256()
@@ -242,14 +246,18 @@ public class GenerateHTML
                     "<tr><td width=\"100%\" height=\"100%\" bordercolor=\"#000000\"><br/>");
             // sb.append("<a href=\"/photos/" + f.getHash256() + "?content=true"
             // + "\" target=\"_blank\">");
-            sb.append("<img " + (restrictSize(f) ? "width" : "height")
+            sb.append("<img id=\"singlephoto\""
+                    + (restrictSize(f) ? "width" : "height")
                     + "=\"900px\" src = \"/photos/" + f.getHash256()
                     + "?content=true" + "\"></img>");
             // sb.append("</a>");
             sb.append("</td></tr>");
 
-            sb.append("<tr><td><a href=\"javascript:deletephoto(" + "\'/photos/"
-                    + f.getHash256() + "'" + ");\">删除</a></td><tr>");
+            sb.append("<tr><td><a id=\"leftrotate\" href=\"#\">左旋转</a>"
+                    + "&nbsp;&nbsp;&nbsp;" + "<a href=\"javascript:deletephoto("
+                    + "\'/photos/" + f.getHash256() + "'" + ");\">删除</a>"
+                    + "&nbsp;&nbsp;&nbsp;"
+                    + "<a id=\"rightrotate\" href=\"#\">右旋转</a></td><tr>");
 
             sb.append("</table>");
 
