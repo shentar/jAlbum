@@ -122,7 +122,17 @@ public class RestRootWebService extends HttpServlet
     {
         List<FileInfo> lst = null;
 
-        int count = AppConfig.getInstance().getMaxCountOfPicInOnePage(25);
+        int count = 25;
+
+        if (HeadUtils.checkMobile(req))
+        {
+            count = 3;
+        }
+        else
+        {
+            count = AppConfig.getInstance().getMaxCountOfPicInOnePage(25);
+        }
+        
         String countStr = req.getParameter("count");
         if (StringUtils.isNotBlank(countStr))
         {
