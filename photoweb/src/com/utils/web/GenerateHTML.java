@@ -19,7 +19,13 @@ import com.utils.conf.AppConfig;
 
 public class GenerateHTML
 {
+
     public static String genIndexPage(List<FileInfo> flst)
+    {
+        return genIndexPage(flst, 5);
+    }
+
+    public static String genIndexPage(List<FileInfo> flst, int rowCount)
     {
         if (flst == null || flst.isEmpty())
         {
@@ -47,7 +53,7 @@ public class GenerateHTML
         int end = 0;
         for (FileInfo f : flst)
         {
-            if (i % 5 == 0)
+            if (i % rowCount == 0)
             {
                 start++;
                 sb.append("<tr>");
@@ -61,7 +67,7 @@ public class GenerateHTML
                     + "=\"340px\" src = \"/photos/" + f.getHash256()
                     + "?content=true&size=340" + "\"></img>" + "</a></td>");
 
-            if ((i + 1) % 5 == 0)
+            if ((i + 1) % rowCount == 0)
             {
                 end++;
                 sb.append("</tr>");
@@ -216,8 +222,7 @@ public class GenerateHTML
                     + "'?next=" + f.getHash256() + "&count=1'"
                     + ");window.location.reload();"
                     + "$.ajax({url:path,type:'DELETE',"
-                    + "success:function(result){}});}"
-                    + "</script>");
+                    + "success:function(result){}});}" + "</script>");
 
             sb.append("<table style=\"text-align: center;\" width=\"100%\" "
                     + "height=\"100%\" border=\"0\" bordercolor=\"#000000\">");
@@ -332,6 +337,12 @@ public class GenerateHTML
     public static String generateDayPage(String day, String prevDay,
             String nextDay, List<FileInfo> flst)
     {
+        return generateDayPage(day, prevDay, nextDay, flst, 5);
+    }
+
+    public static String generateDayPage(String day, String prevDay,
+            String nextDay, List<FileInfo> flst, int rowCount)
+    {
         if (flst == null || flst.isEmpty())
         {
             return generate404Notfound();
@@ -350,7 +361,7 @@ public class GenerateHTML
         int end = 0;
         for (FileInfo f : flst)
         {
-            if (i % 5 == 0)
+            if (i % rowCount == 0)
             {
                 start++;
                 sb.append("<tr>");
@@ -364,7 +375,7 @@ public class GenerateHTML
                     + "=\"340px\" src = \"/photos/" + f.getHash256()
                     + "?content=true&size=340" + "\"></img>" + "</a></td>");
 
-            if ((i + 1) % 5 == 0)
+            if ((i + 1) % rowCount == 0)
             {
                 end++;
                 sb.append("</tr>");

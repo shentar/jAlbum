@@ -27,6 +27,7 @@ import com.backend.FileInfo;
 import com.backend.UniqPhotosStore;
 import com.utils.conf.AppConfig;
 import com.utils.web.GenerateHTML;
+import com.utils.web.HeadUtils;
 
 @Produces(value = { "text/xml", "application/json", "application/xml",
         "text/html" })
@@ -101,7 +102,8 @@ public class RestRootWebService extends HttpServlet
             @Context HttpServletResponse response) throws IOException
     {
         ResponseBuilder builder = Response.status(200);
-        String body = GenerateHTML.genIndexPage(getFileList(req));
+        String body = GenerateHTML.genIndexPage(getFileList(req),
+                HeadUtils.checkMobile(req) ? 3 : 5);
         if (StringUtils.isNotBlank(body))
         {
             builder.entity(body);
@@ -231,5 +233,4 @@ public class RestRootWebService extends HttpServlet
         builder.header("Expires", new Date(expirtime));
         builder.header("Cache-Control", "max-age=" + expirAge);
     }
-
 }

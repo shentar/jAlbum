@@ -19,6 +19,7 @@ import com.backend.DateTableDao;
 import com.backend.FileInfo;
 import com.backend.UniqPhotosStore;
 import com.utils.web.GenerateHTML;
+import com.utils.web.HeadUtils;
 
 public class DayService
 {
@@ -80,8 +81,8 @@ public class DayService
         {
             List<FileInfo> flst = UniqPhotosStore.getInstance()
                     .getAllPhotosBy(day);
-            builder.entity(
-                    GenerateHTML.generateDayPage(day, prevDay, nextDay, flst));
+            builder.entity(GenerateHTML.generateDayPage(day, prevDay, nextDay,
+                    flst, HeadUtils.checkMobile(req) ? 3 : 5));
             return builder.build();
         }
     }
