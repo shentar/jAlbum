@@ -230,10 +230,9 @@ public class GenerateHTML
             sb.append("<td width=\"33%\" bordercolor=\"#000000\">" + f.getPhotoTime() + "</td>");
             sb.append("<td width=\"33%\" bordercolor=\"#000000\"><a href=\"/?next=" + f.getHash256()
                     + "&count=1" + "\">下一张</a></td></tr></table>");
-            sb.append("<br/><br/>");
             sb.append("<table style=\"text-align: center;\" width=\"100%\" "
                     + "height=\"730px\" border=\"0\" bordercolor=\"#000000\">");
-            sb.append("<tr><td width=\"100%\" height=\"100%\" bordercolor=\"#000000\"><br/>");
+            sb.append("<tr><td width=\"100%\" height=\"100%\" bordercolor=\"#000000\">");
             // sb.append("<a href=\"/photos/" + f.getHash256() + "?content=true"
             // + "\" target=\"_blank\">");
             sb.append("<img id=\"singlephoto\"" + (restrictSize(f) ? "width" : "height")
