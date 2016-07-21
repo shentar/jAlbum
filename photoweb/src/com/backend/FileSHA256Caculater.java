@@ -14,16 +14,14 @@ public class FileSHA256Caculater
 {
     public static final int BUFFERED_SIZE = 1024 * 128;
 
-    public static String calFileSha256(File f)
-            throws NoSuchAlgorithmException, IOException
+    public static String calFileSha256(File f) throws NoSuchAlgorithmException, IOException
     {
         if (f == null || !f.exists() || f.isDirectory())
         {
             return null;
         }
 
-        MessageDigest md = MessageDigest
-                .getInstance(AppConfig.getInstance().getHashAlog());
+        MessageDigest md = MessageDigest.getInstance(AppConfig.getInstance().getHashAlog());
         InputStream in = null;
         try
         {
@@ -36,8 +34,7 @@ public class FileSHA256Caculater
                 boolean bcomplete = false;
                 while (offset < BUFFERED_SIZE)
                 {
-                    int readlen = in.read(buffer, offset,
-                            BUFFERED_SIZE - offset);
+                    int readlen = in.read(buffer, offset, BUFFERED_SIZE - offset);
                     if (readlen < 0)
                     {
                         bcomplete = true;

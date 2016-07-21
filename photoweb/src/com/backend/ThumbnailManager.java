@@ -15,8 +15,7 @@ import com.utils.conf.AppConfig;
 
 public class ThumbnailManager
 {
-    private static final Logger logger = LoggerFactory
-            .getLogger(ThumbnailManager.class);
+    private static final Logger logger = LoggerFactory.getLogger(ThumbnailManager.class);
 
     private static boolean isBaseDriValid = false;
 
@@ -55,8 +54,7 @@ public class ThumbnailManager
     {
         String dir2 = id.substring(id.length() - 2, id.length());
         String dir1 = id.substring(id.length() - 4, id.length() - 2);
-        return baseDir + File.separator + dir1 + File.separator + dir2
-                + File.separator + id;
+        return baseDir + File.separator + dir1 + File.separator + dir2 + File.separator + id;
     }
 
     public static boolean checkTheThumbnailExist(String id)
@@ -99,8 +97,7 @@ public class ThumbnailManager
 
         String tmpFile = "." + File.separator + fi.getHash256();
         File tmpF = new File(tmpFile);
-        if (!ThumbnailGenerator.createThumbnail(fi.getPath(), tmpFile, 400, 400,
-                false))
+        if (!ThumbnailGenerator.createThumbnail(fi.getPath(), tmpFile, 400, 400, false))
         {
             if (!FileTools.copyFile(fi.getPath(), tmpFile))
             {

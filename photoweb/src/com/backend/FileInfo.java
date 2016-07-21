@@ -17,7 +17,7 @@ public class FileInfo
     private long height = 0;
 
     private long size;
-    
+
     private boolean isDel = false;
 
     public String getPath()
@@ -52,8 +52,7 @@ public class FileInfo
 
     public String toString()
     {
-        return "[path: " + path + "; hahstr: " + hash256 + "; phototime: "
-                + photoTime + "]";
+        return "[path: " + path + "; hahstr: " + hash256 + "; phototime: " + photoTime + "]";
     }
 
     public long getHeight()

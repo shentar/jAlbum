@@ -46,8 +46,8 @@ public class GenerateHTML
         String indexPageNavi = genIndexNavigate(firstP, endP);
         sb.append(indexPageNavi);
         sb.append("<br/><br/>");
-        sb.append(
-                "<table style=\"text-align: center;\" width=\"100%\" height=\"100%\" border=\"0\" bordercolor=\"#000000\">");
+        sb.append("<table style=\"text-align: center;\" width=\"100%\" height=\"100%\" "
+                + "border=\"0\" bordercolor=\"#000000\">");
         int i = 0;
         int start = 0;
         int end = 0;
@@ -59,13 +59,11 @@ public class GenerateHTML
                 sb.append("<tr>");
             }
 
-            sb.append(
-                    "<td width=\"20%\" height=\"18%\" bordercolor=\"#000000\"><br/>");
-            sb.append("<a href=\"/photos/" + f.getHash256()
-                    + "\" target=\"_blank\">");
+            sb.append("<td width=\"20%\" height=\"18%\" bordercolor=\"#000000\"><br/>");
+            sb.append("<a href=\"/photos/" + f.getHash256() + "\" target=\"_blank\">");
             sb.append("<img " + (restrictSize(f) ? "width" : "height")
-                    + "=\"340px\" src = \"/photos/" + f.getHash256()
-                    + "?content=true&size=340" + "\"></img>" + "</a></td>");
+                    + "=\"340px\" src = \"/photos/" + f.getHash256() + "?content=true&size=340"
+                    + "\"></img>" + "</a></td>");
 
             if ((i + 1) % rowCount == 0)
             {
@@ -91,20 +89,16 @@ public class GenerateHTML
     private static String genIndexNavigate(FileInfo firstP, FileInfo endP)
     {
         StringBuffer indexPageNavi = new StringBuffer();
+        indexPageNavi.append("<table style=\"text-align: center;\" width=\"100%\" height=\"100%\" "
+                + "border=\"0\" bordercolor=\"#000000\">");
+        indexPageNavi.append("<tr><td width=\"33%\" bordercolor=\"#000000\"><a href=\"?prev="
+                + firstP.getHash256() + "&count="
+                + AppConfig.getInstance().getMaxCountOfPicInOnePage(25) + "\">上一页</a></td>");
+        indexPageNavi.append("<td width=\"33%\" bordercolor=\"#000000\">" + firstP.getPhotoTime()
+                + " ~ " + endP.getPhotoTime() + "</td>");
         indexPageNavi.append(
-                "<table style=\"text-align: center;\" width=\"100%\" height=\"100%\" border=\"0\" bordercolor=\"#000000\">");
-        indexPageNavi
-                .append("<tr><td width=\"33%\" bordercolor=\"#000000\"><a href=\"?prev="
-                        + firstP.getHash256() + "&count="
-                        + AppConfig.getInstance().getMaxCountOfPicInOnePage(25)
-                        + "\">上一页</a></td>");
-        indexPageNavi.append("<td width=\"33%\" bordercolor=\"#000000\">"
-                + firstP.getPhotoTime() + " ~ " + endP.getPhotoTime()
-                + "</td>");
-        indexPageNavi
-                .append("<td width=\"33%\" bordercolor=\"#000000\"><a href=\"?next="
-                        + endP.getHash256() + "&count="
-                        + AppConfig.getInstance().getMaxCountOfPicInOnePage(25)
+                "<td width=\"33%\" bordercolor=\"#000000\"><a href=\"?next=" + endP.getHash256()
+                        + "&count=" + AppConfig.getInstance().getMaxCountOfPicInOnePage(25)
                         + "\">下一页</a></td></tr></table>");
         return indexPageNavi.toString();
     }
@@ -116,7 +110,8 @@ public class GenerateHTML
         if (allrecords != null && !allrecords.isEmpty())
         {
             StringBuffer ylst = new StringBuffer(
-                    "<table style=\"text-align: center;\" width=\"100%\" height=\"100%\" border=\"0\" bordercolor=\"#000000\">");
+                    "<table style=\"text-align: center;\" width=\"100%\" height=\"100%\" "
+                            + "border=\"0\" bordercolor=\"#000000\">");
 
             int i = 0;
             int start = 0;
@@ -134,8 +129,7 @@ public class GenerateHTML
 
                 if (i == 0)
                 {
-                    ylst.append(
-                            "<td width=\"5%\" height=\"30px\" bordercolor=\"#000000\">");
+                    ylst.append("<td width=\"5%\" height=\"30px\" bordercolor=\"#000000\">");
                     ylst.append("<a href=\"/\">首页</a></td>");
                     i++;
                 }
@@ -215,8 +209,7 @@ public class GenerateHTML
             String yearNavigage = genYearNavigate();
             sb.append(yearNavigage);
 
-            sb.append(
-                    "<script type=\"text/javascript\" src=\"/js/jQueryRotate.js\"></script>");
+            sb.append("<script type=\"text/javascript\" src=\"/js/jQueryRotate.js\"></script>");
 
             // sb.append(
             // "<script type=\"text/javascript\"
@@ -224,52 +217,41 @@ public class GenerateHTML
 
             sb.append("<script type=\"text/javascript\">"
                     + "function changeUrl(url){window.history.pushState({},0,'http://'+window.location.host+'/'+url);};"
-                    + "window.onload=changeUrl(" + "'photos/" + f.getHash256()
-                    + "');" + "function deletephoto(path){changeUrl("
-                    + "'?next=" + f.getHash256() + "&count=1'"
-                    + ");window.location.reload();"
-                    + "$.ajax({url:path,type:'DELETE',"
-                    + "success:function(result){}});}" + "</script>");
+                    + "window.onload=changeUrl(" + "'photos/" + f.getHash256() + "');"
+                    + "function deletephoto(path){changeUrl(" + "'?next=" + f.getHash256()
+                    + "&count=1'" + ");window.location.reload();"
+                    + "$.ajax({url:path,type:'DELETE'," + "success:function(result){}});}"
+                    + "</script>");
 
             sb.append("<table style=\"text-align: center;\" width=\"100%\" "
                     + "height=\"100%\" border=\"0\" bordercolor=\"#000000\">");
-            sb.append(
-                    "<tr><td width=\"33%\" bordercolor=\"#000000\"><a href=\"/?prev="
-                            + f.getHash256() + "&count=1" + "\">上一张</a></td>");
-            sb.append("<td width=\"33%\" bordercolor=\"#000000\">"
-                    + f.getPhotoTime() + "</td>");
-            sb.append(
-                    "<td width=\"33%\" bordercolor=\"#000000\"><a href=\"/?next="
-                            + f.getHash256() + "&count=1"
-                            + "\">下一张</a></td></tr></table>");
+            sb.append("<tr><td width=\"33%\" bordercolor=\"#000000\"><a href=\"/?prev="
+                    + f.getHash256() + "&count=1" + "\">上一张</a></td>");
+            sb.append("<td width=\"33%\" bordercolor=\"#000000\">" + f.getPhotoTime() + "</td>");
+            sb.append("<td width=\"33%\" bordercolor=\"#000000\"><a href=\"/?next=" + f.getHash256()
+                    + "&count=1" + "\">下一张</a></td></tr></table>");
             sb.append("<br/><br/>");
             sb.append("<table style=\"text-align: center;\" width=\"100%\" "
-                    + "height=\"100%\" border=\"0\" bordercolor=\"#000000\">");
-            sb.append(
-                    "<tr><td width=\"100%\" height=\"100%\" bordercolor=\"#000000\"><br/>");
+                    + "height=\"730px\" border=\"0\" bordercolor=\"#000000\">");
+            sb.append("<tr><td width=\"100%\" height=\"100%\" bordercolor=\"#000000\"><br/>");
             // sb.append("<a href=\"/photos/" + f.getHash256() + "?content=true"
             // + "\" target=\"_blank\">");
-            sb.append("<img id=\"singlephoto\""
-                    + (restrictSize(f) ? "width" : "height")
-                    + "=\"900px\" src = \"/photos/" + f.getHash256()
-                    + "?content=true" + "\"></img>");
+            sb.append("<img id=\"singlephoto\"" + (restrictSize(f) ? "width" : "height")
+                    + "=\"700px\" src = \"/photos/" + f.getHash256() + "?content=true"
+                    + "\"></img>");
             // sb.append("</a>");
             sb.append("</td></tr>");
 
-            sb.append(
-                    "<tr><td><input id=\"leftrotate\" type=\"button\" value=\"左旋转\"></input>"
-                            + "&nbsp;&nbsp;&nbsp;"
-                            + "<a href=\"javascript:deletephoto(" + "\'/photos/"
-                            + f.getHash256() + "'" + ");\">删除</a>"
-                            + "&nbsp;&nbsp;&nbsp;"
-                            + "<input id=\"rightrotate\" type=\"button\" value=\"右旋转\"></input></td><tr>");
+            sb.append("<tr><td><input id=\"leftrotate\" type=\"button\" value=\"左旋转\"></input>"
+                    + "&nbsp;&nbsp;&nbsp;" + "<a href=\"javascript:deletephoto(" + "\'/photos/"
+                    + f.getHash256() + "'" + ");\">删除</a>" + "&nbsp;&nbsp;&nbsp;"
+                    + "<input id=\"rightrotate\" type=\"button\" value=\"右旋转\"></input></td><tr>");
 
-            sb.append("<script type=\"text/javascript\">" + "var rightnum = 0;"
-                    + "$(\"#rightrotate\").click(function(){rightnum++; "
-                    + "$(\"#singlephoto\").rotate(90*rightnum);}); "
-                    + "var leftnum = 0;"
-                    + "$(\"#leftrotate\").click(function(){leftnum++; "
-                    + "$(\"#singlephoto\").rotate(90*leftnum);}); </script>");
+            sb.append("<script type=\"text/javascript\">" + "var r = 0;"
+                    + "$(\"#rightrotate\").click(function(){r++; if (r > 3){r = 0;}"
+                    + "$(\"#singlephoto\").rotate(90*r);}); "
+                    + "$(\"#leftrotate\").click(function(){r--; if (r < 0){ r = 3;}"
+                    + "$(\"#singlephoto\").rotate(90*r);}); </script>");
 
             sb.append("</table>");
 
@@ -324,13 +306,11 @@ public class GenerateHTML
             FileInfo f = UniqPhotosStore.getInstance().getOneFileByHashStr(pic);
             if (f != null)
             {
-                sb.append(
-                        "<td width=\"25%\" height=\"31%\" bordercolor=\"#000000\">");
+                sb.append("<td width=\"25%\" height=\"31%\" bordercolor=\"#000000\">");
                 sb.append("<a href=\"/month/" + year + mo + "\" >");
                 sb.append("<img " + (restrictSize(f) ? "width" : "height")
-                        + "=\"280px\" src = \"/photos/" + pic
-                        + "?content=true&size=280" + "\"></img>"
-                        + "</a><br/><b>" + year + "-" + mo + "月份 (" + filecount
+                        + "=\"280px\" src = \"/photos/" + pic + "?content=true&size=280"
+                        + "\"></img>" + "</a><br/><b>" + year + "-" + mo + "月份 (" + filecount
                         + "张)</b></td>");
             }
             if ((i + 1) % 4 == 0)
@@ -354,14 +334,14 @@ public class GenerateHTML
         return sb.toString();
     }
 
-    public static String generateDayPage(String day, String prevDay,
-            String nextDay, List<FileInfo> flst)
+    public static String generateDayPage(String day, String prevDay, String nextDay,
+            List<FileInfo> flst)
     {
         return generateDayPage(day, prevDay, nextDay, flst, 5);
     }
 
-    public static String generateDayPage(String day, String prevDay,
-            String nextDay, List<FileInfo> flst, int rowCount)
+    public static String generateDayPage(String day, String prevDay, String nextDay,
+            List<FileInfo> flst, int rowCount)
     {
         if (flst == null || flst.isEmpty())
         {
@@ -387,13 +367,11 @@ public class GenerateHTML
                 sb.append("<tr>");
             }
 
-            sb.append(
-                    "<td width=\"20%\" height=\"18%\" bordercolor=\"#000000\">");
-            sb.append("<a href=\"/photos/" + f.getHash256()
-                    + "\" target=\"_blank\">");
+            sb.append("<td width=\"20%\" height=\"18%\" bordercolor=\"#000000\">");
+            sb.append("<a href=\"/photos/" + f.getHash256() + "\" target=\"_blank\">");
             sb.append("<img " + (restrictSize(f) ? "width" : "height")
-                    + "=\"340px\" src = \"/photos/" + f.getHash256()
-                    + "?content=true&size=340" + "\"></img>" + "</a></td>");
+                    + "=\"340px\" src = \"/photos/" + f.getHash256() + "?content=true&size=340"
+                    + "\"></img>" + "</a></td>");
 
             if ((i + 1) % rowCount == 0)
             {
@@ -416,21 +394,20 @@ public class GenerateHTML
         return sb.toString();
     }
 
-    private static String genDayNavigate(String day, String prevDay,
-            String nextDay)
+    private static String genDayNavigate(String day, String prevDay, String nextDay)
     {
         StringBuffer dayNavigate = new StringBuffer();
         dayNavigate.append("<tr><td width=\"20%\">");
-        dayNavigate.append("<a href=\"/month/" + day.substring(0, 6) + "\">返回"
-                + day.substring(0, 4) + "年" + day.substring(4, 6) + "月</a>");
+        dayNavigate.append("<a href=\"/month/" + day.substring(0, 6) + "\">返回" + day.substring(0, 4)
+                + "年" + day.substring(4, 6) + "月</a>");
         dayNavigate.append("</td><td width=\"20%\">");
         if (StringUtils.isNotBlank(prevDay))
         {
             dayNavigate.append("<a href=\"/day/" + prevDay + "\">" + "上一天</a>");
         }
         dayNavigate.append("</td>");
-        dayNavigate.append("<td  width=\"20%\" style=\"text-align:center\">"
-                + day + "</td><td width=\"20%\">");
+        dayNavigate.append("<td  width=\"20%\" style=\"text-align:center\">" + day
+                + "</td><td width=\"20%\">");
         if (StringUtils.isNotBlank(nextDay))
         {
             dayNavigate.append("<a href=\"/day/" + nextDay + "\">" + "下一天</a>");
@@ -439,8 +416,8 @@ public class GenerateHTML
         return dayNavigate.toString();
     }
 
-    public static Object generateMonthPage(String monthstr, String nextMonth,
-            String prevMonth, TreeMap<String, DateRecords> map)
+    public static Object generateMonthPage(String monthstr, String nextMonth, String prevMonth,
+            TreeMap<String, DateRecords> map)
     {
         if (map == null || map.isEmpty())
         {
@@ -473,13 +450,11 @@ public class GenerateHTML
             FileInfo f = UniqPhotosStore.getInstance().getOneFileByHashStr(pic);
             if (f != null)
             {
-                sb.append(
-                        "<td width=\"25%\" height=\"31%\" bordercolor=\"#000000\">");
+                sb.append("<td width=\"25%\" height=\"31%\" bordercolor=\"#000000\">");
                 sb.append("<a href=\"/day/" + monthstr + day + " \" >");
                 sb.append("<img " + (restrictSize(f) ? "width" : "height")
-                        + "=\"280px\" src = \"/photos/" + pic
-                        + "?content=true&size=280" + "\"></img>"
-                        + "</a><br/><b>" + monthstr + "-" + day + " ("
+                        + "=\"280px\" src = \"/photos/" + pic + "?content=true&size=280"
+                        + "\"></img>" + "</a><br/><b>" + monthstr + "-" + day + " ("
                         + mr.getPiccount() + "张)</b></td>");
             }
             if ((i + 1) % 4 == 0)
@@ -504,32 +479,27 @@ public class GenerateHTML
         return sb.toString();
     }
 
-    private static String genMonthNavigate(String monthstr, String nextMonth,
-            String prevMonth)
+    private static String genMonthNavigate(String monthstr, String nextMonth, String prevMonth)
     {
         StringBuffer monthNavigate = new StringBuffer();
-        monthNavigate
-                .append("<table style=\"text-align: center;\" width=\"100%\" "
-                        + "height=\"100%\" border=\"0\" bordercolor=\"#000000\">");
+        monthNavigate.append("<table style=\"text-align: center;\" width=\"100%\" "
+                + "height=\"100%\" border=\"0\" bordercolor=\"#000000\">");
         monthNavigate.append("<tr>" + "<td width=\"20%\">");
-        monthNavigate.append("<a href=\"/year/" + monthstr.substring(0, 4)
-                + "\">返回" + monthstr.substring(0, 4) + "年</a>");
+        monthNavigate.append("<a href=\"/year/" + monthstr.substring(0, 4) + "\">返回"
+                + monthstr.substring(0, 4) + "年</a>");
         monthNavigate.append("</td>" + "<td width=\"20%\">");
         if (StringUtils.isNotBlank(prevMonth))
         {
-            monthNavigate.append(
-                    "<a href=\"/month/" + prevMonth + "\">" + "上一月</a>");
+            monthNavigate.append("<a href=\"/month/" + prevMonth + "\">" + "上一月</a>");
         }
         monthNavigate.append("</td>");
-        monthNavigate.append("<td  width=\"20%\" style=\"text-align:center\">"
-                + monthstr + "月" + "</td><td width=\"20%\">");
+        monthNavigate.append("<td  width=\"20%\" style=\"text-align:center\">" + monthstr + "月"
+                + "</td><td width=\"20%\">");
         if (StringUtils.isNotBlank(nextMonth))
         {
-            monthNavigate.append(
-                    "<a href=\"/month/" + nextMonth + "\">" + "下一月</a>");
+            monthNavigate.append("<a href=\"/month/" + nextMonth + "\">" + "下一月</a>");
         }
-        monthNavigate.append(
-                "</td>" + "<td width=\"20%\"></td>" + "</tr>" + "</table>");
+        monthNavigate.append("</td>" + "<td width=\"20%\"></td>" + "</tr>" + "</table>");
         return monthNavigate.toString();
     }
 

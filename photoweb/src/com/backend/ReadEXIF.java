@@ -22,8 +22,7 @@ import com.drew.metadata.png.PngDirectory;
 
 public class ReadEXIF
 {
-    private static final Logger logger = LoggerFactory
-            .getLogger(ReadEXIF.class);
+    private static final Logger logger = LoggerFactory.getLogger(ReadEXIF.class);
 
     public static FileInfo genAllInfos(String filePath, boolean needExif)
     {
@@ -45,8 +44,7 @@ public class ReadEXIF
             fi = new FileInfo();
             fi.setPath(f.getCanonicalPath());
             fi.setSize(f.length());
-            fi.setcTime(new java.sql.Date(
-                    FileTools.getFileCreateTime(new File(fi.getPath()))));
+            fi.setcTime(new java.sql.Date(FileTools.getFileCreateTime(new File(fi.getPath()))));
             if (needExif)
             {
                 try
@@ -97,15 +95,13 @@ public class ReadEXIF
                     {
                         if (dir.containsTag(ExifDirectoryBase.TAG_IMAGE_HEIGHT))
                         {
-                            fi.setHeight(dir.getInt(
-                                    ExifDirectoryBase.TAG_IMAGE_HEIGHT));
+                            fi.setHeight(dir.getInt(ExifDirectoryBase.TAG_IMAGE_HEIGHT));
                             getheightandweight = true;
                         }
 
                         if (dir.containsTag(ExifDirectoryBase.TAG_IMAGE_WIDTH))
                         {
-                            fi.setWidth(dir
-                                    .getInt(ExifDirectoryBase.TAG_IMAGE_WIDTH));
+                            fi.setWidth(dir.getInt(ExifDirectoryBase.TAG_IMAGE_WIDTH));
                             getheightandweight = true;
                         }
                     }
@@ -117,15 +113,13 @@ public class ReadEXIF
                     {
                         if (dir.containsTag(JpegDirectory.TAG_IMAGE_HEIGHT))
                         {
-                            fi.setHeight(
-                                    dir.getInt(JpegDirectory.TAG_IMAGE_HEIGHT));
+                            fi.setHeight(dir.getInt(JpegDirectory.TAG_IMAGE_HEIGHT));
                             getheightandweight = true;
                         }
 
                         if (dir.containsTag(JpegDirectory.TAG_IMAGE_WIDTH))
                         {
-                            fi.setWidth(
-                                    dir.getInt(JpegDirectory.TAG_IMAGE_WIDTH));
+                            fi.setWidth(dir.getInt(JpegDirectory.TAG_IMAGE_WIDTH));
                             getheightandweight = true;
                         }
                     }
@@ -134,15 +128,13 @@ public class ReadEXIF
                     {
                         if (dir.containsTag(PngDirectory.TAG_IMAGE_HEIGHT))
                         {
-                            fi.setHeight(
-                                    dir.getInt(PngDirectory.TAG_IMAGE_HEIGHT));
+                            fi.setHeight(dir.getInt(PngDirectory.TAG_IMAGE_HEIGHT));
                             getheightandweight = true;
                         }
 
                         if (dir.containsTag(PngDirectory.TAG_IMAGE_WIDTH))
                         {
-                            fi.setWidth(
-                                    dir.getInt(PngDirectory.TAG_IMAGE_WIDTH));
+                            fi.setWidth(dir.getInt(PngDirectory.TAG_IMAGE_WIDTH));
                             getheightandweight = true;
                         }
                     }
@@ -204,8 +196,7 @@ public class ReadEXIF
     {
         try
         {
-            Metadata metadata = ImageMetadataReader
-                    .readMetadata(new File(path));
+            Metadata metadata = ImageMetadataReader.readMetadata(new File(path));
             Iterable<Directory> dirs = metadata.getDirectories();
             for (Directory dir : dirs)
             {

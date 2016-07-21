@@ -12,8 +12,7 @@ import org.slf4j.LoggerFactory;
 
 public class AppConfig
 {
-    private static final Logger logger = LoggerFactory
-            .getLogger(AppConfig.class);
+    private static final Logger logger = LoggerFactory.getLogger(AppConfig.class);
 
     public static final String configFilePath = "jalbum.xml";
 

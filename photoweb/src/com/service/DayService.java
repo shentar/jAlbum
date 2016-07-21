@@ -23,8 +23,7 @@ import com.utils.web.HeadUtils;
 
 public class DayService
 {
-    private static final Logger logger = LoggerFactory
-            .getLogger(MonthService.class);
+    private static final Logger logger = LoggerFactory.getLogger(MonthService.class);
 
     private String day;
 
@@ -79,10 +78,9 @@ public class DayService
         }
         else
         {
-            List<FileInfo> flst = UniqPhotosStore.getInstance()
-                    .getAllPhotosBy(day);
-            builder.entity(GenerateHTML.generateDayPage(day, prevDay, nextDay,
-                    flst, HeadUtils.checkMobile(req) ? 3 : 5));
+            List<FileInfo> flst = UniqPhotosStore.getInstance().getAllPhotosBy(day);
+            builder.entity(GenerateHTML.generateDayPage(day, prevDay, nextDay, flst,
+                    HeadUtils.checkMobile(req) ? 3 : 5));
             return builder.build();
         }
     }

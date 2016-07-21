@@ -30,8 +30,7 @@ import com.utils.web.HeadUtils;
 
 public class ObjectService
 {
-    private static final Logger logger = LoggerFactory
-            .getLogger(ObjectService.class);
+    private static final Logger logger = LoggerFactory.getLogger(ObjectService.class);
 
     private String id;
 
@@ -60,8 +59,7 @@ public class ObjectService
 
                 if (fi == null)
                 {
-                    fi = new BufferedInputStream(
-                            new FileInputStream(new File(f.getPath())));
+                    fi = new BufferedInputStream(new FileInputStream(new File(f.getPath())));
                 }
 
                 if (fi != null)
@@ -72,8 +70,7 @@ public class ObjectService
                     HeadUtils.setExpiredTime(builder);
                     builder.header("Content-Disposition",
                             "filename=" + new File(f.getPath()).getName());
-                    builder.header("PicFileFullPath",
-                            URLEncoder.encode(f.getPath(), "UTF-8"));
+                    builder.header("PicFileFullPath", URLEncoder.encode(f.getPath(), "UTF-8"));
                     logger.info("the file is: {}, Mime: {}", f, contenttype);
                 }
             }
@@ -106,17 +103,14 @@ public class ObjectService
         UniqPhotosStore umeta = UniqPhotosStore.getInstance();
         // List<FileInfo> fnext = umeta.getNextNineFileByHashStr(id, 1);
         umeta.deleteRecordByID(id);
-        
+
         /*
-        if (fnext!= null && !fnext.isEmpty())
-        {
-            // 刷新整个页面。
-            String bodyContent = GenerateHTML.generateSinglePhoto(fnext.get(0));
-            builder.header("Content-type", "text/html");
-            builder.entity(bodyContent);
-            logger.info("the page is {}", bodyContent);
-        }
-        */
+         * if (fnext!= null && !fnext.isEmpty()) { // 刷新整个页面。 String bodyContent
+         * = GenerateHTML.generateSinglePhoto(fnext.get(0));
+         * builder.header("Content-type", "text/html");
+         * builder.entity(bodyContent); logger.info("the page is {}",
+         * bodyContent); }
+         */
         logger.warn("deleted the photo: " + id);
         return builder.build();
     }

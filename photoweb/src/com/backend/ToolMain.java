@@ -14,11 +14,9 @@ import com.utils.conf.AppConfig;
 
 public class ToolMain
 {
-    private static final Logger logger = LoggerFactory
-            .getLogger(ToolMain.class);
+    private static final Logger logger = LoggerFactory.getLogger(ToolMain.class);
 
-    private static BaseSqliteStore metaDataStore = BaseSqliteStore
-            .getInstance();
+    private static BaseSqliteStore metaDataStore = BaseSqliteStore.getInstance();
 
     private static UniqPhotosStore photostore = UniqPhotosStore.getInstance();
 
@@ -35,20 +33,17 @@ public class ToolMain
             if (firstRun)
             {
                 firstRun = false;
-                logger.warn(
-                        "start to scan the base table one time after the program start.");
+                logger.warn("start to scan the base table one time after the program start.");
                 filecount.set(0);
                 PerformanceStatistics.getInstance().reset();
-                List<String> excludeDirs = AppConfig.getInstance()
-                        .getExcludedir();
+                List<String> excludeDirs = AppConfig.getInstance().getExcludedir();
                 logger.warn("the exclude dirs are: " + excludeDirs);
                 metaDataStore.scanAllRecords(excludeDirs);
                 logger.warn("end to scan the base table.");
 
                 PerformanceStatistics.getInstance().reset();
-                logger.warn(
-                        "start to scan the filesystem which specified by the config file: "
-                                + AppConfig.getInstance().getInputDir());
+                logger.warn("start to scan the filesystem which specified by the config file: "
+                        + AppConfig.getInstance().getInputDir());
                 for (String dir : AppConfig.getInstance().getInputDir())
                 {
                     mapAllfiles(new File(dir), excludeDirs);
@@ -58,8 +53,7 @@ public class ToolMain
                 {
                     Thread.sleep(100);
                 }
-                PerformanceStatistics.getInstance()
-                        .printPerformanceLog(System.currentTimeMillis());
+                PerformanceStatistics.getInstance().printPerformanceLog(System.currentTimeMillis());
                 logger.warn("end to scan the filesystem.");
             }
         }
@@ -110,8 +104,7 @@ public class ToolMain
                 {
                     if (f.getCanonicalPath().startsWith(s))
                     {
-                        logger.info("this folder is execluded: "
-                                + f.getCanonicalPath());
+                        logger.info("this folder is execluded: " + f.getCanonicalPath());
                         return;
                     }
                 }
@@ -138,8 +131,8 @@ public class ToolMain
             boolean isCare = false;
             for (String s : AppConfig.getInstance().getFileSuffix())
             {
-                if (f.getName().toLowerCase().endsWith(s) && f
-                        .length() > AppConfig.getInstance().getMinFileSize())
+                if (f.getName().toLowerCase().endsWith(s)
+                        && f.length() > AppConfig.getInstance().getMinFileSize())
                 {
                     if (metaDataStore.checkIfAlreadyExist(f))
                     {
@@ -148,8 +141,7 @@ public class ToolMain
                     else
                     {
                         isCare = true;
-                        metaDataStore.dealWithOneHash(f,
-                                FileSHA256Caculater.calFileSha256(f));
+                        metaDataStore.dealWithOneHash(f, FileSHA256Caculater.calFileSha256(f));
                     }
                     break;
                 }

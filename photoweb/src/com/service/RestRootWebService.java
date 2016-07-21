@@ -28,12 +28,10 @@ import com.utils.conf.AppConfig;
 import com.utils.web.GenerateHTML;
 import com.utils.web.HeadUtils;
 
-@Produces(value = { "text/xml", "application/json", "application/xml",
-        "text/html" })
+@Produces(value = { "text/xml", "application/json", "application/xml", "text/html" })
 public class RestRootWebService extends HttpServlet
 {
-    private static final Logger logger = LoggerFactory
-            .getLogger(RestRootWebService.class);
+    private static final Logger logger = LoggerFactory.getLogger(RestRootWebService.class);
 
     private static final long serialVersionUID = -7748065720779404006L;
 
@@ -63,8 +61,7 @@ public class RestRootWebService extends HttpServlet
 
     @GET
     @Path("/js/{file}")
-    public Response getJSFile(@PathParam("file") String file,
-            @Context HttpServletRequest req,
+    public Response getJSFile(@PathParam("file") String file, @Context HttpServletRequest req,
             @Context HttpServletResponse response)
     {
         logger.debug("get js file in!");
@@ -97,8 +94,8 @@ public class RestRootWebService extends HttpServlet
 
     @GET
     @Path("/")
-    public Response getMsg(@Context HttpServletRequest req,
-            @Context HttpServletResponse response) throws IOException
+    public Response getMsg(@Context HttpServletRequest req, @Context HttpServletResponse response)
+            throws IOException
     {
         ResponseBuilder builder = Response.status(200);
         String body = GenerateHTML.genIndexPage(getFileList(req),
@@ -121,33 +118,35 @@ public class RestRootWebService extends HttpServlet
     {
         List<FileInfo> lst = null;
 
-        int count = 25;
-
-        if (HeadUtils.checkMobile(req))
-        {
-            count = 9;
-        }
-        else
-        {
-            count = AppConfig.getInstance().getMaxCountOfPicInOnePage(25);
-        }
-        
+        int count = 0;
+        int maxCount = AppConfig.getInstance().getMaxCountOfPicInOnePage(25);
         String countStr = req.getParameter("count");
         if (StringUtils.isNotBlank(countStr))
         {
             count = Integer.parseInt(countStr);
         }
 
+        if (count == 0 || count > maxCount)
+        {
+            count = maxCount;
+        }
+
+        if (count > 9)
+        {
+            if (HeadUtils.checkMobile(req))
+            {
+                count = 9;
+            }
+        }
+
         String next = req.getParameter("next");
 
         if (StringUtils.isNotBlank(next))
         {
-            lst = UniqPhotosStore.getInstance().getNextNineFileByHashStr(next,
-                    count);
+            lst = UniqPhotosStore.getInstance().getNextNineFileByHashStr(next, count);
             if (lst == null || lst.isEmpty())
             {
-                lst = UniqPhotosStore.getInstance()
-                        .getNextNineFileByHashStr(null, count);
+                lst = UniqPhotosStore.getInstance().getNextNineFileByHashStr(null, count);
             }
 
             return lst;
@@ -156,26 +155,21 @@ public class RestRootWebService extends HttpServlet
         String prev = req.getParameter("prev");
         if (StringUtils.isNotBlank(prev))
         {
-            lst = UniqPhotosStore.getInstance().getPrevNineFileByHashStr(prev,
-                    count);
+            lst = UniqPhotosStore.getInstance().getPrevNineFileByHashStr(prev, count);
             if (lst == null || lst.isEmpty())
             {
-                lst = UniqPhotosStore.getInstance()
-                        .getPrevNineFileByHashStr(null, count);
+                lst = UniqPhotosStore.getInstance().getPrevNineFileByHashStr(null, count);
             }
 
             return lst;
         }
 
-        return UniqPhotosStore.getInstance().getNextNineFileByHashStr(null,
-                count);
+        return UniqPhotosStore.getInstance().getNextNineFileByHashStr(null, count);
     }
 
     @Path("/photos/{id}")
-    public Object getPhoto(@PathParam("id") String id,
-            @Context HttpServletRequest req,
-            @Context HttpServletResponse response, @Context HttpHeaders headers,
-            InputStream body)
+    public Object getPhoto(@PathParam("id") String id, @Context HttpServletRequest req,
+            @Context HttpServletResponse response, @Context HttpHeaders headers, InputStream body)
     {
         if (StringUtils.isNotBlank(id))
         {
@@ -188,10 +182,8 @@ public class RestRootWebService extends HttpServlet
     }
 
     @Path("/year/{year}")
-    public Object getYearView(@PathParam("year") String year,
-            @Context HttpServletRequest req,
-            @Context HttpServletResponse response, @Context HttpHeaders headers,
-            InputStream body)
+    public Object getYearView(@PathParam("year") String year, @Context HttpServletRequest req,
+            @Context HttpServletResponse response, @Context HttpHeaders headers, InputStream body)
     {
         if (StringUtils.isNotBlank(year))
         {
@@ -204,10 +196,8 @@ public class RestRootWebService extends HttpServlet
     }
 
     @Path("/month/{month}")
-    public Object getMonthView(@PathParam("month") String month,
-            @Context HttpServletRequest req,
-            @Context HttpServletResponse response, @Context HttpHeaders headers,
-            InputStream body)
+    public Object getMonthView(@PathParam("month") String month, @Context HttpServletRequest req,
+            @Context HttpServletResponse response, @Context HttpHeaders headers, InputStream body)
     {
         if (StringUtils.isNotBlank(month) && month.length() == 6)
         {
@@ -220,10 +210,8 @@ public class RestRootWebService extends HttpServlet
     }
 
     @Path("/day/{day}")
-    public Object getDayView(@PathParam("day") String day,
-            @Context HttpServletRequest req,
-            @Context HttpServletResponse response, @Context HttpHeaders headers,
-            InputStream body)
+    public Object getDayView(@PathParam("day") String day, @Context HttpServletRequest req,
+            @Context HttpServletResponse response, @Context HttpHeaders headers, InputStream body)
     {
         if (StringUtils.isNotBlank(day) && day.length() == 8)
         {

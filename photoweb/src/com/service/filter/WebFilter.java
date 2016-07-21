@@ -20,8 +20,7 @@ import com.utils.sys.UUIDGenerator;
 
 public class WebFilter implements Filter
 {
-    private static final Logger logger = LoggerFactory
-            .getLogger(WebFilter.class);
+    private static final Logger logger = LoggerFactory.getLogger(WebFilter.class);
 
     private static final String REQEUSTIDKEY = "requestid";
 
@@ -32,30 +31,28 @@ public class WebFilter implements Filter
     }
 
     @Override
-    public void doFilter(ServletRequest req, ServletResponse res,
-            FilterChain chains) throws IOException, ServletException
+    public void doFilter(ServletRequest req, ServletResponse res, FilterChain chains)
+            throws IOException, ServletException
     {
         try
         {
             MDC.put(REQEUSTIDKEY, UUIDGenerator.getUUID());
 
-            logger.warn("get a request: " + System.nanoTime()
-                    + " the remote port is: " + req.getRemotePort());
+            logger.warn("get a request: " + System.nanoTime() + " the remote port is: "
+                    + req.getRemotePort());
 
-            if (!(req instanceof HttpServletRequest)
-                    || !(res instanceof HttpServletResponse))
+            if (!(req instanceof HttpServletRequest) || !(res instanceof HttpServletResponse))
             {
                 logger.error("got an not request not http.");
                 return;
             }
 
-            ((HttpServletResponse) res).setHeader("Request-ID",
-                    (String) MDC.get(REQEUSTIDKEY));
+            ((HttpServletResponse) res).setHeader("Request-ID", (String) MDC.get(REQEUSTIDKEY));
 
             chains.doFilter(req, res);
 
-            logger.warn("done a request: " + System.nanoTime()
-                    + " the remote port is: " + req.getRemotePort());
+            logger.warn("done a request: " + System.nanoTime() + " the remote port is: "
+                    + req.getRemotePort());
         }
         finally
         {
