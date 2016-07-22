@@ -159,12 +159,23 @@ public class GenerateHTML
 
     public static String getHtmlHead()
     {
+        return getHtmlHead(false);
+    }
+
+    public static String getHtmlHead(boolean isSinglePage)
+    {
         String hh = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" "
                 + "\"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">"
                 + "<html xmlns=\"http://www.w3.org/1999/xhtml\" lang=\"zh-CN\">"
                 + "<head profile=\"http://gmpg.org/xfn/11\">"
                 + "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"/> "
                 + "<script type=\"text/javascript\" src=\"/js/jquery-3.1.0.js\"></script>"
+                + (isSinglePage
+                        ? "<link href=\"/js/jquery.alerts.css\" rel=\"stylesheet\" "
+                                + "type=\"text/css\" media=\"screen\" />"
+                                + "<script type=\"text/javascript\" src=\"/js/jQueryRotate.js\"></script>"
+                                + "<script type=\"text/javascript\" src=\"/js/jquery.alerts.js\"></script>"
+                        : "")
                 + "<title>相册</title></head><body>";
         return hh;
     }
@@ -205,23 +216,17 @@ public class GenerateHTML
         }
         else
         {
-            StringBuffer sb = new StringBuffer(getHtmlHead());
+            StringBuffer sb = new StringBuffer(getHtmlHead(true));
             String yearNavigage = genYearNavigate();
             sb.append(yearNavigage);
 
-            sb.append("<script type=\"text/javascript\" src=\"/js/jQueryRotate.js\"></script>");
-
-            // sb.append(
-            // "<script type=\"text/javascript\"
-            // src=\"/js/rotate.js\"></script>");
-
             sb.append("<script type=\"text/javascript\">"
-                    + "function changeUrl(url){window.history.pushState({},0,'http://'+window.location.host+'/'+url);};"
+                    + "function changeUrl(url){window.history.pushState({},0,'http://'+window.location.host+'/'+url);}"
                     + "window.onload=changeUrl(" + "'photos/" + f.getHash256() + "');"
-                    + "function deletephoto(path){changeUrl(" + "'?next=" + f.getHash256()
-                    + "&count=1'" + ");window.location.reload();"
-                    + "$.ajax({url:path,type:'DELETE'," + "success:function(result){}});}"
-                    + "</script>");
+                    + "function deletephoto(path){jConfirm('该操作将永久隐藏照片，无法撤消，确认是否继续？','确认',function(r){if (r){"
+                    + "changeUrl('?next=" + f.getHash256() + "&count=1');"
+                    + "window.location.reload();" + "$.ajax({url:path,type:'DELETE',"
+                    + "success:function(result){}});}});}" + "</script>");
 
             sb.append("<table style=\"text-align: center;\" width=\"100%\" "
                     + "height=\"100%\" border=\"0\" bordercolor=\"#000000\">");
@@ -242,8 +247,9 @@ public class GenerateHTML
             sb.append("</td></tr>");
 
             sb.append("<tr><td><input id=\"leftrotate\" type=\"button\" value=\"左旋转\"></input>"
-                    + "&nbsp;&nbsp;&nbsp;" + "<a href=\"javascript:deletephoto(" + "\'/photos/"
-                    + f.getHash256() + "'" + ");\">删除</a>" + "&nbsp;&nbsp;&nbsp;"
+                    + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + "<a href=\"javascript:deletephoto("
+                    + "\'/photos/" + f.getHash256() + "'" + ");\">删除</a>"
+                    + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
                     + "<input id=\"rightrotate\" type=\"button\" value=\"右旋转\"></input></td><tr>");
 
             sb.append("<script type=\"text/javascript\">" + "var r = 0;"

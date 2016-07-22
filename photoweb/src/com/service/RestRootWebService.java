@@ -1,5 +1,6 @@
 package com.service;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -72,9 +73,9 @@ public class RestRootWebService extends HttpServlet
             if (filepath.isFile())
             {
                 builder = Response.ok();
-                FileInputStream fp = new FileInputStream(filepath);
+                BufferedInputStream fp = new BufferedInputStream(new FileInputStream(filepath));
                 builder.entity(fp);
-                builder.header("Content-type", "application/javascript");
+                builder.header("Content-type", HeadUtils.judgeMIME(file));
                 HeadUtils.setExpiredTime(builder);
                 logger.debug("getFavicon out!");
             }

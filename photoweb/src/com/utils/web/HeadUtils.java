@@ -37,4 +37,26 @@ public class HeadUtils
         builder.header("Expires", new Date(expirtime));
         builder.header("Cache-Control", "max-age=" + expirAge);
     }
+    
+    public static String judgeMIME(String filePath)
+    {
+        String contentType;
+        if (filePath.endsWith(".js"))
+        {
+            contentType = "application/javascript";
+        }
+        else if (filePath.endsWith(".css"))
+        {
+            contentType = "text/css";
+        }
+        else if (filePath.endsWith(".gif"))
+        {
+            contentType = "image/gif";
+        }
+        else
+        {
+            contentType = "text/html";
+        }
+        return contentType;
+    }
 }
