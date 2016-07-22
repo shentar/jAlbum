@@ -231,10 +231,11 @@ public class GenerateHTML
             sb.append("<table style=\"text-align: center;\" width=\"100%\" "
                     + "height=\"100%\" border=\"0\" bordercolor=\"#000000\">");
             sb.append("<tr><td width=\"33%\" bordercolor=\"#000000\"><a href=\"/?prev="
-                    + f.getHash256() + "&count=1" + "\">上一张</a></td>");
-            sb.append("<td width=\"33%\" bordercolor=\"#000000\">" + f.getPhotoTime() + "</td>");
-            sb.append("<td width=\"33%\" bordercolor=\"#000000\"><a href=\"/?next=" + f.getHash256()
-                    + "&count=1" + "\">下一张</a></td></tr></table>");
+                    + f.getHash256() + "&count=1" + "\">上一张</a>");
+            sb.append("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + f.getPhotoTime()
+                    + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
+            sb.append("<a href=\"/?next=" + f.getHash256() + "&count=1"
+                    + "\">下一张</a></td></tr></table>");
             sb.append("<table style=\"text-align: center;\" width=\"100%\" "
                     + "height=\"730px\" border=\"0\" bordercolor=\"#000000\">");
             sb.append("<tr><td width=\"100%\" height=\"100%\" bordercolor=\"#000000\">");
