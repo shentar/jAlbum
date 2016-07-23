@@ -69,3 +69,7 @@ input {
 #popup_prompt {
 	margin: .5em 0em;
 }
+
+#popup_cancel {
+    width: 60px;
+}

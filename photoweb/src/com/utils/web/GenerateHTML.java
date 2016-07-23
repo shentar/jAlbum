@@ -94,7 +94,7 @@ public class GenerateHTML
         indexPageNavi.append("<tr><td width=\"33%\" bordercolor=\"#000000\"><a href=\"?prev="
                 + firstP.getHash256() + "&count="
                 + AppConfig.getInstance().getMaxCountOfPicInOnePage(25)
-                + "\"><input value=\"下一页\" type=\"button\"/></a></td>");
+                + "\"><input value=\"上一页\" type=\"button\"/></a></td>");
         indexPageNavi.append("<td width=\"33%\" bordercolor=\"#000000\">" + firstP.getPhotoTime()
                 + " ~ " + endP.getPhotoTime() + "</td>");
         indexPageNavi.append(
@@ -424,22 +424,30 @@ public class GenerateHTML
         StringBuffer dayNavigate = new StringBuffer();
         dayNavigate.append("<tr><td width=\"20%\">");
         dayNavigate.append("<a href=\"/month/" + day.substring(0, 6) + "\">返回" + day.substring(0, 4)
-                + "年" + day.substring(4, 6) + "月</a>");
-        dayNavigate.append("</td><td width=\"20%\">");
+                + "年" + day.substring(4, 6) + "月</a></td>");
+
+        dayNavigate.append("<td  width=\"20%\" style=\"text-align:center\">");
         if (StringUtils.isNotBlank(prevDay))
         {
             dayNavigate.append("<a href=\"/day/" + prevDay + "\">"
                     + "<input value=\"上一天\" type=\"button\"/></a>");
         }
         dayNavigate.append("</td>");
-        dayNavigate.append("<td  width=\"20%\" style=\"text-align:center\">" + day
-                + "</td><td width=\"20%\">");
+        
+        dayNavigate.append("<td  width=\"20%\" style=\"text-align:center\">" + day + "</td>");
+        
+        dayNavigate.append("<td  width=\"20%\" style=\"text-align:center\">");
         if (StringUtils.isNotBlank(nextDay))
         {
             dayNavigate.append("<a href=\"/day/" + nextDay + "\">"
                     + "<input value=\"下一天\" type=\"button\"/></a>");
         }
-        dayNavigate.append("</td><td width=\"20%\"></td></tr>");
+        dayNavigate.append("</td>");
+        
+        dayNavigate.append("<td width=\"20%\"></td>");
+        
+        dayNavigate.append("</tr>");
+        
         return dayNavigate.toString();
     }
 
