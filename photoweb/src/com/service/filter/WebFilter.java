@@ -59,13 +59,12 @@ public class WebFilter implements Filter
             }
             SystemProperties.add(SystemConstant.IS_MOBILE_KEY,
                     new Boolean(HeadUtils.checkMobile(useragent)));
+            logger.info("user agent is: " + useragent);
             
             MDC.put(SystemConstant.REMOTE_ADDR,
                     newreq.getRemoteAddr() + ":" + newreq.getRemotePort());
 
             MDC.put(SystemConstant.HTTP_URI, newreq.getRequestURI());
-            
-
 
             chains.doFilter(newreq, newres);
 
@@ -77,7 +76,7 @@ public class WebFilter implements Filter
             MDC.put(SystemConstant.IS_MOBILE_KEY, "" + HeadUtils.isMobile());
             AccessLogger.accessLog();
             
-            SystemProperties.init();
+            SystemProperties.clear();
             MDC.clear();
         }
     }

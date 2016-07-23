@@ -4,24 +4,26 @@ import java.util.HashMap;
 
 public final class SystemProperties
 {
-    private static ThreadLocal<HashMap<String, Object>> contentLocal;
+    private ThreadLocal<HashMap<String, Object>> contentLocal;
 
+    private static SystemProperties instance = new SystemProperties();
+    
     static
     {
-        init();
+        instance.init();
     }
 
     public static void add(String key, Object value)
     {
-        contentLocal.get().put(key, value);
+        instance.contentLocal.get().put(key, value);
     }
 
     public static Object get(String key)
     {
-        return contentLocal.get().get(key);
+        return instance.contentLocal.get().get(key);
     }
 
-    public static void init()
+    private void init()
     {
         contentLocal = new ThreadLocal<HashMap<String, Object>>()
         {
@@ -30,6 +32,11 @@ public final class SystemProperties
                 return new HashMap<String, Object>();
             }
         };
+    }
+    
+    public static void clear()
+    {
+        instance.contentLocal.get().clear();
     }
 
     private SystemProperties()

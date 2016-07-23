@@ -375,12 +375,16 @@ public class GenerateHTML
 
         StringBuffer sb = new StringBuffer();
         sb.append(getHtmlHead());
+
         String yearNavigate = genYearNavigate();
         sb.append(yearNavigate);
+
+        String dayNavigate = genDayNavigate(day, prevDay, nextDay);
+
+        sb.append(dayNavigate);
+
         sb.append("<table style=\"text-align: center;\" width=\"100%\" "
                 + "height=\"100%\" border=\"0\" bordercolor=\"#000000\">");
-        String dayNavigate = genDayNavigate(day, prevDay, nextDay);
-        sb.append(dayNavigate);
         int i = 0;
         int start = 0;
         int end = 0;
@@ -411,9 +415,12 @@ public class GenerateHTML
         {
             sb.append("</tr>");
         }
-        sb.append(dayNavigate);
         sb.append("</table>");
+
+        sb.append(dayNavigate);
+
         sb.append(yearNavigate);
+
         sb.append(getHtmlFoot());
 
         return sb.toString();
@@ -422,6 +429,9 @@ public class GenerateHTML
     private static String genDayNavigate(String day, String prevDay, String nextDay)
     {
         StringBuffer dayNavigate = new StringBuffer();
+        dayNavigate.append("<table style=\"text-align: center;\" width=\"100%\" "
+                + "height=\"100%\" border=\"0\" bordercolor=\"#000000\">");
+
         dayNavigate.append("<tr><td width=\"20%\">");
         dayNavigate.append("<a href=\"/month/" + day.substring(0, 6) + "\">返回" + day.substring(0, 4)
                 + "年" + day.substring(4, 6) + "月</a></td>");
@@ -433,9 +443,9 @@ public class GenerateHTML
                     + "<input value=\"上一天\" type=\"button\"/></a>");
         }
         dayNavigate.append("</td>");
-        
+
         dayNavigate.append("<td  width=\"20%\" style=\"text-align:center\">" + day + "</td>");
-        
+
         dayNavigate.append("<td  width=\"20%\" style=\"text-align:center\">");
         if (StringUtils.isNotBlank(nextDay))
         {
@@ -443,11 +453,12 @@ public class GenerateHTML
                     + "<input value=\"下一天\" type=\"button\"/></a>");
         }
         dayNavigate.append("</td>");
-        
+
         dayNavigate.append("<td width=\"20%\"></td>");
-        
+
         dayNavigate.append("</tr>");
-        
+
+        dayNavigate.append("</table>");
         return dayNavigate.toString();
     }
 
