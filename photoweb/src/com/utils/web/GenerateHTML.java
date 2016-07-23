@@ -247,12 +247,12 @@ public class GenerateHTML
             sb.append("<a href=\"/?next=" + f.getHash256() + "&count=1"
                     + "\"><input value=\"下一张\" type=\"button\"/></td></tr></table>");
             sb.append("<table style=\"text-align: center;\" width=\"100%\" "
-                    + "height=\"730px\" border=\"0\" bordercolor=\"#000000\">");
+                    + "height=\"890px\" border=\"0\" bordercolor=\"#000000\">");
             sb.append("<tr><td width=\"100%\" height=\"100%\" bordercolor=\"#000000\">");
             // sb.append("<a href=\"/photos/" + f.getHash256() + "?content=true"
             // + "\" target=\"_blank\">");
             sb.append("<img id=\"singlephoto\"" + (restrictSize(f) ? "width" : "height")
-                    + "=\"700px\" src = \"/photos/" + f.getHash256() + "?content=true"
+                    + "=\"860px\" src = \"/photos/" + f.getHash256() + "?content=true"
                     + "\"></img>");
             // sb.append("</a>");
             sb.append("</td></tr>");
