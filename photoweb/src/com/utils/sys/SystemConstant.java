@@ -17,4 +17,6 @@ public class SystemConstant
     public static final String REMOTE_ADDR = "remote-addr";
 
     public static final String HTTP_STATUS = "http-status";
+    
+    public static final String HTTP_URI = "http-uri";
 }

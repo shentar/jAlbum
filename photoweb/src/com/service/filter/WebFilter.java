@@ -60,6 +60,8 @@ public class WebFilter implements Filter
             MDC.put(SystemConstant.REMOTE_ADDR,
                     newreq.getRemoteAddr() + ":" + newreq.getRemotePort());
 
+            MDC.put(SystemConstant.HTTP_URI, newreq.getRequestURI());
+            
             SystemProperties.add(SystemConstant.IS_MOBILE_KEY,
                     new Boolean(HeadUtils.checkMobile(((HttpServletRequest) req))));
 
