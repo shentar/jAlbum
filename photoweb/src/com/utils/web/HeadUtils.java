@@ -26,7 +26,8 @@ public class HeadUtils
         {
             ua = ua.toLowerCase();
             if ((ua.contains("windows") && !ua.contains("windows phone"))
-                    || ua.contains("macintosh") || (ua.contains("linux") && ua.contains("android")))
+                    || ua.contains("macintosh") || (ua.contains("linux") && !ua.contains("android"))
+                    || ua.contains("ipad"))
             {
                 return false;
             }
