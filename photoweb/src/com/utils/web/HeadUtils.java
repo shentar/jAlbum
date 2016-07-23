@@ -2,7 +2,6 @@ package com.utils.web;
 
 import java.util.Date;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response.ResponseBuilder;
 
 import org.apache.commons.lang.StringUtils;
@@ -19,9 +18,8 @@ public class HeadUtils
         return ismobile != null && ismobile.booleanValue();
     }
 
-    public static boolean checkMobile(HttpServletRequest req)
+    public static boolean checkMobile(String ua)
     {
-        String ua = req.getHeader(SystemConstant.USER_AGENT_HEADER);
         if (StringUtils.isNotBlank(ua))
         {
             ua = ua.toLowerCase();
