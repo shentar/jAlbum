@@ -11,6 +11,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.MDC;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,13 +19,12 @@ import org.slf4j.LoggerFactory;
 import com.utils.sys.SystemConstant;
 import com.utils.sys.SystemProperties;
 import com.utils.sys.UUIDGenerator;
+import com.utils.web.AccessLogger;
 import com.utils.web.HeadUtils;
 
 public class WebFilter implements Filter
 {
     private static final Logger logger = LoggerFactory.getLogger(WebFilter.class);
-
-    private static final String REQEUSTIDKEY = "requestid";
 
     @Override
     public void destroy()
@@ -36,33 +36,45 @@ public class WebFilter implements Filter
     public void doFilter(ServletRequest req, ServletResponse res, FilterChain chains)
             throws IOException, ServletException
     {
+        long startTime = System.currentTimeMillis();
         try
         {
-            MDC.put(REQEUSTIDKEY, UUIDGenerator.getUUID());
-
-            logger.warn("get a request: " + System.nanoTime() + " the remote port is: "
-                    + req.getRemotePort());
+            MDC.put(SystemConstant.REQEUSTIDKEY, UUIDGenerator.getUUID());
 
             if (!(req instanceof HttpServletRequest) || !(res instanceof HttpServletResponse))
             {
                 logger.error("got an not request not http.");
                 return;
             }
+            HttpServletRequest newreq = (HttpServletRequest) req;
+            HttpServletResponse newres = (HttpServletResponse) res;
 
-            ((HttpServletResponse) res).setHeader("Request-ID", (String) MDC.get(REQEUSTIDKEY));
+            newres.setHeader(SystemConstant.REQUEST_ID_HEADER,
+                    (String) MDC.get(SystemConstant.REQEUSTIDKEY));
+
+            String useragent = newreq.getHeader(SystemConstant.USER_AGENT_HEADER);
+            if (StringUtils.isNotBlank(useragent))
+            {
+                MDC.put(SystemConstant.USER_AGENT, useragent);
+            }
+            MDC.put(SystemConstant.REMOTE_ADDR,
+                    newreq.getRemoteAddr() + ":" + newreq.getRemotePort());
 
             SystemProperties.add(SystemConstant.IS_MOBILE_KEY,
                     new Boolean(HeadUtils.checkMobile(((HttpServletRequest) req))));
 
-            chains.doFilter(req, res);
+            chains.doFilter(newreq, newres);
 
-            logger.warn("done a request: " + System.nanoTime() + " the remote port is: "
-                    + req.getRemotePort());
+            MDC.put(SystemConstant.HTTP_STATUS, "" + newres.getStatus());
         }
         finally
         {
+            MDC.put(SystemConstant.CONSUMED_TIME, (System.currentTimeMillis() - startTime) + "");
+            MDC.put(SystemConstant.IS_MOBILE_KEY, "" + HeadUtils.isMobile());
+            AccessLogger.accessLog();
+            
             SystemProperties.init();
-            MDC.remove(REQEUSTIDKEY);
+            MDC.clear();
         }
     }
 

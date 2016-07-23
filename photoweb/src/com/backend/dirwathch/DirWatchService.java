@@ -188,7 +188,9 @@ public class DirWatchService
                             @Override
                             public void run()
                             {
+                                logger.warn("try to delete the records in path: " + fullPath);
                                 BaseSqliteStore.getInstance().deleteRecordsInDirs(fullPath);
+                                logger.warn("deleteed the records in path: " + fullPath);
                             }
                         });
                     }

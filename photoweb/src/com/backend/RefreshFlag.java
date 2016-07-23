@@ -1,7 +1,12 @@
 package com.backend;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class RefreshFlag
 {
+    private static final Logger logger = LoggerFactory.getLogger(RefreshFlag.class);
+
     private static RefreshFlag instance = new RefreshFlag();
 
     private boolean isNeedRefresh = false;
@@ -13,6 +18,7 @@ public class RefreshFlag
 
     public synchronized boolean getAndSet(boolean flag)
     {
+        logger.info("try to set refresh: old:{}, new: {}", isNeedRefresh, flag);
         boolean f = isNeedRefresh;
         isNeedRefresh = flag;
         return f;

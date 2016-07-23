@@ -21,7 +21,7 @@ public class HeadUtils
 
     public static boolean checkMobile(HttpServletRequest req)
     {
-        String ua = req.getHeader("User-Agent");
+        String ua = req.getHeader(SystemConstant.USER_AGENT_HEADER);
         if (StringUtils.isNotBlank(ua))
         {
             ua = ua.toLowerCase();
