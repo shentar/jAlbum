@@ -46,7 +46,6 @@ public class GenerateHTML
         sb.append(yearNavigate);
         String indexPageNavi = genIndexNavigate(firstP, endP);
         sb.append(indexPageNavi);
-        sb.append("<br/><br/>");
         sb.append("<table style=\"text-align: center;\" width=\"100%\" height=\"100%\" "
                 + "border=\"0\" bordercolor=\"#000000\">");
         int i = 0;

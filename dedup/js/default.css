@@ -1,14 +1,14 @@
 
 body {
     font-family: 微软雅黑,Helvetica, Arial, sans-serif;
-    font-size: 18px;
+    font-size: 12px;
 }
 
 input {
     font-family: 微软雅黑,Helvetica, Arial, sans-serif;
-    font-size: 18px;
-    width: 78px;
-    height: 36px;
+    font-size: 12px;
+    width: 50px;
+    height: 26px;
     border-radius: 6px;
 }
 
