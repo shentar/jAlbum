@@ -1,14 +1,15 @@
 
 body {
     font-family: 微软雅黑,Helvetica, Arial, sans-serif;
-    font-size: 18px;
+    font-size: 1.3em;
 }
 
-#leftrotate,#rightrotate {
+input {
     font-family: 微软雅黑,Helvetica, Arial, sans-serif;
     font-size: 1em;
-    width: 80px;
-    height: 50px;
+    width: 4em;
+    height: 2.6em;
+    border-radius: 9px;
 }
 
 #popup_container {

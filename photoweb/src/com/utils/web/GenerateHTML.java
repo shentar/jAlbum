@@ -65,8 +65,8 @@ public class GenerateHTML
             sb.append("<a href=\"/photos/" + f.getHash256()
                     + "\" target=\"_blank\">");
             sb.append("<img " + (restrictSize(f) ? "width" : "height")
-                    + "=\"340px\" src = \"/photos/" + f.getHash256()
-                    + "?content=true&size=340" + "\"></img>" + "</a></td>");
+                    + "=\"310px\" src = \"/photos/" + f.getHash256()
+                    + "?content=true&size=310px" + "\"></img>" + "</a></td>");
 
             if ((i + 1) % rowCount == 0)
             {
@@ -99,7 +99,7 @@ public class GenerateHTML
                 .append("<tr><td width=\"33%\" bordercolor=\"#000000\"><a href=\"?prev="
                         + firstP.getHash256() + "&count="
                         + AppConfig.getInstance().getMaxCountOfPicInOnePage(25)
-                        + "\">上一页</a></td>");
+                        + "\"><input value=\"下一页\" type=\"button\"/></a></td>");
         indexPageNavi.append("<td width=\"33%\" bordercolor=\"#000000\">"
                 + firstP.getPhotoTime() + " ~ " + endP.getPhotoTime()
                 + "</td>");
@@ -107,7 +107,7 @@ public class GenerateHTML
                 .append("<td width=\"33%\" bordercolor=\"#000000\"><a href=\"?next="
                         + endP.getHash256() + "&count="
                         + AppConfig.getInstance().getMaxCountOfPicInOnePage(25)
-                        + "\">下一页</a></td></tr></table>");
+                        + "\"><input value=\"下一页\" type=\"button\"/></a></td></tr></table>");
         return indexPageNavi.toString();
     }
 
@@ -178,7 +178,8 @@ public class GenerateHTML
                 + "<html xmlns=\"http://www.w3.org/1999/xhtml\" lang=\"zh-CN\">"
                 + "<head profile=\"http://gmpg.org/xfn/11\">"
                 + "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"/> "
-                + "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />"
+                // + "<meta name=\"viewport\" content=\"width=device-width,
+                // initial-scale=1\" />"
                 + "<script type=\"text/javascript\" src=\"/js/jquery-3.1.0.js\"></script>"
                 + "<link href=\"/js/default.css\" rel=\"stylesheet\" "
                 + "type=\"text/css\" media=\"screen\" />"
@@ -244,11 +245,12 @@ public class GenerateHTML
                     + "height=\"100%\" border=\"0\" bordercolor=\"#000000\">");
             sb.append(
                     "<tr><td width=\"33%\" bordercolor=\"#000000\"><a href=\"/?prev="
-                            + f.getHash256() + "&count=1" + "\">上一张</a>");
+                            + f.getHash256() + "&count=1"
+                            + "\"><input value=\"上一张\" type=\"button\"/></a>");
             sb.append("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + f.getPhotoTime()
                     + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
             sb.append("<a href=\"/?next=" + f.getHash256() + "&count=1"
-                    + "\">下一张</a></td></tr></table>");
+                    + "\"><input value=\"下一张\" type=\"button\"/></td></tr></table>");
             sb.append("<table style=\"text-align: center;\" width=\"100%\" "
                     + "height=\"730px\" border=\"0\" bordercolor=\"#000000\">");
             sb.append(
@@ -265,8 +267,7 @@ public class GenerateHTML
             sb.append(
                     "<tr><td><input id=\"leftrotate\" type=\"button\" value=\"左旋转\"></input>"
                             + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
-                            + "<a href=\"javascript:deletephoto(" + "\'/photos/"
-                            + f.getHash256() + "'" + ");\">删除</a>"
+                            + "<input id=\"deletephotob\" type=\"button\" value=\"隐藏\"></input>"
                             + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
                             + "<input id=\"rightrotate\" type=\"button\" value=\"右旋转\"></input></td><tr>");
 
@@ -274,7 +275,9 @@ public class GenerateHTML
                     + "$(\"#rightrotate\").click(function(){r++; if (r > 3){r = 0;}"
                     + "$(\"#singlephoto\").rotate(90*r);}); "
                     + "$(\"#leftrotate\").click(function(){r--; if (r < 0){ r = 3;}"
-                    + "$(\"#singlephoto\").rotate(90*r);}); </script>");
+                    + "$(\"#singlephoto\").rotate(90*r);}); "
+                    + "$(\"#deletephotob\").click(function(){deletephoto('/photos/"
+                    + f.getHash256() + "');});" + "</script>");
 
             sb.append("</table>");
 
@@ -373,6 +376,11 @@ public class GenerateHTML
             return generate404Notfound();
         }
 
+        if (flst.size() == 1)
+        {
+            return generateSinglePhoto(flst.get(0));
+        }
+
         StringBuffer sb = new StringBuffer();
         sb.append(getHtmlHead());
         String yearNavigate = genYearNavigate();
@@ -397,8 +405,8 @@ public class GenerateHTML
             sb.append("<a href=\"/photos/" + f.getHash256()
                     + "\" target=\"_blank\">");
             sb.append("<img " + (restrictSize(f) ? "width" : "height")
-                    + "=\"340px\" src = \"/photos/" + f.getHash256()
-                    + "?content=true&size=340" + "\"></img>" + "</a></td>");
+                    + "=\"310px\" src = \"/photos/" + f.getHash256()
+                    + "?content=true&size=310" + "\"></img>" + "</a></td>");
 
             if ((i + 1) % rowCount == 0)
             {
@@ -431,14 +439,14 @@ public class GenerateHTML
         dayNavigate.append("</td><td width=\"20%\">");
         if (StringUtils.isNotBlank(prevDay))
         {
-            dayNavigate.append("<a href=\"/day/" + prevDay + "\">" + "上一天</a>");
+            dayNavigate.append("<a href=\"/day/" + prevDay + "\">" + "<input value=\"上一天\" type=\"button\"/></a>");
         }
         dayNavigate.append("</td>");
         dayNavigate.append("<td  width=\"20%\" style=\"text-align:center\">"
                 + day + "</td><td width=\"20%\">");
         if (StringUtils.isNotBlank(nextDay))
         {
-            dayNavigate.append("<a href=\"/day/" + nextDay + "\">" + "下一天</a>");
+            dayNavigate.append("<a href=\"/day/" + nextDay + "\">" + "<input value=\"下一天\" type=\"button\"/></a>");
         }
         dayNavigate.append("</td><td width=\"20%\"></td></tr>");
         return dayNavigate.toString();
@@ -523,7 +531,7 @@ public class GenerateHTML
         if (StringUtils.isNotBlank(prevMonth))
         {
             monthNavigate.append(
-                    "<a href=\"/month/" + prevMonth + "\">" + "上一月</a>");
+                    "<a href=\"/month/" + prevMonth + "\">" + "<input value=\"上一月\" type=\"button\"/></a>");
         }
         monthNavigate.append("</td>");
         monthNavigate.append("<td  width=\"20%\" style=\"text-align:center\">"
@@ -531,7 +539,7 @@ public class GenerateHTML
         if (StringUtils.isNotBlank(nextMonth))
         {
             monthNavigate.append(
-                    "<a href=\"/month/" + nextMonth + "\">" + "下一月</a>");
+                    "<a href=\"/month/" + nextMonth + "\">" + "<input value=\"下一月\" type=\"button\"/></a>");
         }
         monthNavigate.append(
                 "</td>" + "<td width=\"20%\"></td>" + "</tr>" + "</table>");
