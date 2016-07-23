@@ -1,5 +1,18 @@
+
+body {
+    font-family: 微软雅黑,Helvetica, Arial, sans-serif;
+    font-size: 18px;
+}
+
+#leftrotate,#rightrotate {
+    font-family: 微软雅黑,Helvetica, Arial, sans-serif;
+    font-size: 1em;
+    width: 80px;
+    height: 50px;
+}
+
 #popup_container {
-	font-family: Arial, sans-serif;
+	font-family: 微软雅黑,Arial, sans-serif;
 	font-size: 12px;
 	min-width: 300px; /* Dialog will be no smaller than this */
 	max-width: 600px; /* Dialog will wrap after this width */
