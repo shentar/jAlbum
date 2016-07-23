@@ -483,12 +483,14 @@ public class GenerateHTML
         int start = 0;
         int end = 0;
 
+        final int rowcount = HeadUtils.isMobile() ? 3 : 5;
+
         for (String day : getSortedKeyList(map.keySet()))
         {
             DateRecords mr = map.get(day);
             String pic = mr.getFirstpic();
 
-            if (i % 3 == 0)
+            if (i % rowcount == 0)
             {
                 start++;
                 sb.append("<tr>");
@@ -503,7 +505,7 @@ public class GenerateHTML
                         + "\"></img>" + "</a><br/><b>" + monthstr + "-" + day + " ("
                         + mr.getPiccount() + "张)</b></td>");
             }
-            if ((i + 1) % 3 == 0)
+            if ((i + 1) % rowcount == 0)
             {
                 end++;
                 sb.append("</tr>");
