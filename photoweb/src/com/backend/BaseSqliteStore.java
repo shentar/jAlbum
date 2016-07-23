@@ -428,6 +428,35 @@ public class BaseSqliteStore
         }
 
         PreparedStatement prep = null;
+        ResultSet res = null;
+        boolean needDel = false;
+        try
+        {
+            lock.readLock().lock();
+            prep = conn.prepareStatement("select * from files where path like ?;");
+            prep.setString(1, dir + "%");
+            res = prep.executeQuery();
+            if (res.next())
+            {
+                needDel = true;
+            }
+            prep.close();
+            res.close();
+        }
+        catch (Exception e)
+        {
+            logger.error("caught: ", e);
+        }
+        finally
+        {
+            lock.readLock().unlock();
+        }
+        
+        if (!needDel)
+        {
+            return;
+        }
+        
         try
         {
             lock.writeLock().lock();
