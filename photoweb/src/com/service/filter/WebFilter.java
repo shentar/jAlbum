@@ -15,8 +15,10 @@ import org.apache.log4j.MDC;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.utils.sys.SystemConstant;
 import com.utils.sys.SystemProperties;
 import com.utils.sys.UUIDGenerator;
+import com.utils.web.HeadUtils;
 
 public class WebFilter implements Filter
 {
@@ -48,6 +50,9 @@ public class WebFilter implements Filter
             }
 
             ((HttpServletResponse) res).setHeader("Request-ID", (String) MDC.get(REQEUSTIDKEY));
+
+            SystemProperties.add(SystemConstant.IS_MOBILE_KEY,
+                    new Boolean(HeadUtils.checkMobile(((HttpServletRequest) req))));
 
             chains.doFilter(req, res);
 

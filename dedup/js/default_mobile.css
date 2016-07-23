@@ -1,15 +1,28 @@
 
 body {
     font-family: 微软雅黑,Helvetica, Arial, sans-serif;
-    font-size: 18px;
+    font-size: 1.3em;
+}
+
+a:link {
+text-decoration: none;
+}
+a:visited {
+text-decoration: none;
+}
+a:hover {
+text-decoration: none;
+}
+a:active {
+text-decoration: none;
 }
 
 input {
     font-family: 微软雅黑,Helvetica, Arial, sans-serif;
-    font-size: 18px;
-    width: 78px;
-    height: 36px;
-    border-radius: 6px;
+    font-size: 1em;
+    width: 4em;
+    height: 2.6em;
+    border-radius: 9px;
 }
 
 #popup_container {

@@ -100,7 +100,7 @@ public class RestRootWebService extends HttpServlet
     {
         ResponseBuilder builder = Response.status(200);
         String body = GenerateHTML.genIndexPage(getFileList(req),
-                HeadUtils.checkMobile(req) ? 3 : 5);
+                HeadUtils.isMobile() ? 3 : 5);
         if (StringUtils.isNotBlank(body))
         {
             builder.entity(body);
@@ -134,7 +134,7 @@ public class RestRootWebService extends HttpServlet
 
         if (count > 9)
         {
-            if (HeadUtils.checkMobile(req))
+            if (HeadUtils.isMobile())
             {
                 count = 9;
             }

@@ -7,8 +7,18 @@ import javax.ws.rs.core.Response.ResponseBuilder;
 
 import org.apache.commons.lang.StringUtils;
 
+import com.utils.sys.SystemConstant;
+import com.utils.sys.SystemProperties;
+
 public class HeadUtils
 {
+
+    public static boolean isMobile()
+    {
+        Boolean ismobile = (Boolean) SystemProperties.get(SystemConstant.IS_MOBILE_KEY);
+        return ismobile != null && ismobile.booleanValue();
+    }
+
     public static boolean checkMobile(HttpServletRequest req)
     {
         String ua = req.getHeader("User-Agent");
@@ -37,7 +47,7 @@ public class HeadUtils
         builder.header("Expires", new Date(expirtime));
         builder.header("Cache-Control", "max-age=" + expirAge);
     }
-    
+
     public static String judgeMIME(String filePath)
     {
         String contentType;

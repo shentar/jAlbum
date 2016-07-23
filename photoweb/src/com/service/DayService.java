@@ -80,7 +80,7 @@ public class DayService
         {
             List<FileInfo> flst = UniqPhotosStore.getInstance().getAllPhotosBy(day);
             builder.entity(GenerateHTML.generateDayPage(day, prevDay, nextDay, flst,
-                    HeadUtils.checkMobile(req) ? 3 : 5));
+                    HeadUtils.isMobile() ? 3 : 5));
             return builder.build();
         }
     }

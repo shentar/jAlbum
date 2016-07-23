@@ -6,6 +6,11 @@ public final class SystemProperties
 {
     private static ThreadLocal<HashMap<String, Object>> contentLocal;
 
+    static
+    {
+        init();
+    }
+
     public static void add(String key, Object value)
     {
         contentLocal.get().put(key, value);
