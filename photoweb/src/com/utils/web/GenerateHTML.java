@@ -14,9 +14,7 @@ import org.apache.commons.lang.StringUtils;
 import com.backend.DateRecords;
 import com.backend.DateTableDao;
 import com.backend.FileInfo;
-import com.backend.UniqPhotosStore;
-import com.utils.conf.AppConfig;
-import com.utils.web.HeadUtils;;
+import com.backend.UniqPhotosStore;;
 
 public class GenerateHTML
 {
@@ -261,8 +259,8 @@ public class GenerateHTML
             sb.append("<table style=\"text-align: center;\" width=\"100%\" "
                     + "height=\"100%\" border=\"0\" bordercolor=\"#000000\">");
 
-            String rightRotateLink = "<input id=\"leftrotate\" type=\"button\" value=\"左旋转\" />";
-            String leftRotateLink = "<input id=\"rightrotate\" type=\"button\" value=\"右旋转\" />";
+            String leftRotateLink = "<input id=\"leftrotate\" type=\"button\" value=\"左旋转\" />";
+            String rightRotateLink = "<input id=\"rightrotate\" type=\"button\" value=\"右旋转\" />";
             String deleteLink = "<input id=\"deletephotob\" type=\"button\" value=\"隐藏\" />";
 
             sb.append("<tr><td width=\"33%\" bordercolor=\"#000000\">");
