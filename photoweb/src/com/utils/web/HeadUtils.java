@@ -6,6 +6,7 @@ import javax.ws.rs.core.Response.ResponseBuilder;
 
 import org.apache.commons.lang.StringUtils;
 
+import com.utils.conf.AppConfig;
 import com.utils.sys.SystemConstant;
 import com.utils.sys.SystemProperties;
 
@@ -45,6 +46,18 @@ public class HeadUtils
         long expirtime = System.currentTimeMillis() + expirAge;
         builder.header("Expires", new Date(expirtime));
         builder.header("Cache-Control", "max-age=" + expirAge);
+    }
+
+    public static int getMaxCountOfOnePage()
+    {
+        if (isMobile())
+        {
+            return 9;
+        }
+        else
+        {
+            return AppConfig.getInstance().getMaxCountOfPicInOnePage(25);
+        }
     }
 
     public static String judgeMIME(String filePath)

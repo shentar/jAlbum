@@ -20,6 +20,7 @@ import com.utils.web.HeadUtils;;
 
 public class GenerateHTML
 {
+    private static final String seprator = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
 
     public static String genIndexPage(List<FileInfo> flst)
     {
@@ -60,7 +61,7 @@ public class GenerateHTML
             }
 
             sb.append("<td width=\"20%\" height=\"18%\" bordercolor=\"#000000\"><br/>");
-            sb.append("<a href=\"/photos/" + f.getHash256() + "\" target=\"_blank\">");
+            sb.append("<a href=\"/photos/" + f.getHash256() + "\">");
             sb.append("<img " + (restrictSize(f) ? "width" : "height")
                     + "=\"310px\" src = \"/photos/" + f.getHash256() + "?content=true&size=310px"
                     + "\"></img>" + "</a></td>");
@@ -88,20 +89,40 @@ public class GenerateHTML
 
     private static String genIndexNavigate(FileInfo firstP, FileInfo endP)
     {
-        StringBuffer indexPageNavi = new StringBuffer();
-        indexPageNavi.append("<table style=\"text-align: center;\" width=\"100%\" height=\"100%\" "
+        StringBuffer sb = new StringBuffer();
+        sb.append("<table style=\"text-align: center;\" width=\"100%\" height=\"100%\" "
                 + "border=\"0\" bordercolor=\"#000000\">");
-        indexPageNavi.append("<tr><td width=\"33%\" bordercolor=\"#000000\"><a href=\"?prev="
-                + firstP.getHash256() + "&count="
-                + AppConfig.getInstance().getMaxCountOfPicInOnePage(25)
-                + "\"><input value=\"上一页\" type=\"button\"/></a></td>");
-        indexPageNavi.append("<td width=\"33%\" bordercolor=\"#000000\">" + firstP.getPhotoTime()
-                + " ~ " + endP.getPhotoTime() + "</td>");
-        indexPageNavi.append(
-                "<td width=\"33%\" bordercolor=\"#000000\"><a href=\"?next=" + endP.getHash256()
-                        + "&count=" + AppConfig.getInstance().getMaxCountOfPicInOnePage(25)
-                        + "\"><input value=\"下一页\" type=\"button\"/></a></td></tr></table>");
-        return indexPageNavi.toString();
+
+        String prevPage = getPhotoLink(firstP, false);
+        String nextPage = getPhotoLink(endP, true);
+        String photoTime = firstP.getPhotoTime() + " ~ " + endP.getPhotoTime();
+
+        sb.append("<tr><td width=\"100%\" bordercolor=\"#000000\">");
+        sb.append(prevPage + seprator);
+        sb.append(photoTime + seprator);
+        sb.append(nextPage);
+        sb.append("</td></tr></table>");
+
+        return sb.toString();
+    }
+
+    private static String getPhotoLink(FileInfo f, boolean isNext)
+    {
+        return getPhotoLink(f, HeadUtils.getMaxCountOfOnePage(), isNext);
+    }
+
+    private static String getPhotoLink(FileInfo f, int count, boolean isNext)
+    {
+        String value = isNext ? "下" : "上";
+        value += "一";
+        value += (count == 1 ? "张" : "页");
+
+        String pPara = isNext ? "next" : "prev";
+
+        String prevPage = "<a href=\"/?" + pPara + "=" + f.getHash256() + "&count=" + count
+                + "\"><input value=\"" + value + "\" type=\"button\"/></a>";
+
+        return prevPage;
     }
 
     public static String genYearNavigate()
@@ -239,15 +260,22 @@ public class GenerateHTML
 
             sb.append("<table style=\"text-align: center;\" width=\"100%\" "
                     + "height=\"100%\" border=\"0\" bordercolor=\"#000000\">");
-            sb.append("<tr><td width=\"33%\" bordercolor=\"#000000\"><a href=\"/?prev="
-                    + f.getHash256() + "&count=1"
-                    + "\"><input value=\"上一张\" type=\"button\"/></a>");
-            sb.append("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + f.getPhotoTime()
-                    + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
-            sb.append("<a href=\"/?next=" + f.getHash256() + "&count=1"
-                    + "\"><input value=\"下一张\" type=\"button\"/></td></tr></table>");
+
+            String rightRotateLink = "<input id=\"leftrotate\" type=\"button\" value=\"左旋转\" />";
+            String leftRotateLink = "<input id=\"rightrotate\" type=\"button\" value=\"右旋转\" />";
+            String deleteLink = "<input id=\"deletephotob\" type=\"button\" value=\"隐藏\" />";
+
+            sb.append("<tr><td width=\"33%\" bordercolor=\"#000000\">");
+            sb.append(getPhotoLink(f, false) + seprator);
+            sb.append(getPhotoLink(f, 1, false) + seprator);
+            sb.append(f.getPhotoTime() + seprator);
+            sb.append(getPhotoLink(f, 1, true) + seprator);
+            sb.append(getPhotoLink(f, true));
+            sb.append("</td></tr></table>");
+
             sb.append("<table style=\"text-align: center;\" width=\"100%\" "
                     + "height=\"890px\" border=\"0\" bordercolor=\"#000000\">");
+
             sb.append("<tr><td width=\"100%\" height=\"100%\" bordercolor=\"#000000\">");
             // sb.append("<a href=\"/photos/" + f.getHash256() + "?content=true"
             // + "\" target=\"_blank\">");
@@ -257,11 +285,11 @@ public class GenerateHTML
             // sb.append("</a>");
             sb.append("</td></tr>");
 
-            sb.append("<tr><td><input id=\"leftrotate\" type=\"button\" value=\"左旋转\"></input>"
-                    + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
-                    + "<input id=\"deletephotob\" type=\"button\" value=\"隐藏\"></input>"
-                    + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
-                    + "<input id=\"rightrotate\" type=\"button\" value=\"右旋转\"></input></td><tr>");
+            sb.append("<tr><td width=\"100%\" height=\"100%\" bordercolor=\"#000000\">");
+            sb.append(leftRotateLink + seprator);
+            sb.append(deleteLink + seprator);
+            sb.append(rightRotateLink + seprator);
+            sb.append("</td><tr>");
 
             sb.append("<script type=\"text/javascript\">" + "var r = 0;"
                     + "$(\"#rightrotate\").click(function(){r++; if (r > 3){r = 0;}"
@@ -397,7 +425,7 @@ public class GenerateHTML
             }
 
             sb.append("<td width=\"20%\" height=\"18%\" bordercolor=\"#000000\">");
-            sb.append("<a href=\"/photos/" + f.getHash256() + "\" target=\"_blank\">");
+            sb.append("<a href=\"/photos/" + f.getHash256() + "\">");
             sb.append("<img " + (restrictSize(f) ? "width" : "height")
                     + "=\"310px\" src = \"/photos/" + f.getHash256() + "?content=true&size=310"
                     + "\"></img>" + "</a></td>");
