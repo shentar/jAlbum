@@ -20,6 +20,8 @@ public class FileInfo
 
     private boolean isDel = false;
 
+    private int roatateDegree = 0;
+
     public String getPath()
     {
         return path;
@@ -103,5 +105,15 @@ public class FileInfo
     public void setDel(boolean isDel)
     {
         this.isDel = isDel;
+    }
+
+    public int getRoatateDegree()
+    {
+        return roatateDegree;
+    }
+
+    public void setRoatateDegree(int roatateDegree)
+    {
+        this.roatateDegree = roatateDegree;
     }
 }

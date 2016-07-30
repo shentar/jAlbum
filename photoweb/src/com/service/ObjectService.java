@@ -17,7 +17,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,8 +50,9 @@ public class ObjectService
             if (f != null && new File(f.getPath()).isFile())
             {
                 String sizestr = req.getParameter("size");
+                int size = Integer.parseInt(sizestr);
                 InputStream fi = null;
-                if (StringUtils.isNotBlank(sizestr))
+                if (size <= 400)
                 {
                     fi = ThumbnailManager.getThumbnail(id);
                 }

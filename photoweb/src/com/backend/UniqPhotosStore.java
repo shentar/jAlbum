@@ -246,12 +246,12 @@ public class UniqPhotosStore
             prep.close();
             logger.warn("delete all records form uniqphotos2.");
 
-            prep = conn.prepareStatement(
-                    "insert into uniqphotos2(path,hashstr,size,phototime,width,height) "
-                            + "select path,sha256,size,"
-                            + "phototime,width,height from files where (deleted <>'true' or deleted is null) and "
-                            + "sha256 in(select sha256 from files group by sha256) "
-                            + "group by sha256 ORDER BY phototime DESC");
+            prep = conn.prepareStatement("insert into uniqphotos2(path,hashstr,size,phototime,"
+                    + "width,height,degree) select path,sha256,size,"
+                    + "phototime,width,height,degree from files where "
+                    + "(deleted <>'true' or deleted is null) and "
+                    + "sha256 in(select sha256 from files group by sha256) "
+                    + "group by sha256 ORDER BY phototime DESC");
             prep.execute();
             prep.close();
             logger.warn("insert new records to uniqphotos2.");
@@ -300,6 +300,7 @@ public class UniqPhotosStore
         fi.setPhotoTime(res.getDate("phototime"));
         fi.setWidth(res.getLong("width"));
         fi.setHeight(res.getLong("height"));
+        fi.setRoatateDegree(res.getInt("degree"));
         return fi;
     }
 

@@ -122,7 +122,7 @@ public class BaseSqliteStore
             fi.setDel(false);
             fi.setHash256(sha256);
             lock.writeLock().lock();
-            prep = conn.prepareStatement("insert into files values(?,?,?,?,?,?,?,?);");
+            prep = conn.prepareStatement("insert into files values(?,?,?,?,?,?,?,?,?);");
             prep.setString(1, fi.getPath());
             prep.setString(2, fi.getHash256());
             prep.setLong(3, fi.getSize());
@@ -131,6 +131,7 @@ public class BaseSqliteStore
             prep.setLong(6, fi.getWidth());
             prep.setLong(7, fi.getHeight());
             prep.setString(8, fi.isDel() ? "true" : "false");
+            prep.setLong(9, fi.getRoatateDegree());
             prep.execute();
 
             RefreshFlag.getInstance().getAndSet(true);
@@ -164,11 +165,11 @@ public class BaseSqliteStore
 
     public boolean checkIfAlreadyExist(File f)
     {
-        lock.readLock().lock();
         ResultSet res = null;
         PreparedStatement prep = null;
         try
         {
+            lock.readLock().lock();
             prep = conn.prepareStatement("select * from files where path=?;");
             prep.setString(1, f.getCanonicalPath());
 
@@ -239,6 +240,7 @@ public class BaseSqliteStore
         fi.setWidth(res.getLong("width"));
         fi.setHeight(res.getLong("height"));
         fi.setDel("true".equalsIgnoreCase(res.getString("deleted")));
+        fi.setRoatateDegree(res.getInt("degree"));
         return fi;
     }
 
@@ -451,12 +453,12 @@ public class BaseSqliteStore
         {
             lock.readLock().unlock();
         }
-        
+
         if (!needDel)
         {
             return;
         }
-        
+
         try
         {
             lock.writeLock().lock();

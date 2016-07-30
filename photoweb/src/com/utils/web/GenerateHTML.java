@@ -60,9 +60,8 @@ public class GenerateHTML
 
             sb.append("<td width=\"20%\" height=\"18%\" bordercolor=\"#000000\"><br/>");
             sb.append("<a href=\"/photos/" + f.getHash256() + "\">");
-            sb.append("<img " + (restrictSize(f) ? "width" : "height")
-                    + "=\"310px\" src = \"/photos/" + f.getHash256() + "?content=true&size=310px"
-                    + "\"></img>" + "</a></td>");
+            sb.append(generateImgTag(f, 310));
+            sb.append("</a></td>");
 
             if ((i + 1) % rowCount == 0)
             {
@@ -277,9 +276,7 @@ public class GenerateHTML
             sb.append("<tr><td width=\"100%\" height=\"100%\" bordercolor=\"#000000\">");
             // sb.append("<a href=\"/photos/" + f.getHash256() + "?content=true"
             // + "\" target=\"_blank\">");
-            sb.append("<img id=\"singlephoto\"" + (restrictSize(f) ? "width" : "height")
-                    + "=\"860px\" src = \"/photos/" + f.getHash256() + "?content=true"
-                    + "\"></img>");
+            sb.append(generateImgTag(f, 860));
             // sb.append("</a>");
             sb.append("</td></tr>");
 
@@ -289,7 +286,8 @@ public class GenerateHTML
             sb.append(rightRotateLink + seprator);
             sb.append("</td><tr>");
 
-            sb.append("<script type=\"text/javascript\">" + "var r = 0;"
+            int r = f.getRoatateDegree() / 90;
+            sb.append("<script type=\"text/javascript\">" + "var r = " + r + ";"
                     + "$(\"#rightrotate\").click(function(){r++; if (r > 3){r = 0;}"
                     + "$(\"#singlephoto\").rotate(90*r);}); "
                     + "$(\"#leftrotate\").click(function(){r--; if (r < 0){ r = 3;}"
@@ -304,6 +302,21 @@ public class GenerateHTML
             sb.append(getHtmlFoot());
             return sb.toString();
         }
+    }
+
+    private static String generateImgTag(FileInfo f, int size)
+    {
+        String img = "<img id=\"singlephoto\"" + (restrictSize(f) ? "width" : "height") + "=";
+        img += "\"" + size + "px\"";
+        if (size >= 400 && f.getRoatateDegree() != 0)
+        {
+            img += " style=\"transform: rotate(" + f.getRoatateDegree()
+                    + "deg); transform-origin: 50% 50% 0px;\"";
+        }
+        img += " src = \"/photos/" + f.getHash256() + "?content=true&size=" + size + "\">";
+        img += "</img>";
+
+        return img;
     }
 
     public static String generateYearPage(String year,
@@ -354,10 +367,8 @@ public class GenerateHTML
             {
                 sb.append("<td width=\"25%\" height=\"31%\" bordercolor=\"#000000\">");
                 sb.append("<a href=\"/month/" + year + mo + "\" >");
-                sb.append("<img " + (restrictSize(f) ? "width" : "height")
-                        + "=\"310px\" src = \"/photos/" + pic + "?content=true&size=310"
-                        + "\"></img>" + "</a><br/><b>" + year + "-" + mo + "月份 (" + filecount
-                        + "张)</b></td>");
+                sb.append(generateImgTag(f, 310));
+                sb.append("</a><br/><b>" + year + "-" + mo + "月份 (" + filecount + "张)</b></td>");
             }
             if ((i + 1) % rowcount == 0)
             {
@@ -424,9 +435,8 @@ public class GenerateHTML
 
             sb.append("<td width=\"20%\" height=\"18%\" bordercolor=\"#000000\">");
             sb.append("<a href=\"/photos/" + f.getHash256() + "\">");
-            sb.append("<img " + (restrictSize(f) ? "width" : "height")
-                    + "=\"310px\" src = \"/photos/" + f.getHash256() + "?content=true&size=310"
-                    + "\"></img>" + "</a></td>");
+            sb.append(generateImgTag(f, 310));
+            sb.append("</a></td>");
 
             if ((i + 1) % rowCount == 0)
             {
@@ -526,10 +536,9 @@ public class GenerateHTML
             {
                 sb.append("<td width=\"25%\" height=\"31%\" bordercolor=\"#000000\">");
                 sb.append("<a href=\"/day/" + monthstr + day + " \" >");
-                sb.append("<img " + (restrictSize(f) ? "width" : "height")
-                        + "=\"310px\" src = \"/photos/" + pic + "?content=true&size=310"
-                        + "\"></img>" + "</a><br/><b>" + monthstr + "-" + day + " ("
-                        + mr.getPiccount() + "张)</b></td>");
+                sb.append(generateImgTag(f, 310));
+                sb.append("</a><br/><b>" + monthstr + "-" + day + " (" + mr.getPiccount()
+                        + "张)</b></td>");
             }
             if ((i + 1) % rowcount == 0)
             {
@@ -586,20 +595,26 @@ public class GenerateHTML
 
     public static boolean restrictSize(FileInfo f)
     {
+        boolean ret = true;
         if (f.getHeight() > 0 && f.getWidth() > 0)
         {
             double rate = (((double) f.getWidth()) / f.getHeight());
             if (rate > 1)
             {
-                return true;
+                ret = true;
             }
             else
             {
-                return false;
+                ret = false;
             }
         }
 
-        return true;
+        // if (f.getRoatateDegree() == 90 || f.getRoatateDegree() == 270)
+        // {
+        // ret = !ret;
+        // }
+
+        return ret;
     }
 
 }

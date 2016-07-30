@@ -190,13 +190,19 @@ public class ReadEXIF
         {
             fi.setPhotoTime(new java.sql.Date(d.getTime()));
         }
+
+        fi.setRoatateDegree(needRotateAngel(metadata));
     }
 
-    public static int needRotateAngel(String path)
+    public static int needRotateAngel(Metadata metadata)
     {
         try
         {
-            Metadata metadata = ImageMetadataReader.readMetadata(new File(path));
+            if (metadata == null)
+            {
+                return 0;
+            }
+
             Iterable<Directory> dirs = metadata.getDirectories();
             for (Directory dir : dirs)
             {
@@ -224,6 +230,20 @@ public class ReadEXIF
         catch (Exception e)
         {
             logger.error("caused by: ", e);
+        }
+
+        return 0;
+    }
+
+    public static int needRotateAngel(String path)
+    {
+        try
+        {
+            return needRotateAngel(ImageMetadataReader.readMetadata(new File(path)));
+        }
+        catch (Exception e)
+        {
+            logger.warn("caused by: ", e);
         }
 
         return 0;
