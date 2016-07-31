@@ -264,17 +264,14 @@ public class GenerateHTML
             String returnToDayPage = "<a href=\"/day/" + dayStr + "\">浏览 <b>" + viewDayStr
                     + "</b></a>";
 
-            sb.append("<tr><td width=\"33%\" bordercolor=\"#000000\">");
-            sb.append(returnToDayPage);
-            sb.append("</td>");
-            sb.append("<td width=\"33%\" bordercolor=\"#000000\">");
+            sb.append("<tr><td width=\"100%\" bordercolor=\"#000000\">");
+            sb.append(returnToDayPage + seprator + seprator + seprator);
             sb.append(getPhotoLink(f, false) + seprator);
             sb.append(getPhotoLink(f, 1, false) + seprator);
             sb.append(f.getPhotoTime() + seprator);
             sb.append(getPhotoLink(f, 1, true) + seprator);
             sb.append(getPhotoLink(f, true));
-            sb.append("</td>");
-            sb.append("<td width=\"33%\" bordercolor=\"#000000\"></td></tr>");
+            sb.append("</td></tr>");
             sb.append("</table>");
 
             sb.append("<table style=\"text-align: center;\" width=\"100%\" "
