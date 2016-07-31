@@ -56,11 +56,11 @@ public class WebFilter implements Filter
             if (StringUtils.isNotBlank(useragent))
             {
                 MDC.put(SystemConstant.USER_AGENT, useragent);
+                HeadUtils.checkMobile(useragent);
+
+                logger.info("user agent is: " + useragent);
             }
-            SystemProperties.add(SystemConstant.IS_MOBILE_KEY,
-                    new Boolean(HeadUtils.checkMobile(useragent)));
-            logger.info("user agent is: " + useragent);
-            
+
             MDC.put(SystemConstant.REMOTE_ADDR,
                     newreq.getRemoteAddr() + ":" + newreq.getRemotePort());
 
@@ -75,7 +75,7 @@ public class WebFilter implements Filter
             MDC.put(SystemConstant.CONSUMED_TIME, (System.currentTimeMillis() - startTime) + "");
             MDC.put(SystemConstant.IS_MOBILE_KEY, "" + HeadUtils.isMobile());
             AccessLogger.accessLog();
-            
+
             SystemProperties.clear();
             MDC.clear();
         }

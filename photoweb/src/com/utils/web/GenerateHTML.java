@@ -258,17 +258,24 @@ public class GenerateHTML
             sb.append("<table style=\"text-align: center;\" width=\"100%\" "
                     + "height=\"100%\" border=\"0\" bordercolor=\"#000000\">");
 
-            String leftRotateLink = "<input id=\"leftrotate\" type=\"button\" value=\"左旋转\" />";
-            String rightRotateLink = "<input id=\"rightrotate\" type=\"button\" value=\"右旋转\" />";
-            String deleteLink = "<input id=\"deletephotob\" type=\"button\" value=\"隐藏\" />";
+            String dayStr = HeadUtils.formatDate(f.getPhotoTime());
+            String viewDayStr = String.format("%s年%s月%s日", dayStr.substring(0, 4),
+                    dayStr.substring(4, 6), dayStr.substring(6, 8));
+            String returnToDayPage = "<a href=\"/day/" + dayStr + "\">浏览 <b>" + viewDayStr
+                    + "</b></a>";
 
             sb.append("<tr><td width=\"33%\" bordercolor=\"#000000\">");
+            sb.append(returnToDayPage);
+            sb.append("</td>");
+            sb.append("<td width=\"33%\" bordercolor=\"#000000\">");
             sb.append(getPhotoLink(f, false) + seprator);
             sb.append(getPhotoLink(f, 1, false) + seprator);
             sb.append(f.getPhotoTime() + seprator);
             sb.append(getPhotoLink(f, 1, true) + seprator);
             sb.append(getPhotoLink(f, true));
-            sb.append("</td></tr></table>");
+            sb.append("</td>");
+            sb.append("<td width=\"33%\" bordercolor=\"#000000\"></td></tr>");
+            sb.append("</table>");
 
             sb.append("<table style=\"text-align: center;\" width=\"100%\" "
                     + "height=\"890px\" border=\"0\" bordercolor=\"#000000\">");
@@ -281,12 +288,23 @@ public class GenerateHTML
             sb.append("</td></tr>");
 
             sb.append("<tr><td width=\"100%\" height=\"100%\" bordercolor=\"#000000\">");
+
+            String leftRotateLink = "<input id=\"leftrotate\" type=\"button\" value=\"左旋转\" />";
+            String rightRotateLink = "<input id=\"rightrotate\" type=\"button\" value=\"右旋转\" />";
+            String deleteLink = "<input id=\"deletephotob\" type=\"button\" value=\"隐藏\" />";
+
             sb.append(leftRotateLink + seprator);
             sb.append(deleteLink + seprator);
             sb.append(rightRotateLink + seprator);
             sb.append("</td><tr>");
 
-            int r = f.getRoatateDegree() / 90;
+            int r = 0;
+
+            if (HeadUtils.needRotatePic(f, 860))
+            {
+                r = f.getRoatateDegree() / 90;
+            }
+
             sb.append("<script type=\"text/javascript\">" + "var r = " + r + ";"
                     + "$(\"#rightrotate\").click(function(){r++; if (r > 3){r = 0;}"
                     + "$(\"#singlephoto\").rotate(90*r);}); "
@@ -308,7 +326,7 @@ public class GenerateHTML
     {
         String img = "<img id=\"singlephoto\"" + (restrictSize(f) ? "width" : "height") + "=";
         img += "\"" + size + "px\"";
-        if (size >= 400 && f.getRoatateDegree() != 0)
+        if (HeadUtils.needRotatePic(f, size))
         {
             img += " style=\"transform: rotate(" + f.getRoatateDegree()
                     + "deg); transform-origin: 50% 50% 0px;\"";

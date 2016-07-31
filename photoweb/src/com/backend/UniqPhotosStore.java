@@ -5,8 +5,7 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -17,6 +16,8 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.utils.web.HeadUtils;
 
 public class UniqPhotosStore
 {
@@ -85,7 +86,6 @@ public class UniqPhotosStore
             lock.readLock().unlock();
 
             Map<String, DateRecords> dst = new HashMap<String, DateRecords>();
-            final SimpleDateFormat df = new SimpleDateFormat("yyyyMMdd");
             while (res.next())
             {
                 Date ptime = res.getDate("phototime");
@@ -94,7 +94,7 @@ public class UniqPhotosStore
                     logger.warn("some error file: " + res.getString("hashstr"));
                     continue;
                 }
-                String datestr = df.format(ptime);
+                String datestr = HeadUtils.formatDate(ptime);
 
                 DateRecords dr = dst.get(datestr);
                 if (dr == null)
@@ -306,17 +306,11 @@ public class UniqPhotosStore
 
     public List<FileInfo> getAllPhotosBy(String day)
     {
-
-        SimpleDateFormat sf = new SimpleDateFormat("yyyyMMdd");
         java.util.Date d = null;
-        try
+        d = HeadUtils.parseDate(day);
+        if (d == null)
         {
-            d = sf.parse(day);
-        }
-        catch (ParseException e)
-        {
-            logger.warn("caused by: ", e);
-            return null;
+            return new ArrayList<FileInfo>();
         }
 
         try
