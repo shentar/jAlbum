@@ -114,12 +114,16 @@ public class GenerateHTML
         value += "一";
         value += (count == 1 ? "张" : "页");
 
-        String pPara = isNext ? "next" : "prev";
-
-        String prevPage = "<a href=\"/?" + pPara + "=" + f.getHash256() + "&count=" + count
-                + "\"><input value=\"" + value + "\" type=\"button\"/></a>";
+        String prevPage = "<a href=\"" + getPhotoUrl(f, count, isNext) + "\"><input value=\""
+                + value + "\" type=\"button\"/></a>";
 
         return prevPage;
+    }
+
+    private static String getPhotoUrl(FileInfo f, int count, boolean isNext)
+    {
+        String pPara = isNext ? "next" : "prev";
+        return "/?" + pPara + "=" + f.getHash256() + "&count=" + count;
     }
 
     public static String genYearNavigate()
@@ -247,6 +251,7 @@ public class GenerateHTML
             String yearNavigage = genYearNavigate();
             sb.append(yearNavigage);
 
+            sb.append("<script type=\"text/javascript\" src=\"/js/navigate.js\"></script>");
             sb.append("<script type=\"text/javascript\">"
                     + "function changeUrl(url){window.history.pushState({},0,'http://'+window.location.host+'/'+url);}"
                     + "window.onload=changeUrl(" + "'photos/" + f.getHash256() + "');"
@@ -268,7 +273,7 @@ public class GenerateHTML
             sb.append(returnToDayPage + seprator);
             sb.append(getPhotoLink(f, false) + seprator);
             sb.append(getPhotoLink(f, 1, false));
-            sb.append(f.getPhotoTime());
+            sb.append("&nbsp;" + f.getPhotoTime() + "&nbsp;");
             sb.append(getPhotoLink(f, 1, true) + seprator);
             sb.append(getPhotoLink(f, true));
             sb.append("</td></tr>");
@@ -280,7 +285,9 @@ public class GenerateHTML
             sb.append("<tr><td width=\"100%\" height=\"100%\" bordercolor=\"#000000\">");
             // sb.append("<a href=\"/photos/" + f.getHash256() + "?content=true"
             // + "\" target=\"_blank\">");
-            sb.append(generateImgTag(f, 860));
+            String extraInfo = "onmouseover=\"upNext(this" + "," + "'" + getPhotoUrl(f, 1, false)
+                    + "'" + "," + "'" + getPhotoUrl(f, 1, true) + "'" + ")\"";
+            sb.append(generateImgTag(f, 860, extraInfo));
             // sb.append("</a>");
             sb.append("</td></tr>");
 
@@ -321,7 +328,14 @@ public class GenerateHTML
 
     private static String generateImgTag(FileInfo f, int size)
     {
-        String img = "<img id=\"singlephoto\"" + (restrictSize(f) ? "width" : "height") + "=";
+        return generateImgTag(f, size, "");
+    }
+
+    private static String generateImgTag(FileInfo f, int size, String exinfo)
+    {
+        String img = "<img";
+        img += " " + exinfo;
+        img += " id=\"singlephoto\"" + (restrictSize(f) ? "width" : "height") + "=";
         img += "\"" + size + "px\"";
         if (HeadUtils.needRotatePic(f, size))
         {
@@ -329,6 +343,7 @@ public class GenerateHTML
                     + "deg); transform-origin: 50% 50% 0px;\"";
         }
         img += " src = \"/photos/" + f.getHash256() + "?content=true&size=" + size + "\">";
+
         img += "</img>";
 
         return img;
