@@ -19,7 +19,7 @@ ant
 ```
 The build target files are store in the jAlbum/distribute folder.
 
-You can also get the release package by this link: [jAlbum_0.1.6.tar.gz](http://7ktqfj.com1.z0.glb.clouddn.com/jAlbum_0.1.6.tar.gz)
+You can also get the release package in this web page: [jAlbum release](http://codefine.co/2837.html)
 
 ## start
 >### 0. Configure the jalbum.xml file.
