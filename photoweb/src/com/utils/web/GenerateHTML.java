@@ -267,8 +267,8 @@ public class GenerateHTML
             sb.append("<tr><td width=\"100%\" bordercolor=\"#000000\">");
             sb.append(returnToDayPage + seprator);
             sb.append(getPhotoLink(f, false) + seprator);
-            sb.append(getPhotoLink(f, 1, false) + seprator);
-            sb.append(f.getPhotoTime() + seprator);
+            sb.append(getPhotoLink(f, 1, false));
+            sb.append(f.getPhotoTime());
             sb.append(getPhotoLink(f, 1, true) + seprator);
             sb.append(getPhotoLink(f, true));
             sb.append("</td></tr>");
