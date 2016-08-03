@@ -197,17 +197,32 @@ public class GenerateHTML
                 + "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"/> "
                 // + "<meta name=\"viewport\" content=\"width=device-width,
                 // initial-scale=1\" />"
-                + "<script type=\"text/javascript\" src=\"/js/jquery-3.1.0.js\"></script>"
-                + (HeadUtils.isMobile()
-                        ? ("<link href=\"/js/default_mobile.css\" rel=\"stylesheet\" "
-                                + "type=\"text/css\" media=\"screen\" />")
-                        : ("<link href=\"/js/default.css\" rel=\"stylesheet\" "
-                                + "type=\"text/css\" media=\"screen\" />"))
-                + (isSinglePage
-                        ? ("<script type=\"text/javascript\" src=\"/js/jQueryRotate.js\"></script>"
-                                + "<script type=\"text/javascript\" src=\"/js/jquery.alerts.js\"></script>")
-                        : "")
-                + "<title>相册</title></head><body>";
+                + "<script type=\"text/javascript\" src=\"/js/jquery-3.1.0.js\"></script>";
+
+        if (HeadUtils.isMobile())
+        {
+            hh += "<link href=\"/js/default_mobile.css\" rel=\"stylesheet\" "
+                    + "type=\"text/css\" media=\"screen\" />";
+
+        }
+        else
+        {
+            hh += "<link href=\"/js/default.css\" rel=\"stylesheet\" "
+                    + "type=\"text/css\" media=\"screen\" />";
+        }
+
+        if (isSinglePage)
+        {
+            hh += "<script type=\"text/javascript\" src=\"/js/jQueryRotate.js\"></script>";
+            hh += "<script type=\"text/javascript\" src=\"/js/jquery.alerts.js\"></script>";
+            hh += "<script type=\"text/javascript\" src=\"/js/navigate.js\"></script>";
+            if (HeadUtils.isMobile())
+            {
+                hh += "<script type=\"text/javascript\" src=\"/js/jquery.touchSwipe.min.js\"></script>";
+            }
+        }
+
+        hh += "<title>相册</title></head><body>";
         return hh;
     }
 
@@ -251,14 +266,35 @@ public class GenerateHTML
             String yearNavigage = genYearNavigate();
             sb.append(yearNavigage);
 
-            sb.append("<script type=\"text/javascript\" src=\"/js/navigate.js\"></script>");
             sb.append("<script type=\"text/javascript\">"
                     + "function changeUrl(url){window.history.pushState({},0,'http://'+window.location.host+'/'+url);}"
                     + "window.onload=changeUrl(" + "'photos/" + f.getHash256() + "');"
                     + "function deletephoto(path){jConfirm('该操作将永久隐藏照片，无法撤消，确认是否继续？','确认',function(r){if (r){"
                     + "changeUrl('?next=" + f.getHash256() + "&count=1');"
                     + "window.location.reload();" + "$.ajax({url:path,type:'DELETE',"
-                    + "success:function(result){}});}});}" + "</script>");
+                    + "success:function(result){}});}});}");
+
+            if (HeadUtils.isMobile())
+            {
+                sb.append("$(function() {");
+                sb.append("$(\"#singlephoto\").swipe({");
+                sb.append("swipe: function(event, direction, distance, duration, fingerCount) {");
+                sb.append("if (distance>=30){if (direction=='left'){top.location=" + "'"
+                        + getPhotoUrl(f, 1, false)
+                        + "';}else if (direction=='right') {top.location=" + "'"
+                        + getPhotoUrl(f, 1, true) + "';" + "}");
+                sb.append("}},});});");
+                /*
+                 * sb.append("$(document).ready(function(){"); sb.append(
+                 * "$(\"#singlephoto\").on(\"swipeleft\",function(){top.location="
+                 * + "'" + getPhotoUrl(f, 1, false) + "'" + ";});" +
+                 * "$(\"#singlephoto\").on(\"swiperight\",function(){top.location="
+                 * + "'" + getPhotoUrl(f, 1, true) + "'" + ";});");
+                 * sb.append("});");
+                 */
+            }
+
+            sb.append("</script>");
 
             sb.append("<table style=\"text-align: center;\" width=\"100%\" "
                     + "height=\"100%\" border=\"0\" bordercolor=\"#000000\">");
@@ -271,7 +307,9 @@ public class GenerateHTML
 
             sb.append("<tr><td width=\"100%\" bordercolor=\"#000000\">");
             sb.append(returnToDayPage + seprator);
-            sb.append(getPhotoLink(f, false) + seprator);
+            sb.append(
+
+                    getPhotoLink(f, false) + seprator);
             sb.append(getPhotoLink(f, 1, false));
             sb.append("&nbsp;" + f.getPhotoTime() + "&nbsp;");
             sb.append(getPhotoLink(f, 1, true) + seprator);
@@ -285,9 +323,15 @@ public class GenerateHTML
             sb.append("<tr><td width=\"100%\" height=\"100%\" bordercolor=\"#000000\">");
             // sb.append("<a href=\"/photos/" + f.getHash256() + "?content=true"
             // + "\" target=\"_blank\">");
-            String extraInfo = "onmouseover=\"upNext(this" + "," + "'" + getPhotoUrl(f, 1, false)
-                    + "'" + "," + "'" + getPhotoUrl(f, 1, true) + "'" + ")\"";
-            sb.append(generateImgTag(f, 860, extraInfo));
+
+            String extraInfo = "";
+            if (HeadUtils.isMobile())
+            {
+                extraInfo = "onmouseover=\"upNext(this" + "," + "'" + getPhotoUrl(f, 1, false) + "'"
+                        + "," + "'" + getPhotoUrl(f, 1, true) + "'" + ")\"";
+            }
+
+            sb.append(generateImgTag(f, 860, extraInfo, "singlephoto"));
             // sb.append("</a>");
             sb.append("</td></tr>");
 
@@ -324,19 +368,23 @@ public class GenerateHTML
             sb.append(getHtmlFoot());
             return sb.toString();
         }
+
     }
 
     private static String generateImgTag(FileInfo f, int size)
     {
-        return generateImgTag(f, size, "");
+        return generateImgTag(f, size, "", "");
     }
 
-    private static String generateImgTag(FileInfo f, int size, String exinfo)
+    private static String generateImgTag(FileInfo f, int size, String exinfo, String id)
     {
         String img = "<img";
         img += " " + exinfo;
-        img += " id=\"singlephoto\"" + (restrictSize(f) ? "width" : "height") + "=";
-        img += "\"" + size + "px\"";
+        if (StringUtils.isNotBlank(id))
+        {
+            img += " id=\"" + id + "\"";
+        }
+        img += (restrictSize(f) ? "width" : "height") + "=" + "\"" + size + "px\"";
         if (HeadUtils.needRotatePic(f, size))
         {
             img += " style=\"transform: rotate(" + f.getRoatateDegree()
