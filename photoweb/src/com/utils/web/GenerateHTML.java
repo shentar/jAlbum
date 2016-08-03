@@ -279,9 +279,9 @@ public class GenerateHTML
                 sb.append("$(function() {");
                 sb.append("$(\"#singlephoto\").swipe({");
                 sb.append("swipe: function(event, direction, distance, duration, fingerCount) {");
-                sb.append("if (distance>=30){if (direction=='left'){top.location=" + "'"
+                sb.append("if (distance>=30){if (direction=='right'){top.location=" + "'"
                         + getPhotoUrl(f, 1, false)
-                        + "';}else if (direction=='right') {top.location=" + "'"
+                        + "';}else if (direction=='left') {top.location=" + "'"
                         + getPhotoUrl(f, 1, true) + "';" + "}");
                 sb.append("}},});});");
                 /*
