@@ -134,14 +134,14 @@ public class ToolMain
                 if (f.getName().toLowerCase().endsWith(s)
                         && f.length() > AppConfig.getInstance().getMinFileSize())
                 {
-                    if (metaDataStore.checkIfAlreadyExist(f))
+                    if (PicStatus.EXIST == metaDataStore.checkIfAlreadyExist(f))
                     {
                         break;
                     }
                     else
                     {
                         isCare = true;
-                        metaDataStore.dealWithOneHash(f, FileSHA256Caculater.calFileSha256(f));
+                        metaDataStore.insertOneRecord(f, FileSHA256Caculater.calFileSha256(f));
                     }
                     break;
                 }

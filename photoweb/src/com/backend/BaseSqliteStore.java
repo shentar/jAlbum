@@ -92,23 +92,7 @@ public class BaseSqliteStore
      * @param sha256
      *            文件hash值。
      */
-    public void dealWithOneHash(File f, String sha256)
-    {
-        if (f == null || sha256 == null)
-        {
-            logger.error("the input is invalid.");
-            return;
-        }
-
-        if (checkIfAlreadyExist(f))
-        {
-            return;
-        }
-
-        insertOneRecord(f, sha256);
-    }
-
-    private void insertOneRecord(File f, String sha256)
+    public void insertOneRecord(File f, String sha256)
     {
         PreparedStatement prep = null;
         try
@@ -119,6 +103,13 @@ public class BaseSqliteStore
                 logger.warn("error file" + f.getCanonicalPath());
                 return;
             }
+
+            // 检查是否已经存在隐藏的照片的记录。
+            if (checkPhotoAlreadyHidenByID(sha256))
+            {
+                fi.setDel(true);
+            }
+
             fi.setDel(false);
             fi.setHash256(sha256);
             lock.writeLock().lock();
@@ -163,7 +154,48 @@ public class BaseSqliteStore
         }
     }
 
-    public boolean checkIfAlreadyExist(File f)
+    public void deleteOneRecordByPath(FileInfo fi)
+    {
+        if (fi == null || StringUtils.isBlank(fi.getPath()))
+        {
+            logger.warn("input file's path is empty.");
+            return;
+        }
+        deleteRecord(fi.getPath(), false);
+    }
+
+    public FileInfo getOneFileByPath(String path)
+    {
+        if (StringUtils.isBlank(path))
+        {
+            return null;
+        }
+
+        ResultSet res = null;
+        PreparedStatement prep = null;
+        try
+        {
+            lock.readLock().lock();
+            prep = conn.prepareStatement("select * from files where path=?;");
+            prep.setString(1, path);
+
+            res = prep.executeQuery();
+
+            if (res.next())
+            {
+                return getFileInfoFromTable(res);
+            }
+
+            lock.readLock().unlock();
+        }
+        catch (Exception e)
+        {
+            logger.warn("caught: ", e);
+        }
+        return null;
+    }
+
+    public PicStatus checkIfAlreadyExist(File f)
     {
         ResultSet res = null;
         PreparedStatement prep = null;
@@ -178,17 +210,18 @@ public class BaseSqliteStore
             if (res.next())
             {
                 FileInfo oldfi = getFileInfoFromTable(res);
+
                 if (oldfi.getSize() == f.length() && oldfi.getcTime() != null
                         && oldfi.getcTime().getTime() == FileTools.getFileCreateTime(f))
                 {
                     checkPhotoTime(oldfi);
-                    return true;
+                    return PicStatus.EXIST;
                 }
                 else
                 {
                     logger.warn("the file was changed, rebuild the record: " + oldfi);
-                    deleteOneRecord(oldfi);
-                    return false;
+                    deleteOneRecordByID(oldfi);
+                    return PicStatus.NOT_EXIST;
                 }
             }
         }
@@ -226,7 +259,7 @@ public class BaseSqliteStore
                 }
             }
         }
-        return false;
+        return PicStatus.NOT_EXIST;
     }
 
     private FileInfo getFileInfoFromTable(ResultSet res) throws SQLException
@@ -310,9 +343,10 @@ public class BaseSqliteStore
             while (res.next())
             {
                 FileInfo fi = getFileInfoFromTable(res);
+
                 if (FileTools.checkFileDeleted(fi, excludeDirs))
                 {
-                    deleteOneRecord(fi);
+                    deleteOneRecordByID(fi);
                     PerformanceStatistics.getInstance().addOneFile(true);
                 }
                 else
@@ -366,9 +400,9 @@ public class BaseSqliteStore
         });
     }
 
-    public void deleteRecordsByID(String id)
+    public void deleteRecord(String str, boolean isPath)
     {
-        if (id == null || StringUtils.isBlank(id))
+        if (str == null || StringUtils.isBlank(str))
         {
             logger.warn("input file's path is empty.");
             return;
@@ -378,15 +412,22 @@ public class BaseSqliteStore
         try
         {
             lock.writeLock().lock();
-            prep = conn.prepareStatement("delete from files where sha256=?;");
-            prep.setString(1, id);
+            if (isPath)
+            {
+                prep = conn.prepareStatement("delete from files where path=?;");
+            }
+            else
+            {
+                prep = conn.prepareStatement("delete from files where sha256=?;");
+            }
+            prep.setString(1, str);
             prep.execute();
             prep.close();
             RefreshFlag.getInstance().getAndSet(true);
         }
         catch (Exception e)
         {
-            logger.error("caught: " + id, e);
+            logger.error("caught: " + str, e);
         }
         finally
         {
@@ -394,32 +435,14 @@ public class BaseSqliteStore
         }
     }
 
-    public void deleteOneRecord(FileInfo fi)
+    public void deleteOneRecordByID(FileInfo fi)
     {
-        if (fi == null || StringUtils.isBlank(fi.getPath()))
+        if (fi == null || StringUtils.isBlank(fi.getHash256()))
         {
             logger.warn("input file's path is empty.");
             return;
         }
-
-        PreparedStatement prep = null;
-        try
-        {
-            lock.writeLock().lock();
-            prep = conn.prepareStatement("delete from files where path=?;");
-            prep.setString(1, fi.getPath());
-            prep.execute();
-            prep.close();
-            RefreshFlag.getInstance().getAndSet(true);
-        }
-        catch (Exception e)
-        {
-            logger.error("caught: " + fi, e);
-        }
-        finally
-        {
-            lock.writeLock().unlock();
-        }
+        deleteRecord(fi.getHash256(), true);
     }
 
     public void deleteRecordsInDirs(String dir)
@@ -462,7 +485,8 @@ public class BaseSqliteStore
         try
         {
             lock.writeLock().lock();
-            prep = conn.prepareStatement("delete from files where path like ?;");
+            prep = conn.prepareStatement(
+                    "delete from files where path like ? and (deleted <>'true' or deleted is null);");
             prep.setString(1, dir + "%");
 
             prep.execute();
@@ -479,7 +503,7 @@ public class BaseSqliteStore
         }
     }
 
-    public void setPhotoToDelByID(String id)
+    public void setPhotoToBeHidenByID(String id)
     {
         if (id == null || StringUtils.isBlank(id))
         {
@@ -505,5 +529,43 @@ public class BaseSqliteStore
         {
             lock.writeLock().unlock();
         }
+    }
+
+    public boolean checkPhotoAlreadyHidenByID(String id)
+    {
+        boolean isHidden = false;
+        if (id == null || StringUtils.isBlank(id))
+        {
+            logger.warn("input id is empty.");
+            return isHidden;
+        }
+        ResultSet res = null;
+        PreparedStatement prep = null;
+        try
+        {
+            lock.readLock().lock();
+            prep = conn.prepareStatement("select * files where sha256=? and deleted='true';");
+            prep.setString(1, id);
+            res = prep.executeQuery();
+
+            if (res.next())
+            {
+                isHidden = true;
+            }
+
+            res.close();
+            prep.close();
+            // RefreshFlag.getInstance().getAndSet(true);
+        }
+        catch (Exception e)
+        {
+            logger.error("caught: " + id, e);
+        }
+        finally
+        {
+            lock.readLock().unlock();
+        }
+
+        return isHidden;
     }
 }

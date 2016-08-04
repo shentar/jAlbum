@@ -78,33 +78,52 @@ public class FileTools
         if (fi != null)
         {
             File f = new File(fi.getPath());
-            if (f.isFile() && f.length() > AppConfig.getInstance().getMinFileSize())
+            if (f.isFile())
             {
-                if (fi.getcTime().getTime() == FileTools.getFileCreateTime(new File(fi.getPath())))
+                if (f.length() > AppConfig.getInstance().getMinFileSize())
                 {
-                    if (excludeDirs != null)
+                    if (fi.getcTime().getTime() == FileTools
+                            .getFileCreateTime(new File(fi.getPath()))
+                            && fi.getSize() == f.length())
                     {
-                        for (String dir : excludeDirs)
+                        if (excludeDirs != null)
                         {
-                            if (fi.getPath().startsWith(dir))
+                            for (String dir : excludeDirs)
                             {
-                                return true;
+                                if (fi.getPath().startsWith(dir))
+                                {
+                                    return true;
+                                }
                             }
+                        }
+
+                        return false;
+                    }
+                    else
+                    {
+                        if (fi.isDel())
+                        {
+                            return false;
                         }
                     }
 
+                    /*
+                     * String tmpstr = fi.getPath().toLowerCase(); if
+                     * (tmpstr.endsWith("jpg") || tmpstr.endsWith("jpeg")) {
+                     * final int angel = ReadEXIF.needRotateAngel(fi.getPath());
+                     * if (angel != 0) { threadPool.submit(new Runnable() {
+                     * 
+                     * @Override public void run() { rotateOneFile(fi, angel); }
+                     * }); return true; } }
+                     */
+                }
+            }
+            else
+            {
+                if (fi.isDel())
+                {
                     return false;
                 }
-
-                /*
-                 * String tmpstr = fi.getPath().toLowerCase(); if
-                 * (tmpstr.endsWith("jpg") || tmpstr.endsWith("jpeg")) { final
-                 * int angel = ReadEXIF.needRotateAngel(fi.getPath()); if (angel
-                 * != 0) { threadPool.submit(new Runnable() {
-                 * 
-                 * @Override public void run() { rotateOneFile(fi, angel); } });
-                 * return true; } }
-                 */
             }
         }
         return true;
