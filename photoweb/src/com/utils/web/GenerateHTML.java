@@ -280,9 +280,8 @@ public class GenerateHTML
                 sb.append("$(\"#singlephoto\").swipe({");
                 sb.append("swipe: function(event, direction, distance, duration, fingerCount) {");
                 sb.append("if (distance>=30){if (direction=='right'){top.location=" + "'"
-                        + getPhotoUrl(f, 1, false)
-                        + "';}else if (direction=='left') {top.location=" + "'"
-                        + getPhotoUrl(f, 1, true) + "';" + "}");
+                        + getPhotoUrl(f, 1, false) + "';}else if (direction=='left') {top.location="
+                        + "'" + getPhotoUrl(f, 1, true) + "';" + "}");
                 sb.append("}},});});");
                 /*
                  * sb.append("$(document).ready(function(){"); sb.append(
@@ -325,7 +324,7 @@ public class GenerateHTML
             // + "\" target=\"_blank\">");
 
             String extraInfo = "";
-            if (HeadUtils.isMobile())
+            if (!HeadUtils.isMobile())
             {
                 extraInfo = "onmouseover=\"upNext(this" + "," + "'" + getPhotoUrl(f, 1, false) + "'"
                         + "," + "'" + getPhotoUrl(f, 1, true) + "'" + ")\"";
