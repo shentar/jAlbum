@@ -37,6 +37,7 @@ stopjAlbum ()
         kill -9 "${jpid}"
     fi
     rm -rf "${pidfile}" >/dev/null 2>&1
+    echo "stopped"
 }
 
 case "${param}" in
