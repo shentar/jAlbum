@@ -45,14 +45,14 @@ case "${param}" in
         then    
             echo "running"
         else
-            echo "not running"
+            echo "not run"
         fi
     ;;
 
     start)
         if [ ${status} -eq 0 ]
         then
-            echo "is already running"
+            echo "already running"
         else
             (startjAlbum &)
         fi
