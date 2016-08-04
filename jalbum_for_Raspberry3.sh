@@ -21,6 +21,24 @@ then
     fi
 fi
 
+startjAlbum ()
+{
+    DIR="$(cd "$(dirname "$0")" && pwd )"
+    cd "${DIR}"
+    java -Xms128M -Xmx512M -Xdebug -Xrunjdwp:transport=dt_socket,address=4321,server=y,suspend=n -Dorg.sqlite.lib.path=./ -Dorg.sqlite.lib.name=libsqlite.so -jar start.jar >./log/jstdout.log 2>&1 &
+    echo "$!" >"${pidfile}"
+}
+
+stopjAlbum ()
+{
+    local jpid="$1"
+    if [ ! -z "${jpid}" ]
+    then
+        kill -9 "${jpid}"
+    fi
+    rm -rf "${pidfile}" >/dev/null 2>&1
+}
+
 case "${param}" in
     status)
         if [ ${status} -eq 0 ]
@@ -36,7 +54,7 @@ case "${param}" in
         then
             echo "is already running"
         else
-            startjAlbum
+            (startjAlbum &)
         fi
     ;;
     
@@ -55,7 +73,7 @@ case "${param}" in
         then
             stopjAlbum "$pid"
         fi    
-        startjAlbum
+        (startjAlbum &)
     ;;
     
     *)
@@ -65,21 +83,4 @@ case "${param}" in
     
 esac
     
-function startjAlbum()
-{
-    DIR="$(cd "$(dirname "$0")" && pwd )"
-    cd "${DIR}"
-    (java -Xms128M -Xmx512M -Xdebug -Xrunjdwp:transport=dt_socket,address=4321,server=y,suspend=n -Dorg.sqlite.lib.path=./ -Dorg.sqlite.lib.name=libsqlite.so -jar start.jar >./log/jstdout.log 2>&1  &)
-    echo "$!" >"${pidfile}"
-}
-
-function stopjAlbum()
-{
-    local jpid="$1"
-    if [ ! -z "${jpid}" ]
-    then
-        kill -9 "${jpid}"
-    fi
-    rm -rf "${pidfile}" >/dev/null 2>&1
-}
-
+exit 0
