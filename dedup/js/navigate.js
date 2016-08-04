@@ -12,7 +12,7 @@ function upNext(bigimg, lefturl, righturl){
 			imgurl				= righturl;
 		}
 	}
-	bigimg.onmouseup=function(){
+	bigimg.onclick=function(){
 		top.location=imgurl;
 	}
 }
