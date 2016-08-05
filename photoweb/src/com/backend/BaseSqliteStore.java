@@ -544,7 +544,7 @@ public class BaseSqliteStore
         try
         {
             lock.readLock().lock();
-            prep = conn.prepareStatement("select * files where sha256=? and deleted='true';");
+            prep = conn.prepareStatement("select * from files where sha256=? and deleted='true';");
             prep.setString(1, id);
             res = prep.executeQuery();
 
