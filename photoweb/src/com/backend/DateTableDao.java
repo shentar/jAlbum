@@ -50,7 +50,7 @@ public class DateTableDao
                 String date = res.getString("datestr");
                 if (StringUtils.isBlank(date) || date.length() != 8)
                 {
-                    logger.error("one empty datestr record!");
+                    logger.error("one empty datestr record: " + (date == null ? "" : date));
                     continue;
                 }
 
