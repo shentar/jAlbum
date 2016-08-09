@@ -88,6 +88,7 @@ public class ToolMain
         {
             if (f.isFile())
             {
+                logger.info("find a file: " + f);
                 filecount.incrementAndGet();
                 FileTools.threadPool.submit(new Runnable()
                 {

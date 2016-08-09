@@ -88,6 +88,7 @@ public class ThumbnailManager
             return;
         }
 
+        logger.warn("now try to gen the thumbnail for: {}", fi);
         File thumbnailFile = new File(getPicThumbnailPath(id));
         File parentDir = thumbnailFile.getParentFile();
         if (!parentDir.exists())

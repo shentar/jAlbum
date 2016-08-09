@@ -301,6 +301,7 @@ public class UniqPhotosStore
         fi.setWidth(res.getLong("width"));
         fi.setHeight(res.getLong("height"));
         fi.setRoatateDegree(res.getInt("degree"));
+        logger.debug("the file info is: {}", fi);
         return fi;
     }
 

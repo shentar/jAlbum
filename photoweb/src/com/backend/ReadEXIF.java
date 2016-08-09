@@ -59,6 +59,8 @@ public class ReadEXIF
                     return fi;
                 }
             }
+
+            logger.debug("the file is: {}", fi);
             return fi;
         }
         catch (Throwable e)

@@ -26,7 +26,7 @@ public class ThumbnailGenerator
         File imgFile = new File(fpath);
         checkPicType(imgFile);
 
-        logger.debug("target image's size, width:{}, height:{}.", w, h);
+        logger.debug("target image[{}]'s size, width:{}, height:{}.", fpath, w, h);
         Image img = ImageIO.read(imgFile);
         if (img == null)
         {
@@ -48,17 +48,16 @@ public class ThumbnailGenerator
             {
                 h = Integer.parseInt(
                         new java.text.DecimalFormat("0").format(height * w / (width * 1.0)));
-                logger.debug("change image's height, width:{}, height:{}.", w, h);
+
             }
             else
             {
                 w = Integer.parseInt(
                         new java.text.DecimalFormat("0").format(width * h / (height * 1.0)));
-                logger.debug("change image's width, width:{}, height:{}.", w, h);
             }
         }
 
-        logger.info("the fixed width and height are: {}, {}", w, h);
+        logger.info("the fixed width and height are:[{}], {}, {}", fpath, w, h);
 
         BufferedImage bi = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
         Graphics g = bi.getGraphics();
@@ -124,7 +123,6 @@ public class ThumbnailGenerator
             }
 
             ImageIO.write(bi, suffix, new File(thumbnailPath));
-
             return true;
         }
         catch (Exception e)

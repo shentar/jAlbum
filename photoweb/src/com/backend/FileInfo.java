@@ -54,7 +54,10 @@ public class FileInfo
 
     public String toString()
     {
-        return "[path: " + path + "; hahstr: " + hash256 + "; phototime: " + photoTime + "]";
+        return String.format(
+                "[path: %s, ptime: %s, ctime: %s, hashstr: %s, x/y: %s/%s, size: %s, roatate: %s, isDel: %s, ]",
+                path, photoTime + "", cTime + "", hash256, width + "", height + "", size + "",
+                roatateDegree + "", isDel + "");
     }
 
     public long getHeight()

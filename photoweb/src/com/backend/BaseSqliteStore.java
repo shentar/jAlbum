@@ -214,6 +214,7 @@ public class BaseSqliteStore
                 if (oldfi.getSize() == f.length() && oldfi.getcTime() != null
                         && oldfi.getcTime().getTime() == FileTools.getFileCreateTime(f))
                 {
+                    logger.info("the file is exist: " + f);
                     checkPhotoTime(oldfi);
                     return PicStatus.EXIST;
                 }
@@ -274,6 +275,7 @@ public class BaseSqliteStore
         fi.setHeight(res.getLong("height"));
         fi.setDel("true".equalsIgnoreCase(res.getString("deleted")));
         fi.setRoatateDegree(res.getInt("degree"));
+        logger.debug("the file info is: {}", fi);
         return fi;
     }
 
@@ -294,6 +296,7 @@ public class BaseSqliteStore
 
                 if (bneedupdate)
                 {
+                    logger.info("need to update the file info: " + oldfi);
                     updatePhotoInfo(oldfi);
                 }
 

@@ -116,6 +116,8 @@ public class DirWatchService
             return;
         }
 
+        logger.debug("add one path to listen: " + path);
+
         Path p = Paths.get(path);
         if (ws != null && p.toFile().isDirectory())
         {
@@ -158,6 +160,7 @@ public class DirWatchService
                     if (kd.equals(StandardWatchEventKinds.ENTRY_CREATE))
                     {
                         final File cf = new File(fullPath);
+                        logger.info("add one warn: " + cf);
                         if (cf.isDirectory())
                         {
                             this.addListener(fullPath);
@@ -197,6 +200,7 @@ public class DirWatchService
                     else if (kd.equals(StandardWatchEventKinds.ENTRY_MODIFY))
                     {
                         final File cf = new File(fullPath);
+                        logger.warn("the entry is modified: " + cf);
                         if (cf.isFile())
                         {
                             FileTools.threadPool.submit(new Runnable()
