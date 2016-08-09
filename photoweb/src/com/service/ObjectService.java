@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 
 import com.backend.BaseSqliteStore;
 import com.backend.FileInfo;
+import com.backend.FileTools;
 import com.backend.ThumbnailManager;
 import com.backend.UniqPhotosStore;
 import com.utils.web.GenerateHTML;
@@ -55,6 +56,10 @@ public class ObjectService
                 if (size <= 400)
                 {
                     fi = ThumbnailManager.getThumbnail(id);
+                    if (fi == null)
+                    {
+                        FileTools.submitAnThumbnailTask(f);
+                    }
                 }
 
                 if (fi == null)

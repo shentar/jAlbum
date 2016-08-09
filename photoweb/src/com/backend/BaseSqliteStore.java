@@ -7,8 +7,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -17,7 +15,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.utils.conf.AppConfig;
-import com.utils.sys.GloableLockBaseOnString;
 
 public class BaseSqliteStore
 {
@@ -28,9 +25,6 @@ public class BaseSqliteStore
     private ReadWriteLock lock = new ReentrantReadWriteLock(false);
 
     private static BaseSqliteStore instance = new BaseSqliteStore();
-
-    // 对于树莓派等系统，最多只能2个线程同时计算缩略图。
-    public static final ExecutorService threadPool = Executors.newFixedThreadPool(2);
 
     private BaseSqliteStore()
     {
@@ -127,7 +121,7 @@ public class BaseSqliteStore
 
             RefreshFlag.getInstance().getAndSet(true);
 
-            submitAnThumbnailTask(fi);
+            FileTools.submitAnThumbnailTask(fi);
         }
         catch (SQLException e)
         {
@@ -361,7 +355,7 @@ public class BaseSqliteStore
                     }
                     else
                     {
-                        submitAnThumbnailTask(fi);
+                        FileTools.submitAnThumbnailTask(fi);
                     }
                 }
             }
@@ -373,34 +367,6 @@ public class BaseSqliteStore
         {
             logger.error("caught: ", e);
         }
-    }
-
-    private void submitAnThumbnailTask(final FileInfo fi)
-    {
-        boolean isdone = false;
-
-        isdone = GloableLockBaseOnString.getInstance().tryToDo(fi.getHash256());
-        if (!isdone)
-        {
-            logger.info("the task of pic id [{}] is already being done.", fi.getHash256());
-            return;
-        }
-
-        threadPool.submit(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                try
-                {
-                    ThumbnailManager.checkAndGenThumbnail(fi);
-                }
-                finally
-                {
-                    GloableLockBaseOnString.getInstance().done(fi.getHash256());
-                }
-            }
-        });
     }
 
     public void deleteRecord(String str, boolean isPath)

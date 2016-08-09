@@ -27,6 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.utils.conf.AppConfig;
+import com.utils.sys.GloableLockBaseOnString;
 
 public class FileTools
 {
@@ -36,6 +37,9 @@ public class FileTools
     public static long lastScanTime = 0;
     public static final ExecutorService threadPool = Executors
             .newFixedThreadPool(AppConfig.getInstance().getThreadCount());
+
+    // 对于树莓派等系统，最多只能2个线程同时计算缩略图。
+    public static final ExecutorService threadPool4Thumbnail = Executors.newFixedThreadPool(2);
 
     public static void readShortFileContent(byte[] buffer, File f)
             throws FileNotFoundException, IOException
@@ -255,5 +259,30 @@ public class FileTools
             }
         }
         return false;
+    }
+
+    public static void submitAnThumbnailTask(final FileInfo fi)
+    {
+        if (!GloableLockBaseOnString.getInstance().tryToDo(fi.getHash256()))
+        {
+            logger.warn("the task of pic id [{}] is already being done.", fi);
+            return;
+        }
+
+        threadPool4Thumbnail.submit(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                try
+                {
+                    ThumbnailManager.checkAndGenThumbnail(fi);
+                }
+                finally
+                {
+                    GloableLockBaseOnString.getInstance().done(fi.getHash256());
+                }
+            }
+        });
     }
 }
