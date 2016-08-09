@@ -11,6 +11,7 @@ import org.apache.log4j.xml.DOMConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.backend.FreshAllData;
 import com.backend.SqliteConnManger;
 import com.backend.ToolMain;
 import com.backend.dirwathch.DirWatchService;
@@ -69,13 +70,13 @@ public class SpecialListener implements ServletContextListener
             {
                 try
                 {
-                    ToolMain.renewTheData();
+                    FreshAllData.getInstance().freshAll();
                 }
                 catch (Throwable e)
                 {
                     logger.error("caught: ", e);
                 }
             }
-        }, 10, 300, TimeUnit.SECONDS);
+        }, 10, 5, TimeUnit.SECONDS);
     }
 }

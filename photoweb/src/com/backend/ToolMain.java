@@ -9,7 +9,6 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.backend.dirwathch.DirWatchService;
 import com.utils.conf.AppConfig;
 
 public class ToolMain
@@ -17,10 +16,6 @@ public class ToolMain
     private static final Logger logger = LoggerFactory.getLogger(ToolMain.class);
 
     private static BaseSqliteStore metaDataStore = BaseSqliteStore.getInstance();
-
-    private static UniqPhotosStore photostore = UniqPhotosStore.getInstance();
-
-    private static DateTableDao datestore = DateTableDao.getInstance();
 
     private static AtomicLong filecount = new AtomicLong(0);
 
@@ -61,20 +56,6 @@ public class ToolMain
         {
             logger.error("caught: ", th);
         }
-    }
-
-    public static void renewTheData()
-    {
-        boolean needFresh = RefreshFlag.getInstance().getAndSet(false);
-        if (needFresh)
-        {
-            logger.warn("start to refresh all tables.");
-            photostore.getDupFiles();
-            datestore.refreshDate();
-            logger.warn("completed one roundle.");
-        }
-        logger.warn("the count of dir which is monitered is "
-                + DirWatchService.getInstance().getTheWatchDirCount() + ".");
     }
 
     public static void mapAllfiles(final File f, List<String> excludeDirs)
