@@ -19,6 +19,8 @@ public class FreshAllData
 
     private static DateTableDao datestore = DateTableDao.getInstance();
 
+    private boolean firstTime = true;
+
     private long lastEventTime = 0;
 
     private long lastFreshTime = System.currentTimeMillis();
@@ -43,12 +45,13 @@ public class FreshAllData
 
         logger.info("the refresh info is: {}", this);
 
-        if (lastEventTime != 0 && (System.currentTimeMillis() - lastEventTime >= TEN_SECS_IN_MILLS
-                || System.currentTimeMillis() - lastFreshTime >= FIVE_MINS_IN_MILLS))
+        if (firstTime || lastEventTime != 0
+                && (System.currentTimeMillis() - lastEventTime >= TEN_SECS_IN_MILLS
+                        || System.currentTimeMillis() - lastFreshTime >= FIVE_MINS_IN_MILLS))
         {
             doRefresh();
+            firstTime = false;
         }
-
     }
 
     private void doRefresh()
