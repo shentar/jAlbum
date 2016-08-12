@@ -155,7 +155,7 @@ public class BaseSqliteStore
             logger.warn("input file's path is empty.");
             return;
         }
-        deleteRecord(fi.getPath(), false);
+        deleteRecord(fi.getPath(), true);
     }
 
     public FileInfo getOneFileByPath(String path)
@@ -411,7 +411,7 @@ public class BaseSqliteStore
             logger.warn("input file's path is empty.");
             return;
         }
-        deleteRecord(fi.getHash256(), true);
+        deleteRecord(fi.getHash256(), false);
     }
 
     public void deleteRecordsInDirs(String dir)
