@@ -266,6 +266,7 @@ public class GenerateHTML
             String yearNavigage = genYearNavigate();
             sb.append(yearNavigage);
 
+            // 隐藏照片
             sb.append("<script type=\"text/javascript\">"
                     + "function changeUrl(url){window.history.pushState({},0,'http://'+window.location.host+'/'+url);}"
                     + "window.onload=changeUrl(" + "'photos/" + f.getHash256() + "');"
@@ -276,6 +277,7 @@ public class GenerateHTML
 
             if (HeadUtils.isMobile())
             {
+                // 滑动翻页
                 sb.append("$(function() {");
                 sb.append("$(\"#singlephoto\").swipe({");
                 sb.append("swipe: function(event, direction, distance, duration, fingerCount) {");
@@ -291,6 +293,15 @@ public class GenerateHTML
                  * + "'" + getPhotoUrl(f, 1, true) + "'" + ";});");
                  * sb.append("});");
                  */
+            }
+            else
+            {
+                // 键盘翻页。
+                sb.append("$(document).ready(function(){");
+                sb.append("$(\"body\").keyup(function(event){");
+                sb.append("if(event.keyCode==37)top.location=" + "'" + getPhotoUrl(f, 1, false) + "';");
+                sb.append("if(event.keyCode==39)top.location=" + "'" + getPhotoUrl(f, 1, true) + "';");
+                sb.append("});});");
             }
 
             sb.append("</script>");
@@ -352,6 +363,7 @@ public class GenerateHTML
                 r = f.getRoatateDegree() / 90;
             }
 
+            // 左旋转和右旋转照片
             sb.append("<script type=\"text/javascript\">" + "var r = " + r + ";"
                     + "$(\"#rightrotate\").click(function(){r++; if (r > 3){r = 0;}"
                     + "$(\"#singlephoto\").rotate(90*r);}); "
