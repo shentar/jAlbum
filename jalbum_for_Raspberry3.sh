@@ -49,7 +49,7 @@ stopjAlbum ()
     local jpid="$1"
     if [ ! -z "${jpid}" ]
     then
-        start-stop-daemon -K -p "${pidfile}" -a "${JAVA}" -s KILL
+        start-stop-daemon -K -p "${pidfile}" -a "${JAVA}" -s TERM
     fi
     
     while :

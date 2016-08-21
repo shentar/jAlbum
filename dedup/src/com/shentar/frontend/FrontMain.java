@@ -20,14 +20,16 @@ public class FrontMain
         SignalHandler sig = new SignalHandler()
         {
             @Override
-            public void handle(Signal arg0)
+            public void handle(Signal signum)
             {
-                if (arg0.getNumber() == 15)
+                System.out.println("caught signal " + signum);
+                if (signum.getNumber() == 15)
                 {
+                    System.out.println("caught KILL signal, exit now.");
                     try
                     {
                         server.stop();
-                        Runtime.getRuntime().halt(0); 
+                        Runtime.getRuntime().halt(0);
                     }
                     catch (Exception e)
                     {
@@ -38,7 +40,10 @@ public class FrontMain
         };
         Signal.handle(new Signal("TERM"), sig);
 
+        System.out.println("start now.");
         server.start();
+        System.out.println("started.");
         server.join();
+        System.out.println("exit now!");
     }
 }
