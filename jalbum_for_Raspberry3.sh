@@ -54,7 +54,7 @@ stopjAlbum ()
     
     while :
     do
-        pstatus=$(sh ${selfexe} stop)
+        pstatus=$(sh ${selfexe} status)
         if [ "${pstatus}" = "running" ]
         then
             sleep 1
