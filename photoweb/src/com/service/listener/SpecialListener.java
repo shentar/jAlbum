@@ -11,6 +11,7 @@ import org.apache.log4j.xml.DOMConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.backend.FileTools;
 import com.backend.FreshAllData;
 import com.backend.SqliteConnManger;
 import com.backend.ToolMain;
@@ -33,6 +34,8 @@ public class SpecialListener implements ServletContextListener
     public void contextDestroyed(ServletContextEvent arg0)
     {
         f.cancel(true);
+        FileTools.threadPool.shutdownNow();
+        FileTools.threadPool4Thumbnail.shutdownNow();
     }
 
     @Override
