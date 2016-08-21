@@ -34,7 +34,7 @@ stopjAlbum ()
     local jpid="$1"
     if [ ! -z "${jpid}" ]
     then
-        kill -9 "${jpid}"
+        kill -15 "${jpid}"
     fi
     rm -rf "${pidfile}" >/dev/null 2>&1
     echo "stopped"
