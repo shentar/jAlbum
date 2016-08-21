@@ -9,6 +9,20 @@ then
         exit 1
 fi
 
+##################################################
+# Setup JAVA if unset
+##################################################
+if [ -z "${JAVA}" ]
+then
+  JAVA=$(which java)
+fi
+
+if [ -z "${JAVA}" ]
+then
+  echo "Cannot find a Java JDK. Please set either set JAVA or put java (>=1.5) in your PATH." 2>&2
+  exit 1
+fi
+
 pid=0
 status=1
 pidfile="/var/run/jalbum.pid"
@@ -26,7 +40,7 @@ startjAlbum ()
 {
     DIR="$(cd "$(dirname "$0")" && pwd )"
     cd "${DIR}"
-    java -Xms128M -Xmx512M -Xdebug -Xrunjdwp:transport=dt_socket,address=4321,server=y,suspend=n -Dorg.sqlite.lib.path=./ -Dorg.sqlite.lib.name=libsqlite.so -jar start.jar >./log/jstdout.log 2>&1 &
+    ${JAVA} -Xms128M -Xmx512M -Xdebug -Xrunjdwp:transport=dt_socket,address=4321,server=y,suspend=n -Dorg.sqlite.lib.path=./ -Dorg.sqlite.lib.name=libsqlite.so -jar start.jar >./log/jstdout.log 2>&1 &
     echo "$!" >"${pidfile}"
 }
 
@@ -35,7 +49,7 @@ stopjAlbum ()
     local jpid="$1"
     if [ ! -z "${jpid}" ]
     then
-        kill -15 "${jpid}"
+        start-stop-daemon -K -p "${pidfile}" -a "${JAVA}" -s KILL
     fi
     
     while :

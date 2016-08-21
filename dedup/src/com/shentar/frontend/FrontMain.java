@@ -39,5 +39,6 @@ public class FrontMain
 
         server.start();
         server.join();
+        Runtime.getRuntime().halt(0); 
     }
 }
