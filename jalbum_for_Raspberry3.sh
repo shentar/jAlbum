@@ -1,5 +1,6 @@
 #!/bin/bash
 
+selfexe="$0"
 sf=`filename $0`
 param=$1
 if [ -z "${param}" ]
@@ -16,7 +17,7 @@ then
     pid=$(cat ${pidfile})
     if [ ! -z "${pid}" ]
     then
-        $(kill -0 "${pid}")
+        $(kill -0 "${pid}" >/dev/null 2>&1)
         status=$?
     fi
 fi
@@ -36,6 +37,19 @@ stopjAlbum ()
     then
         kill -15 "${jpid}"
     fi
+    
+    while :
+    do
+        pstatus=$(sh ${selfexe})
+        if [ "${pstatus}" = "running" ]
+        then
+            sleep 1
+        else
+            break
+        fi
+        
+    done
+    
     rm -rf "${pidfile}" >/dev/null 2>&1
     echo "stopped"
 }

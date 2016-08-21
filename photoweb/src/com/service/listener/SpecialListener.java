@@ -33,9 +33,11 @@ public class SpecialListener implements ServletContextListener
     @Override
     public void contextDestroyed(ServletContextEvent arg0)
     {
+        logger.warn("began to stop the web service.");
         f.cancel(true);
         FileTools.threadPool.shutdownNow();
         FileTools.threadPool4Thumbnail.shutdownNow();
+        logger.warn("stopped the web service");
     }
 
     @Override
