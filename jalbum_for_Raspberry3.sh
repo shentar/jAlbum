@@ -5,7 +5,7 @@ sf=`filename $0`
 param=$1
 if [ -z "${param}" ]
 then
-        echo "Usage: sf [start|stop|status|restart]"
+        echo "Usage: ${sf} [start|stop|status|restart]"
         exit 1
 fi
 
@@ -47,7 +47,6 @@ stopjAlbum ()
         else
             break
         fi
-        
     done
     
     rm -rf "${pidfile}" >/dev/null 2>&1
