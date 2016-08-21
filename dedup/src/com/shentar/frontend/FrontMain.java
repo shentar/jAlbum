@@ -27,6 +27,7 @@ public class FrontMain
                     try
                     {
                         server.stop();
+                        Runtime.getRuntime().halt(0); 
                     }
                     catch (Exception e)
                     {
@@ -39,6 +40,5 @@ public class FrontMain
 
         server.start();
         server.join();
-        Runtime.getRuntime().halt(0); 
     }
 }
