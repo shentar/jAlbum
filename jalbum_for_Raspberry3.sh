@@ -23,6 +23,7 @@ then
   exit 1
 fi
 
+port=2148
 pid=0
 status=1
 pidfile="/var/run/jalbum.pid"
@@ -40,7 +41,7 @@ startjAlbum ()
 {
     DIR="$(cd "$(dirname "$0")" && pwd )"
     cd "${DIR}"
-    ${JAVA} -Xms128M -Xmx512M -Xdebug -Xrunjdwp:transport=dt_socket,address=4321,server=y,suspend=n -Dorg.sqlite.lib.path=./ -Dorg.sqlite.lib.name=libsqlite.so -jar start.jar >./log/jstdout.log 2>&1 &
+    ${JAVA} -Xms128M -Xmx512M -Xdebug -Xrunjdwp:transport=dt_socket,address=4321,server=y,suspend=n -Dorg.sqlite.lib.path=./ -Dorg.sqlite.lib.name=libsqlite.so -jar start.jar ${port} >./log/jstdout.log 2>&1 &
     echo "$!" >"${pidfile}"
 }
 
