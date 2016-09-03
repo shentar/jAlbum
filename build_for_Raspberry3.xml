@@ -35,7 +35,6 @@
                 <include name="log4j.xml" /> 
             </fileset> 
             <fileset dir="${basedir}">
-                <include name="start_for_Raspberry3.sh" />
                 <include name="jalbum_for_Raspberry3.sh" />
             </fileset>  			
         </copy>
