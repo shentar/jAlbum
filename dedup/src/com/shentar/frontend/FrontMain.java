@@ -8,9 +8,29 @@ import sun.misc.SignalHandler;
 
 public class FrontMain
 {
+    public static final int DEFAULT_PORT = 2148;
+
     public static void main(String[] args) throws Exception
     {
-        final Server server = new Server(2148);
+        int port = DEFAULT_PORT;
+        if (args.length == 1)
+        {
+            String pstr = args[0];
+            try
+            {
+                port = Integer.parseInt(pstr);
+                if (port < 0 || port > 65535)
+                {
+                    port = DEFAULT_PORT;
+                }
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+        }
+
+        final Server server = new Server(port);
 
         WebAppContext context = new WebAppContext();
         context.setContextPath("/");
