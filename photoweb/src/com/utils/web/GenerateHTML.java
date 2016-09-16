@@ -42,7 +42,10 @@ public class GenerateHTML
         StringBuffer sb = new StringBuffer();
         sb.append(getHtmlHead());
         String yearNavigate = genYearNavigate();
-        sb.append(yearNavigate);
+        if (!HeadUtils.isMobile())
+        {
+            sb.append(yearNavigate);
+        }
         String indexPageNavi = genIndexNavigate(firstP, endP);
         sb.append(indexPageNavi);
         sb.append("<table style=\"text-align: center;\" width=\"100%\" height=\"100%\" "
@@ -264,8 +267,10 @@ public class GenerateHTML
         {
             StringBuffer sb = new StringBuffer(getHtmlHead(true));
             String yearNavigage = genYearNavigate();
-            sb.append(yearNavigage);
-
+            if (!HeadUtils.isMobile())
+            {
+                sb.append(yearNavigage);
+            }
             // 隐藏照片
             sb.append("<script type=\"text/javascript\">"
                     + "function changeUrl(url){window.history.pushState({},0,'http://'+window.location.host+'/'+url);}"
@@ -299,8 +304,10 @@ public class GenerateHTML
                 // 键盘翻页。
                 sb.append("$(document).ready(function(){");
                 sb.append("$(\"body\").keyup(function(event){");
-                sb.append("if(event.keyCode==37)top.location=" + "'" + getPhotoUrl(f, 1, false) + "';");
-                sb.append("if(event.keyCode==39)top.location=" + "'" + getPhotoUrl(f, 1, true) + "';");
+                sb.append("if(event.keyCode==37)top.location=" + "'" + getPhotoUrl(f, 1, false)
+                        + "';");
+                sb.append("if(event.keyCode==39)top.location=" + "'" + getPhotoUrl(f, 1, true)
+                        + "';");
                 sb.append("});});");
             }
 
@@ -419,7 +426,10 @@ public class GenerateHTML
         StringBuffer sb = new StringBuffer();
         sb.append(getHtmlHead());
         String yearNavigete = genYearNavigate();
-        sb.append(yearNavigete);
+        if (!HeadUtils.isMobile())
+        {
+            sb.append(yearNavigete);
+        }
         sb.append("<table style=\"text-align: center;\" width=\"100%\" "
                 + "height=\"100%\" border=\"0\" bordercolor=\"#000000\">");
 
@@ -503,8 +513,10 @@ public class GenerateHTML
         sb.append(getHtmlHead());
 
         String yearNavigate = genYearNavigate();
-        sb.append(yearNavigate);
-
+        if (!HeadUtils.isMobile())
+        {
+            sb.append(yearNavigate);
+        }
         String dayNavigate = genDayNavigate(day, prevDay, nextDay);
 
         sb.append(dayNavigate);
@@ -598,7 +610,10 @@ public class GenerateHTML
         StringBuffer sb = new StringBuffer();
         sb.append(getHtmlHead());
         String yearNavigate = genYearNavigate();
-        sb.append(yearNavigate);
+        if (!HeadUtils.isMobile())
+        {
+            sb.append(yearNavigate);
+        }
         String monthNavigate = genMonthNavigate(monthstr, nextMonth, prevMonth);
         sb.append(monthNavigate);
         sb.append("<table style=\"text-align: center;\" width=\"100%\" "
