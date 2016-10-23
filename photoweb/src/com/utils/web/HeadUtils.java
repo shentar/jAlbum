@@ -92,6 +92,7 @@ public class HeadUtils
 
     public static String judgeMIME(String filePath)
     {
+        filePath = filePath.toLowerCase();
         String contentType;
         if (filePath.endsWith(".js"))
         {
@@ -104,6 +105,10 @@ public class HeadUtils
         else if (filePath.endsWith(".gif"))
         {
             contentType = "image/gif";
+        }
+        else if (filePath.endsWith(".mp4"))
+        {
+            contentType = "video/mp4";
         }
         else
         {

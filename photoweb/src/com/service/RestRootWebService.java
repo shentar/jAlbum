@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 
 import com.backend.FileInfo;
 import com.backend.UniqPhotosStore;
+import com.service.video.VideoRootResource;
 import com.utils.conf.AppConfig;
 import com.utils.web.GenerateHTML;
 import com.utils.web.HeadUtils;
@@ -115,6 +116,13 @@ public class RestRootWebService extends HttpServlet
         return builder.build();
     }
 
+    @Path("/video{var:.*}")
+    public Object getViedoResource(@PathParam("var") String var, @Context HttpServletRequest req, @Context HttpServletResponse response)
+            throws IOException
+    {
+        return new VideoRootResource(var);
+    }
+    
     public List<FileInfo> getFileList(HttpServletRequest req)
     {
         List<FileInfo> lst = null;
