@@ -2,13 +2,10 @@ package com.backend;
 
 import java.io.File;
 import java.io.IOException;
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -16,13 +13,9 @@ import org.slf4j.LoggerFactory;
 
 import com.utils.conf.AppConfig;
 
-public class BaseSqliteStore
+public class BaseSqliteStore extends AbstractRecordsStore
 {
     private static final Logger logger = LoggerFactory.getLogger(BaseSqliteStore.class);
-
-    private Connection conn = SqliteConnManger.getInstance().getConn();
-
-    private ReadWriteLock lock = new ReentrantReadWriteLock(false);
 
     private static BaseSqliteStore instance = new BaseSqliteStore();
 

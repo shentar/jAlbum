@@ -1,26 +1,19 @@
 package com.backend;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DateTableDao
+public class DateTableDao extends AbstractRecordsStore
 {
     private static final Logger logger = LoggerFactory.getLogger(DateTableDao.class);
-
-    private Connection conn = SqliteConnManger.getInstance().getConn();
-
-    private ReadWriteLock lock = new ReentrantReadWriteLock(false);
 
     private static DateTableDao instance = new DateTableDao();
 

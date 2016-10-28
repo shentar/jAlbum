@@ -1,6 +1,5 @@
 package com.backend;
 
-import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -10,8 +9,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -19,13 +16,9 @@ import org.slf4j.LoggerFactory;
 
 import com.utils.web.HeadUtils;
 
-public class UniqPhotosStore
+public class UniqPhotosStore extends AbstractRecordsStore
 {
     private static final Logger logger = LoggerFactory.getLogger(UniqPhotosStore.class);
-
-    private Connection conn = SqliteConnManger.getInstance().getConn();
-
-    private ReadWriteLock lock = new ReentrantReadWriteLock(false);
 
     private static UniqPhotosStore instance = new UniqPhotosStore();
 
