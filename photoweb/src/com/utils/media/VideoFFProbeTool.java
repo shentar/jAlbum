@@ -139,8 +139,11 @@ public class VideoFFProbeTool
         if (fs != null)
         {
             Object ti = fs.tags.get("creation_time");
-            logger.warn("class type is: " + ti.getClass());
-            return ti.toString();
+            if (ti != null)
+            {
+                // logger.warn("class type is: " + ti.getClass());
+                return ti.toString();
+            }
         }
 
         return null;
@@ -187,7 +190,16 @@ public class VideoFFProbeTool
                 fi.setWidth(getWidth(fs));
                 fi.setPath(fpath);
                 fi.setSize(new File(fpath).length());
-                fi.setPhotoTime(new Date(sf.parse(getVideoCreateTime(fs)).getTime()));
+                String ptime = getVideoCreateTime(fs);
+                if (StringUtils.isNotBlank(ptime))
+                {
+                    fi.setPhotoTime(new Date(sf.parse(ptime).getTime()));
+                }
+                else
+                {
+                    fi.setPhotoTime(fi.getcTime());
+                }
+
                 fi.setRoatateDegree(0);
                 return fi;
             }
