@@ -1,11 +1,11 @@
 package com.backend;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.List;
 
 public class VideoRecordsStore extends AbstractRecordsStore
 {
-    private static final Logger logger = LoggerFactory.getLogger(UniqPhotosStore.class);
+    // private static final Logger logger =
+    // LoggerFactory.getLogger(UniqPhotosStore.class);
 
     private static VideoRecordsStore instance = new VideoRecordsStore();
 
@@ -19,4 +19,32 @@ public class VideoRecordsStore extends AbstractRecordsStore
         return instance;
     }
 
+    public List<VideoFile> getAllVideos()
+    {
+        return null;
+    }
+
+    public void insertOneVideo(VideoFile vf)
+    {
+    }
+
+    public boolean checkVideoExist(VideoFile vf)
+    {
+        return false;
+    }
+
+    public VideoFile getOneVideoByID(String id)
+    {
+        return null;
+    }
+
+    public List<VideoFile> getNextPage(String id, int count, boolean isNext)
+    {
+        return null;
+    }
+
+    public void deleteRecordByID(String id)
+    {
+
+    }
 }

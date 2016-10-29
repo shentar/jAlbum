@@ -1,4 +1,4 @@
-package com.backend;
+package com.utils.media;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -10,6 +10,8 @@ import javax.imageio.ImageIO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.backend.FileInfo;
+import com.backend.FileTools;
 import com.drew.imaging.ImageMetadataReader;
 import com.drew.metadata.Directory;
 import com.drew.metadata.Metadata;

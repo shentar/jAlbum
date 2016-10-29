@@ -65,43 +65,41 @@ public class ToolMain
         {
             return;
         }
+
+        if (f.isFile())
+        {
+            logger.debug("find a file: " + f);
+            filecount.incrementAndGet();
+            FileTools.threadPool.submit(new Runnable()
+            {
+                public void run()
+                {
+                    checkOneFile(f);
+                    filecount.decrementAndGet();
+                }
+            });
+        }
         else
         {
-            if (f.isFile())
+            for (String s : excludeDirs)
             {
-                logger.debug("find a file: " + f);
-                filecount.incrementAndGet();
-                FileTools.threadPool.submit(new Runnable()
+                if (f.getCanonicalPath().startsWith(s))
                 {
-                    public void run()
-                    {
-                        checkOneFile(f);
-                        filecount.decrementAndGet();
-                    }
-                });
-            }
-            else
-            {
-                for (String s : excludeDirs)
-                {
-                    if (f.getCanonicalPath().startsWith(s))
-                    {
-                        logger.info("this folder is execluded: " + f.getCanonicalPath());
-                        return;
-                    }
-                }
-
-                File[] files = f.listFiles();
-                if (files == null)
-                {
-                    logger.warn("some empty folder: " + f.getCanonicalPath());
+                    logger.info("this folder is execluded: " + f.getCanonicalPath());
                     return;
                 }
+            }
 
-                for (File cf : files)
-                {
-                    mapAllfiles(cf, excludeDirs);
-                }
+            File[] files = f.listFiles();
+            if (files == null)
+            {
+                logger.warn("some empty folder: " + f.getCanonicalPath());
+                return;
+            }
+
+            for (File cf : files)
+            {
+                mapAllfiles(cf, excludeDirs);
             }
         }
     }
@@ -129,7 +127,6 @@ public class ToolMain
                 }
             }
             PerformanceStatistics.getInstance().addOneFile(isCare);
-
         }
         catch (Exception e)
         {

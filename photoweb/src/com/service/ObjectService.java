@@ -25,6 +25,7 @@ import com.backend.FileInfo;
 import com.backend.FileTools;
 import com.backend.ThumbnailManager;
 import com.backend.UniqPhotosStore;
+import com.utils.media.MediaTool;
 import com.utils.web.GenerateHTML;
 import com.utils.web.HeadUtils;
 
@@ -53,7 +54,7 @@ public class ObjectService
                 String sizestr = req.getParameter("size");
                 int size = Integer.parseInt(sizestr);
                 InputStream fi = null;
-                if (size <= 400)
+                if (size <= 400 && !MediaTool.isVideo(f.getPath()))
                 {
                     fi = ThumbnailManager.getThumbnail(id);
                     if (fi == null)

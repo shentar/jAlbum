@@ -1,11 +1,17 @@
-package com.utils.web;
+package com.utils.media;
 
 import java.io.BufferedInputStream;
+import java.io.File;
 import java.io.InputStream;
+import java.sql.Date;
+import java.text.SimpleDateFormat;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.backend.FileInfo;
+import com.backend.FileTools;
 
 import net.bramp.ffmpeg.FFprobe;
 import net.bramp.ffmpeg.probe.FFmpegFormat;
@@ -74,6 +80,7 @@ public class VideoFFProbeTool
 
         return null;
     }
+
     public static FFmpegFormat getFileFormat(String filePath)
     {
         if (StringUtils.isBlank(filePath))
@@ -94,6 +101,7 @@ public class VideoFFProbeTool
 
         return null;
     }
+
     public static FFmpegStream getVideoStream(String filePath)
     {
         if (StringUtils.isBlank(filePath))
@@ -118,7 +126,7 @@ public class VideoFFProbeTool
             }
 
         }
-        catch (Exception e)
+        catch (Throwable e)
         {
             logger.warn("caused: ", e);
         }
@@ -151,5 +159,44 @@ public class VideoFFProbeTool
     public static long getSize(FFmpegFormat fmt)
     {
         return fmt.size;
+    }
+
+    public static int getWidth(FFmpegStream fs)
+    {
+        return fs.width;
+    }
+
+    public static int getHeight(FFmpegStream fs)
+    {
+        return fs.height;
+    }
+
+    public static FileInfo genFileInfos(String fpath)
+    {
+        try
+        {
+            FFmpegStream fs = getVideoStream(fpath);
+            if (fs != null)
+            {
+                File f = new File(fpath);
+                SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                FileInfo fi = new FileInfo();
+                fi.setcTime(new Date(FileTools.getFileCreateTime(f)));
+                fi.setDel(false);
+                fi.setHeight(getHeight(fs));
+                fi.setWidth(getWidth(fs));
+                fi.setPath(fpath);
+                fi.setSize(new File(fpath).length());
+                fi.setPhotoTime(new Date(sf.parse(getVideoCreateTime(fs)).getTime()));
+                fi.setRoatateDegree(0);
+                return fi;
+            }
+        }
+        catch (Exception e)
+        {
+            logger.warn("Caused by: ", e);
+        }
+
+        return null;
     }
 }

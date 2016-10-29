@@ -14,7 +14,8 @@ import org.apache.commons.lang.StringUtils;
 import com.backend.DateRecords;
 import com.backend.DateTableDao;
 import com.backend.FileInfo;
-import com.backend.UniqPhotosStore;;
+import com.backend.UniqPhotosStore;
+import com.utils.media.MediaTool;;
 
 public class GenerateHTML
 {
@@ -396,23 +397,39 @@ public class GenerateHTML
 
     private static String generateImgTag(FileInfo f, int size, String exinfo, String id)
     {
-        String img = "<img";
-        img += " " + exinfo;
-        if (StringUtils.isNotBlank(id))
+        String content = null;
+        if (MediaTool.isVideo(f.getPath()))
         {
-            img += " id=\"" + id + "\"";
+            String video = "<video";
+            video += (restrictSize(f) ? "width" : "height") + "=" + "\"" + size + "px\"";
+            video += "controls=\"controls\">";
+
+            video += "<source";
+            video += " src = \"/photos/" + f.getHash256() + "?content=true&size=" + size + "\""
+                    + "type=\"video/mp4\">";
+            video += "Your browser does not support the video tag.</video>";
+            content = video;
         }
-        img += (restrictSize(f) ? "width" : "height") + "=" + "\"" + size + "px\"";
-        if (HeadUtils.needRotatePic(f, size))
+        else
         {
-            img += " style=\"transform: rotate(" + f.getRoatateDegree()
-                    + "deg); transform-origin: 50% 50% 0px;\"";
+            String img = "<img";
+            img += " " + exinfo;
+            if (StringUtils.isNotBlank(id))
+            {
+                img += " id=\"" + id + "\"";
+            }
+            img += (restrictSize(f) ? "width" : "height") + "=" + "\"" + size + "px\"";
+            if (HeadUtils.needRotatePic(f, size))
+            {
+                img += " style=\"transform: rotate(" + f.getRoatateDegree()
+                        + "deg); transform-origin: 50% 50% 0px;\"";
+            }
+            img += " src = \"/photos/" + f.getHash256() + "?content=true&size=" + size + "\">";
+
+            img += "</img>";
+            content = img;
         }
-        img += " src = \"/photos/" + f.getHash256() + "?content=true&size=" + size + "\">";
-
-        img += "</img>";
-
-        return img;
+        return content;
     }
 
     public static String generateYearPage(String year,

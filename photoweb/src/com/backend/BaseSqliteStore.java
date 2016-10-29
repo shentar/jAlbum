@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.utils.conf.AppConfig;
+import com.utils.media.MediaTool;
 
 public class BaseSqliteStore extends AbstractRecordsStore
 {
@@ -84,7 +85,7 @@ public class BaseSqliteStore extends AbstractRecordsStore
         PreparedStatement prep = null;
         try
         {
-            FileInfo fi = ReadEXIF.genAllInfos(f.getCanonicalPath(), true);
+            FileInfo fi = MediaTool.genFileInfo(f.getCanonicalPath());
             if (fi == null)
             {
                 logger.warn("error file" + f.getCanonicalPath());
@@ -114,13 +115,12 @@ public class BaseSqliteStore extends AbstractRecordsStore
 
             RefreshFlag.getInstance().getAndSet(true);
 
-            FileTools.submitAnThumbnailTask(fi);
+            if (!MediaTool.isVideo(fi.getPath()))
+            {
+                FileTools.submitAnThumbnailTask(fi);
+            }
         }
-        catch (SQLException e)
-        {
-            logger.error("caught: " + f, e);
-        }
-        catch (IOException e)
+        catch (Exception e)
         {
             logger.error("caught: " + f, e);
         }
@@ -277,7 +277,7 @@ public class BaseSqliteStore extends AbstractRecordsStore
                 if (oldfi.getPhotoTime() == null || oldfi.getcTime() == null
                         || oldfi.getPhotoTime().getTime() > System.currentTimeMillis())
                 {
-                    oldfi = ReadEXIF.genAllInfos(oldfi.getPath(), true);
+                    oldfi = MediaTool.genFileInfo(oldfi.getPath());
                     bneedupdate = true;
                 }
 
@@ -341,14 +341,17 @@ public class BaseSqliteStore extends AbstractRecordsStore
                 }
                 else
                 {
-                    if (ThumbnailManager.checkTheThumbnailExist(fi.getHash256()))
+                    if (MediaTool.isVideo(fi.getPath()))
                     {
-                        PerformanceStatistics.getInstance().addOneFile(false);
-                        continue;
-                    }
-                    else
-                    {
-                        FileTools.submitAnThumbnailTask(fi);
+                        if (ThumbnailManager.checkTheThumbnailExist(fi.getHash256()))
+                        {
+                            PerformanceStatistics.getInstance().addOneFile(false);
+                            continue;
+                        }
+                        else
+                        {
+                            FileTools.submitAnThumbnailTask(fi);
+                        }
                     }
                 }
             }
