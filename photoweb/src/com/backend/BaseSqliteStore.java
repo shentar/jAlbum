@@ -341,7 +341,7 @@ public class BaseSqliteStore extends AbstractRecordsStore
                 }
                 else
                 {
-                    if (MediaTool.isVideo(fi.getPath()))
+                    if (!MediaTool.isVideo(fi.getPath()))
                     {
                         if (ThumbnailManager.checkTheThumbnailExist(fi.getHash256()))
                         {

@@ -400,7 +400,7 @@ public class GenerateHTML
         String content = null;
         if (MediaTool.isVideo(f.getPath()))
         {
-            String video = "<video";
+            String video = "<video ";
             video += (restrictSize(f) ? "width" : "height") + "=" + "\"" + size + "px\"";
             video += "controls=\"controls\">";
 
