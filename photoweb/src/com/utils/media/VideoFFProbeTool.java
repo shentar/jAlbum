@@ -201,6 +201,18 @@ public class VideoFFProbeTool
                 }
 
                 fi.setRoatateDegree(0);
+                String extrInfo = String.format("[%s,%s,%s,%s,%s,%s,%s,%s,%s,%s]", 
+                        fs.avg_frame_rate.toString(), 
+                        fs.bit_rate + "", 
+                        fs.bits_per_raw_sample+"", 
+                        fs.codec_name+"", 
+                        fs.duration+"", 
+                        fs.duration_ts+"",
+                        fs.display_aspect_ratio+"",
+                        fs.max_bit_rate+"",
+                        fs.width+"",
+                        fs.height +"");
+                fi.setExtrInfo(extrInfo);
                 return fi;
             }
         }

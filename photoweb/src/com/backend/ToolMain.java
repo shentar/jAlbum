@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.utils.conf.AppConfig;
+import com.utils.media.MediaTool;
 
 public class ToolMain
 {
@@ -121,7 +122,14 @@ public class ToolMain
                     else
                     {
                         isCare = true;
-                        metaDataStore.insertOneRecord(f, FileSHA256Caculater.calFileSha256(f));
+                        if (!MediaTool.isVideo(f.getCanonicalPath()))
+                        {
+                            metaDataStore.insertOneRecord(f, FileSHA256Caculater.calFileSha256(f));
+                        }
+                        else
+                        {
+                            metaDataStore.insertOneRecord(f, null);
+                        }
                     }
                     break;
                 }

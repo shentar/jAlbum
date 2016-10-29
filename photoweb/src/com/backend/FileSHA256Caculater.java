@@ -8,6 +8,8 @@ import java.io.InputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.utils.conf.AppConfig;
 
 public class FileSHA256Caculater
@@ -63,6 +65,19 @@ public class FileSHA256Caculater
                 in.close();
             }
         }
+    }
+
+    public static String calFileSha256(String str) throws NoSuchAlgorithmException, IOException
+    {
+        if (StringUtils.isBlank(str))
+        {
+            return null;
+        }
+
+        MessageDigest md = MessageDigest.getInstance(AppConfig.getInstance().getHashAlog());
+        byte[] buf = str.getBytes("UTF-8");
+        md.update(buf, 0, buf.length);
+        return byte2hex(md.digest());
     }
 
     private static String byte2hex(byte[] b)

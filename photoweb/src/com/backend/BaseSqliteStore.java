@@ -99,6 +99,10 @@ public class BaseSqliteStore extends AbstractRecordsStore
             }
 
             fi.setDel(false);
+            if (StringUtils.isBlank(sha256))
+            {
+                sha256 = FileSHA256Caculater.calFileSha256(fi.getExtrInfo());
+            }
             fi.setHash256(sha256);
             lock.writeLock().lock();
             prep = conn.prepareStatement("insert into files values(?,?,?,?,?,?,?,?,?);");

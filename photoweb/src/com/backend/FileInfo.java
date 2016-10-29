@@ -22,6 +22,8 @@ public class FileInfo
 
     private int roatateDegree = 0;
 
+    private String extrInfo;
+
     public String getPath()
     {
         return path;
@@ -50,6 +52,14 @@ public class FileInfo
     public void setPhotoTime(Date photoTime)
     {
         this.photoTime = photoTime;
+    }
+
+    public String getHashStr()
+    {
+        return String.format(
+                "[ptime: %s, hashstr: %s, x/y: %s/%s, size: %s, roatate: %s, isDel: %s, extrInfo: %s]",
+                photoTime + "", hash256, width + "", height + "", size + "", roatateDegree + "",
+                isDel + "", extrInfo);
     }
 
     public String toString()
@@ -118,5 +128,15 @@ public class FileInfo
     public void setRoatateDegree(int roatateDegree)
     {
         this.roatateDegree = roatateDegree;
+    }
+
+    public String getExtrInfo()
+    {
+        return extrInfo;
+    }
+
+    public void setExtrInfo(String extrInfo)
+    {
+        this.extrInfo = extrInfo;
     }
 }
