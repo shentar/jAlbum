@@ -154,7 +154,7 @@ public class UniqPhotosStore extends AbstractRecordsStore
                 {
                     if (isvideo)
                     {
-                        sqlstr += " and ftype==?";
+                        sqlstr += " where ftype==?";
                     }
 
                     if (!isnext)
