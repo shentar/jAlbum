@@ -315,7 +315,7 @@ public class BaseSqliteStore extends AbstractRecordsStore
         {
             lock.writeLock().lock();
             PreparedStatement prep = conn.prepareStatement(
-                    "update files set phototime=?,width=?,height=? ftype=? where path=?;");
+                    "update files set phototime=?,width=?,height=?,ftype=? where path=?;");
             prep.setDate(1, fi.getPhotoTime());
             prep.setLong(2, fi.getWidth());
             prep.setLong(3, fi.getHeight());
