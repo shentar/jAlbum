@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.backend.FileInfo;
+import com.backend.FileType;
 import com.backend.scan.FileTools;
 
 import net.bramp.ffmpeg.FFprobe;
@@ -190,6 +191,7 @@ public class VideoFFProbeTool
                 fi.setWidth(getWidth(fs));
                 fi.setPath(fpath);
                 fi.setSize(new File(fpath).length());
+                fi.setFtype(FileType.MP4);
                 String ptime = getVideoCreateTime(fs);
                 if (StringUtils.isNotBlank(ptime))
                 {
@@ -201,17 +203,11 @@ public class VideoFFProbeTool
                 }
 
                 fi.setRoatateDegree(0);
-                String extrInfo = String.format("[%s,%s,%s,%s,%s,%s,%s,%s,%s,%s]", 
-                        fs.avg_frame_rate.toString(), 
-                        fs.bit_rate + "", 
-                        fs.bits_per_raw_sample+"", 
-                        fs.codec_name+"", 
-                        fs.duration+"", 
-                        fs.duration_ts+"",
-                        fs.display_aspect_ratio+"",
-                        fs.max_bit_rate+"",
-                        fs.width+"",
-                        fs.height +"");
+                String extrInfo = String.format("[%s,%s,%s,%s,%s,%s,%s,%s,%s,%s]",
+                        fs.avg_frame_rate.toString(), fs.bit_rate + "", fs.bits_per_raw_sample + "",
+                        fs.codec_name + "", fs.duration + "", fs.duration_ts + "",
+                        fs.display_aspect_ratio + "", fs.max_bit_rate + "", fs.width + "",
+                        fs.height + "");
                 fi.setExtrInfo(extrInfo);
                 return fi;
             }

@@ -44,6 +44,7 @@ public class ReadEXIF
         try
         {
             fi = new FileInfo();
+            fi.setFtype(FileTools.getFileType(filePath));
             fi.setPath(f.getCanonicalPath());
             fi.setSize(f.length());
             fi.setcTime(new java.sql.Date(FileTools.getFileCreateTime(new File(fi.getPath()))));

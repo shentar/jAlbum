@@ -27,6 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.backend.FileInfo;
+import com.backend.FileType;
 import com.utils.conf.AppConfig;
 import com.utils.media.ExifCreator;
 import com.utils.media.ThumbnailManager;
@@ -287,5 +288,34 @@ public class FileTools
                 }
             }
         });
+    }
+
+    public static FileType getFileType(String filePath)
+    {
+        filePath = filePath.toLowerCase();
+        FileType contentType;
+
+        if (filePath.endsWith(".mp4"))
+        {
+            contentType = FileType.MP4;
+        }
+        else if (filePath.endsWith(".png"))
+        {
+            contentType = FileType.PNG;
+        }
+        else if (filePath.endsWith(".jpeg"))
+        {
+            contentType = FileType.JPEG;
+        }
+        else if (filePath.endsWith(".jpg"))
+        {
+            contentType = FileType.JPG;
+        }
+        else
+        {
+            contentType = FileType.JPG;
+        }
+
+        return contentType;
     }
 }

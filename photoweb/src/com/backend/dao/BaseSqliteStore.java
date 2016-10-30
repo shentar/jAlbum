@@ -284,15 +284,22 @@ public class BaseSqliteStore extends AbstractRecordsStore
             if (oldfi.getPath().toLowerCase().endsWith(s))
             {
                 boolean bneedupdate = false;
+
+                FileType ftype = FileTools.getFileType(oldfi.getPath());
+                if (!oldfi.getFtype().equals(ftype))
+                {
+                    bneedupdate = true;
+                }
+
                 if (oldfi.getPhotoTime() == null || oldfi.getcTime() == null
                         || oldfi.getPhotoTime().getTime() > System.currentTimeMillis())
                 {
-                    oldfi = MediaTool.genFileInfo(oldfi.getPath());
                     bneedupdate = true;
                 }
 
                 if (bneedupdate)
                 {
+                    oldfi = MediaTool.genFileInfo(oldfi.getPath());
                     logger.info("need to update the file info: " + oldfi);
                     updatePhotoInfo(oldfi);
                 }
@@ -308,11 +315,12 @@ public class BaseSqliteStore extends AbstractRecordsStore
         {
             lock.writeLock().lock();
             PreparedStatement prep = conn.prepareStatement(
-                    "update files set phototime=?,width=?,height=? where path=?;");
+                    "update files set phototime=?,width=?,height=? ftype=? where path=?;");
             prep.setDate(1, fi.getPhotoTime());
             prep.setLong(2, fi.getWidth());
             prep.setLong(3, fi.getHeight());
             prep.setString(4, fi.getPath());
+            prep.setInt(5, fi.getFtype().ordinal());
             prep.execute();
             prep.close();
             RefreshFlag.getInstance().getAndSet(true);
