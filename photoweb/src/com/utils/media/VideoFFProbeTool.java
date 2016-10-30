@@ -137,7 +137,7 @@ public class VideoFFProbeTool
 
     public static String getVideoCreateTime(FFmpegStream fs)
     {
-        if (fs != null)
+        if (fs != null && fs.tags != null)
         {
             Object ti = fs.tags.get("creation_time");
             if (ti != null)
