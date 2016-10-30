@@ -25,7 +25,6 @@ import org.slf4j.LoggerFactory;
 
 import com.backend.FileInfo;
 import com.backend.dao.UniqPhotosStore;
-import com.service.video.VideoRootResource;
 import com.utils.conf.AppConfig;
 import com.utils.web.GenerateHTML;
 import com.utils.web.HeadUtils;
@@ -100,8 +99,7 @@ public class RestRootWebService extends HttpServlet
             throws IOException
     {
         ResponseBuilder builder = Response.status(200);
-        String body = GenerateHTML.genIndexPage(getFileList(req),
-                HeadUtils.isMobile() ? 3 : 5);
+        String body = GenerateHTML.genIndexPage(getFileList(req), HeadUtils.isMobile() ? 3 : 5);
         if (StringUtils.isNotBlank(body))
         {
             builder.entity(body);
@@ -116,13 +114,12 @@ public class RestRootWebService extends HttpServlet
         return builder.build();
     }
 
-    @Path("/video{var:.*}")
-    public Object getViedoResource(@PathParam("var") String var, @Context HttpServletRequest req, @Context HttpServletResponse response)
-            throws IOException
-    {
-        return new VideoRootResource(var);
-    }
-    
+    /*
+     * @Path("/video{var:.*}") public Object getViedoResource(@PathParam("var")
+     * String var, @Context HttpServletRequest req, @Context HttpServletResponse
+     * response) throws IOException { return new VideoRootResource(var); }
+     */
+
     public List<FileInfo> getFileList(HttpServletRequest req)
     {
         List<FileInfo> lst = null;
@@ -148,32 +145,35 @@ public class RestRootWebService extends HttpServlet
             }
         }
 
-        String next = req.getParameter("next");
+        boolean isvideo = (req.getParameter("video") != null);
+        if (isvideo && count > 9)
+        {
+            count = 9;
+        }
 
+        String next = req.getParameter("next");
+        String prev = req.getParameter("prev");
+        String id = null;
+        boolean isnext = true;
         if (StringUtils.isNotBlank(next))
         {
-            lst = UniqPhotosStore.getInstance().getNextNineFileByHashStr(next, count);
-            if (lst == null || lst.isEmpty())
-            {
-                lst = UniqPhotosStore.getInstance().getNextNineFileByHashStr(null, count);
-            }
-
-            return lst;
+            id = next;
         }
-
-        String prev = req.getParameter("prev");
-        if (StringUtils.isNotBlank(prev))
+        else if (StringUtils.isNotBlank(prev))
         {
-            lst = UniqPhotosStore.getInstance().getPrevNineFileByHashStr(prev, count);
-            if (lst == null || lst.isEmpty())
-            {
-                lst = UniqPhotosStore.getInstance().getPrevNineFileByHashStr(null, count);
-            }
-
-            return lst;
+            id = prev;
+            isnext = false;
         }
 
-        return UniqPhotosStore.getInstance().getNextNineFileByHashStr(null, count);
+        lst = UniqPhotosStore.getInstance().getNextNineFileByHashStr(id, count, isnext, isvideo);
+        if ((lst == null || lst.isEmpty()) && id != null)
+        {
+            lst = UniqPhotosStore.getInstance().getNextNineFileByHashStr(null, count, isnext,
+                    isvideo);
+        }
+
+        return lst;
+
     }
 
     @Path("/photos/{id}")

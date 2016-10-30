@@ -118,7 +118,8 @@ public class UniqPhotosStore extends AbstractRecordsStore
         return null;
     }
 
-    public List<FileInfo> getNextNineFileByHashStr(String id, int count)
+    public List<FileInfo> getNextNineFileByHashStr(String id, int count, boolean isnext,
+            boolean isvideo)
     {
         try
         {
@@ -127,6 +128,8 @@ public class UniqPhotosStore extends AbstractRecordsStore
             ResultSet res = null;
             try
             {
+                String sqlstr = "select * from uniqphotos1";
+
                 FileInfo fi = null;
                 if (id != null)
                 {
@@ -135,13 +138,48 @@ public class UniqPhotosStore extends AbstractRecordsStore
 
                 if (fi != null)
                 {
-                    prep = conn.prepareStatement(
-                            "select * from uniqphotos1 where phototime<? limit " + count + ";");
-                    prep.setDate(1, fi.getPhotoTime());
+                    sqlstr += " where phototime<?";
+
+                    if (isvideo)
+                    {
+                        sqlstr += " and ftype==?";
+                    }
+
+                    if (!isnext)
+                    {
+                        sqlstr += " order by phototime asc";
+                    }
                 }
                 else
                 {
-                    prep = conn.prepareStatement("select * from uniqphotos1 limit " + count + ";");
+                    if (isvideo)
+                    {
+                        sqlstr += " and ftype==?";
+                    }
+
+                    if (!isnext)
+                    {
+                        sqlstr += " order by phototime asc";
+                    }
+                }
+
+                sqlstr += " limit " + count + ";";
+                prep = conn.prepareStatement(sqlstr);
+
+                if (fi != null)
+                {
+                    prep.setDate(1, fi.getPhotoTime());
+                    if (isvideo)
+                    {
+                        prep.setInt(2, FileType.MP4.ordinal());
+                    }
+                }
+                else
+                {
+                    if (isvideo)
+                    {
+                        prep.setInt(1, FileType.MP4.ordinal());
+                    }
                 }
 
                 res = prep.executeQuery();
@@ -151,63 +189,6 @@ public class UniqPhotosStore extends AbstractRecordsStore
                 {
                     FileInfo f = getFileInfoFromTable(res);
                     lst.add(f);
-                }
-
-                res.close();
-                prep.close();
-
-                return lst;
-            }
-            catch (Exception e)
-            {
-                logger.error("caught: ", e);
-            }
-        }
-        finally
-        {
-            lock.readLock().unlock();
-        }
-
-        return null;
-
-    }
-
-    public List<FileInfo> getPrevNineFileByHashStr(String id, int count)
-    {
-        try
-        {
-            lock.readLock().lock();
-            PreparedStatement prep = null;
-            ResultSet res = null;
-            try
-            {
-                FileInfo fi = null;
-                if (id != null)
-                {
-                    fi = getOneFileByHashStr(id);
-                }
-
-                if (fi != null)
-                {
-                    prep = conn.prepareStatement(
-                            "select * from uniqphotos1 where phototime>? order by phototime asc limit "
-                                    + count + ";");
-                    prep.setDate(1, fi.getPhotoTime());
-                }
-                else
-                {
-                    prep = conn.prepareStatement(
-                            "select * from uniqphotos1 order by phototime asc limit " + count
-                                    + ";");
-                }
-
-                res = prep.executeQuery();
-
-                List<FileInfo> lst = new LinkedList<FileInfo>();
-                while (res.next())
-                {
-                    FileInfo f = getFileInfoFromTable(res);
-                    lst.add(0, f);
                 }
 
                 res.close();
