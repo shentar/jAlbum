@@ -319,10 +319,11 @@ public class BaseSqliteStore extends AbstractRecordsStore
             prep.setDate(1, fi.getPhotoTime());
             prep.setLong(2, fi.getWidth());
             prep.setLong(3, fi.getHeight());
-            prep.setString(4, fi.getPath());
-            prep.setInt(5, fi.getFtype().ordinal());
+            prep.setInt(4, fi.getFtype().ordinal());
+            prep.setString(5, fi.getPath());
             prep.execute();
             prep.close();
+            logger.warn("update the file to: {}", fi);
             RefreshFlag.getInstance().getAndSet(true);
         }
         catch (Exception e)
