@@ -16,7 +16,6 @@ import com.backend.PicStatus;
 import com.backend.scan.FileTools;
 import com.backend.scan.RefreshFlag;
 import com.utils.conf.AppConfig;
-import com.utils.media.FileSHA256Caculater;
 import com.utils.media.MediaTool;
 import com.utils.media.ThumbnailManager;
 import com.utils.sys.PerformanceStatistics;
@@ -87,44 +86,40 @@ public class BaseSqliteStore extends AbstractRecordsStore
      * @param sha256
      *            文件hash值。
      */
-    public void insertOneRecord(File f, String sha256)
+    public void insertOneRecord(FileInfo fi)
     {
         PreparedStatement prep = null;
         try
         {
-            FileInfo fi = MediaTool.genFileInfo(f.getCanonicalPath());
-            if (fi == null)
-            {
-                logger.warn("error file" + f.getCanonicalPath());
-                return;
-            }
-
-            if (StringUtils.isBlank(sha256))
-            {
-                sha256 = FileSHA256Caculater.calFileSha256(fi.getExtrInfo());
-            }
-
             // 检查是否已经存在隐藏的照片的记录。
-            if (checkPhotoAlreadyHidenByID(sha256))
+            if (checkPhotoAlreadyHidenByID(fi.getHash256()))
             {
                 fi.setDel(true);
             }
+            else
+            {
+                fi.setDel(false);
+            }
 
-            fi.setDel(false);
-
-            fi.setHash256(sha256);
-            lock.writeLock().lock();
-            prep = conn.prepareStatement("insert into files values(?,?,?,?,?,?,?,?,?);");
-            prep.setString(1, fi.getPath());
-            prep.setString(2, fi.getHash256());
-            prep.setLong(3, fi.getSize());
-            prep.setDate(4, fi.getcTime());
-            prep.setDate(5, fi.getPhotoTime());
-            prep.setLong(6, fi.getWidth());
-            prep.setLong(7, fi.getHeight());
-            prep.setString(8, fi.isDel() ? "true" : "false");
-            prep.setLong(9, fi.getRoatateDegree());
-            prep.execute();
+            try
+            {
+                lock.writeLock().lock();
+                prep = conn.prepareStatement("insert into files values(?,?,?,?,?,?,?,?,?);");
+                prep.setString(1, fi.getPath());
+                prep.setString(2, fi.getHash256());
+                prep.setLong(3, fi.getSize());
+                prep.setDate(4, fi.getcTime());
+                prep.setDate(5, fi.getPhotoTime());
+                prep.setLong(6, fi.getWidth());
+                prep.setLong(7, fi.getHeight());
+                prep.setString(8, fi.isDel() ? "true" : "false");
+                prep.setLong(9, fi.getRoatateDegree());
+                prep.execute();
+            }
+            finally
+            {
+                lock.writeLock().unlock();
+            }
 
             RefreshFlag.getInstance().getAndSet(true);
 
@@ -135,7 +130,7 @@ public class BaseSqliteStore extends AbstractRecordsStore
         }
         catch (Exception e)
         {
-            logger.error("caught: " + f, e);
+            logger.error("caught: " + fi, e);
         }
         finally
         {
@@ -150,7 +145,6 @@ public class BaseSqliteStore extends AbstractRecordsStore
                     e.printStackTrace();
                 }
             }
-            lock.writeLock().unlock();
         }
     }
 

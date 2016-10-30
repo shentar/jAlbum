@@ -9,6 +9,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.backend.FileInfo;
 import com.backend.PicStatus;
 import com.backend.dao.BaseSqliteStore;
 import com.utils.conf.AppConfig;
@@ -116,25 +117,39 @@ public class ToolMain
             boolean isCare = false;
             for (String s : AppConfig.getInstance().getFileSuffix())
             {
-                if (f.getName().toLowerCase().endsWith(s)
-                        && f.length() > AppConfig.getInstance().getMinFileSize())
+                if (f.getName().toLowerCase().endsWith(s))
                 {
+                    if (f.length() < AppConfig.getInstance().getMinFileSize())
+                    {
+                        logger.info("the size is too small maybe not a normal photo file: " + f);
+                        break;
+                    }
+
                     if (PicStatus.EXIST == metaDataStore.checkIfAlreadyExist(f))
                     {
                         break;
                     }
+
+                    isCare = true;
+
+                    FileInfo fi = MediaTool.genFileInfo(f.getCanonicalPath());
+                    if (fi == null)
+                    {
+                        logger.warn("error file" + f.getCanonicalPath());
+                        return;
+                    }
+
+                    if (!MediaTool.isVideo(f.getCanonicalPath()))
+                    {
+                        fi.setHash256(FileSHA256Caculater.calFileSha256(f));
+                    }
                     else
                     {
-                        isCare = true;
-                        if (!MediaTool.isVideo(f.getCanonicalPath()))
-                        {
-                            metaDataStore.insertOneRecord(f, FileSHA256Caculater.calFileSha256(f));
-                        }
-                        else
-                        {
-                            metaDataStore.insertOneRecord(f, null);
-                        }
+                        // 视频文件通常比较大，采用提取的特征值代替整文件计算MD5值
+                        fi.setHash256(FileSHA256Caculater.calFileSha256(fi.getExtrInfo()));
                     }
+
+                    metaDataStore.insertOneRecord(fi);
                     break;
                 }
             }
