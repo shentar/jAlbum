@@ -145,11 +145,7 @@ public class RestRootWebService extends HttpServlet
             }
         }
 
-        boolean isvideo = (req.getParameter("video") != null);
-        if (isvideo && count > 9)
-        {
-            count = 9;
-        }
+        boolean isvideo = HeadUtils.isVideo();
 
         String next = req.getParameter("next");
         String prev = req.getParameter("prev");

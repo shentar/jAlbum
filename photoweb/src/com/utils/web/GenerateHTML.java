@@ -127,7 +127,9 @@ public class GenerateHTML
     private static String getPhotoUrl(FileInfo f, int count, boolean isNext)
     {
         String pPara = isNext ? "next" : "prev";
-        return "/?" + pPara + "=" + f.getHash256() + "&count=" + count;
+
+        return "/?" + pPara + "=" + f.getHash256() + "&count=" + count
+                + (HeadUtils.isVideo() ? "&video=true" : "");
     }
 
     public static String genYearNavigate()
@@ -161,6 +163,16 @@ public class GenerateHTML
                     ylst.append("<td width=\"5%\" height=\"30px\" bordercolor=\"#000000\">");
                     ylst.append("<a href=\"/\"><input type=\"button\" value=\"首页\"/></a></td>");
                     i++;
+
+                    ylst.append("<td width=\"5%\" height=\"30px\" bordercolor=\"#000000\">");
+                    ylst.append(
+                            "<a href=\"/?video=true\"><input type=\"button\" value=\"视频\"/></a></td>");
+                    i++;
+
+                    if (HeadUtils.isVideo())
+                    {
+                        break;
+                    }
                 }
 
                 ylst.append("<td width=\"5%\" bordercolor=\"#000000\">");

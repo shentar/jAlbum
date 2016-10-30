@@ -61,6 +61,11 @@ public class WebFilter implements Filter
                 logger.info("user agent is: " + useragent);
             }
 
+            if (newreq.getParameter("video") != null)
+            {
+                SystemProperties.add(SystemConstant.IS_VIDEO, new Boolean(true));
+            }
+
             MDC.put(SystemConstant.REMOTE_ADDR,
                     newreq.getRemoteAddr() + ":" + newreq.getRemotePort());
 

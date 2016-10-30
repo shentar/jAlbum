@@ -147,4 +147,10 @@ public class HeadUtils
 
         return null;
     }
+
+    public static boolean isVideo()
+    {
+        Boolean isvideo = (Boolean) SystemProperties.get(SystemConstant.IS_VIDEO);
+        return isvideo != null && isvideo.booleanValue();
+    }
 }
