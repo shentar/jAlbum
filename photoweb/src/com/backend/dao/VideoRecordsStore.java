@@ -1,6 +1,8 @@
-package com.backend;
+package com.backend.dao;
 
 import java.util.List;
+
+import com.backend.VideoFile;
 
 public class VideoRecordsStore extends AbstractRecordsStore
 {

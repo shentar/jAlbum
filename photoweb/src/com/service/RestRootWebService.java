@@ -24,7 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.backend.FileInfo;
-import com.backend.UniqPhotosStore;
+import com.backend.dao.UniqPhotosStore;
 import com.service.video.VideoRootResource;
 import com.utils.conf.AppConfig;
 import com.utils.web.GenerateHTML;

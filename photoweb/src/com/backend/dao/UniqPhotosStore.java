@@ -1,4 +1,4 @@
-package com.backend;
+package com.backend.dao;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -14,6 +14,8 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.backend.FileInfo;
+import com.backend.scan.RefreshFlag;
 import com.utils.web.HeadUtils;
 
 public class UniqPhotosStore extends AbstractRecordsStore

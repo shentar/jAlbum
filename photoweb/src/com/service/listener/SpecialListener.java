@@ -11,11 +11,11 @@ import org.apache.log4j.xml.DOMConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.backend.FileTools;
-import com.backend.FreshAllData;
-import com.backend.SqliteConnManger;
-import com.backend.ToolMain;
+import com.backend.dao.SqliteConnManger;
 import com.backend.dirwathch.DirWatchService;
+import com.backend.scan.FileTools;
+import com.backend.scan.FreshAllData;
+import com.backend.scan.ToolMain;
 import com.utils.conf.AppConfig;
 
 public class SpecialListener implements ServletContextListener

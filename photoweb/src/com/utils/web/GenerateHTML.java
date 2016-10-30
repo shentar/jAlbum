@@ -11,10 +11,10 @@ import java.util.TreeMap;
 
 import org.apache.commons.lang.StringUtils;
 
-import com.backend.DateRecords;
-import com.backend.DateTableDao;
 import com.backend.FileInfo;
-import com.backend.UniqPhotosStore;
+import com.backend.dao.DateRecords;
+import com.backend.dao.DateTableDao;
+import com.backend.dao.UniqPhotosStore;
 import com.utils.media.MediaTool;;
 
 public class GenerateHTML

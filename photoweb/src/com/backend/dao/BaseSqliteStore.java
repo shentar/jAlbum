@@ -1,4 +1,4 @@
-package com.backend;
+package com.backend.dao;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,8 +11,15 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.backend.FileInfo;
+import com.backend.PicStatus;
+import com.backend.scan.FileTools;
+import com.backend.scan.RefreshFlag;
 import com.utils.conf.AppConfig;
+import com.utils.media.FileSHA256Caculater;
 import com.utils.media.MediaTool;
+import com.utils.media.ThumbnailManager;
+import com.utils.sys.PerformanceStatistics;
 
 public class BaseSqliteStore extends AbstractRecordsStore
 {
@@ -92,6 +99,11 @@ public class BaseSqliteStore extends AbstractRecordsStore
                 return;
             }
 
+            if (StringUtils.isBlank(sha256))
+            {
+                sha256 = FileSHA256Caculater.calFileSha256(fi.getExtrInfo());
+            }
+
             // 检查是否已经存在隐藏的照片的记录。
             if (checkPhotoAlreadyHidenByID(sha256))
             {
@@ -99,10 +111,7 @@ public class BaseSqliteStore extends AbstractRecordsStore
             }
 
             fi.setDel(false);
-            if (StringUtils.isBlank(sha256))
-            {
-                sha256 = FileSHA256Caculater.calFileSha256(fi.getExtrInfo());
-            }
+
             fi.setHash256(sha256);
             lock.writeLock().lock();
             prep = conn.prepareStatement("insert into files values(?,?,?,?,?,?,?,?,?);");

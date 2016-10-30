@@ -12,8 +12,8 @@ import javax.ws.rs.core.Response.ResponseBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.backend.DateRecords;
-import com.backend.DateTableDao;
+import com.backend.dao.DateRecords;
+import com.backend.dao.DateTableDao;
 import com.utils.web.GenerateHTML;
 
 public class YearService

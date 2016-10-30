@@ -1,4 +1,4 @@
-package com.backend;
+package com.backend.scan;
 
 import java.io.File;
 import java.io.IOException;
@@ -9,8 +9,12 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.backend.PicStatus;
+import com.backend.dao.BaseSqliteStore;
 import com.utils.conf.AppConfig;
+import com.utils.media.FileSHA256Caculater;
 import com.utils.media.MediaTool;
+import com.utils.sys.PerformanceStatistics;
 
 public class ToolMain
 {

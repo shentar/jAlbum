@@ -1,4 +1,4 @@
-package com.backend;
+package com.backend.scan;
 
 import java.awt.Dimension;
 import java.awt.Graphics2D;
@@ -26,7 +26,10 @@ import javax.imageio.ImageIO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.backend.FileInfo;
 import com.utils.conf.AppConfig;
+import com.utils.media.ExifCreator;
+import com.utils.media.ThumbnailManager;
 import com.utils.sys.GloableLockBaseOnString;
 
 public class FileTools

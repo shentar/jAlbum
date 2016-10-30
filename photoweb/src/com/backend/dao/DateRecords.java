@@ -1,4 +1,4 @@
-package com.backend;
+package com.backend.dao;
 
 public class DateRecords
 {

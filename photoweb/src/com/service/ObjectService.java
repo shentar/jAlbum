@@ -20,12 +20,12 @@ import javax.ws.rs.core.Response.ResponseBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.backend.BaseSqliteStore;
 import com.backend.FileInfo;
-import com.backend.FileTools;
-import com.backend.ThumbnailManager;
-import com.backend.UniqPhotosStore;
+import com.backend.dao.BaseSqliteStore;
+import com.backend.dao.UniqPhotosStore;
+import com.backend.scan.FileTools;
 import com.utils.media.MediaTool;
+import com.utils.media.ThumbnailManager;
 import com.utils.web.GenerateHTML;
 import com.utils.web.HeadUtils;
 

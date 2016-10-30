@@ -1,4 +1,4 @@
-package com.backend;
+package com.backend.dao;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
