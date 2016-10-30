@@ -24,6 +24,8 @@ public class FileInfo
 
     private String extrInfo;
 
+    private FileType ftype;
+
     public String getPath()
     {
         return path;
@@ -65,9 +67,9 @@ public class FileInfo
     public String toString()
     {
         return String.format(
-                "[path: %s, ptime: %s, ctime: %s, hashstr: %s, x/y: %s/%s, size: %s, roatate: %s, isDel: %s, ]",
+                "[path: %s, ptime: %s, ctime: %s, hashstr: %s, x/y: %s/%s, size: %s, roatate: %s, isDel: %s, filetype: %s]",
                 path, photoTime + "", cTime + "", hash256, width + "", height + "", size + "",
-                roatateDegree + "", isDel + "");
+                roatateDegree + "", isDel + "", ftype.toString());
     }
 
     public long getHeight()
@@ -138,5 +140,15 @@ public class FileInfo
     public void setExtrInfo(String extrInfo)
     {
         this.extrInfo = extrInfo;
+    }
+
+    public FileType getFtype()
+    {
+        return ftype;
+    }
+
+    public void setFtype(FileType ftype)
+    {
+        this.ftype = ftype;
     }
 }

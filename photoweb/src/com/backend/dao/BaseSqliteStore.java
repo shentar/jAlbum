@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.backend.FileInfo;
+import com.backend.FileType;
 import com.backend.PicStatus;
 import com.backend.scan.FileTools;
 import com.backend.scan.RefreshFlag;
@@ -114,6 +115,7 @@ public class BaseSqliteStore extends AbstractRecordsStore
                 prep.setLong(7, fi.getHeight());
                 prep.setString(8, fi.isDel() ? "true" : "false");
                 prep.setLong(9, fi.getRoatateDegree());
+                prep.setInt(10, fi.getFtype().ordinal());
                 prep.execute();
             }
             finally
@@ -269,6 +271,7 @@ public class BaseSqliteStore extends AbstractRecordsStore
         fi.setHeight(res.getLong("height"));
         fi.setDel("true".equalsIgnoreCase(res.getString("deleted")));
         fi.setRoatateDegree(res.getInt("degree"));
+        fi.setFtype(FileType.values()[res.getInt("ftype")]);
         logger.debug("the file info is: {}", fi);
         return fi;
     }

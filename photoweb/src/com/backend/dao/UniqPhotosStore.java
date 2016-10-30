@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.backend.FileInfo;
+import com.backend.FileType;
 import com.backend.scan.RefreshFlag;
 import com.utils.web.HeadUtils;
 
@@ -242,8 +243,8 @@ public class UniqPhotosStore extends AbstractRecordsStore
             logger.warn("delete all records form uniqphotos2.");
 
             prep = conn.prepareStatement("insert into uniqphotos2(path,hashstr,size,phototime,"
-                    + "width,height,degree) select path,sha256,size,"
-                    + "phototime,width,height,degree from files where "
+                    + "width,height,degree, ftype) select path,sha256,size,"
+                    + "phototime,width,height,degree,ftype from files where "
                     + "(deleted <>'true' or deleted is null) and "
                     + "sha256 in(select sha256 from files group by sha256) "
                     + "group by sha256 ORDER BY phototime DESC");
@@ -296,6 +297,7 @@ public class UniqPhotosStore extends AbstractRecordsStore
         fi.setWidth(res.getLong("width"));
         fi.setHeight(res.getLong("height"));
         fi.setRoatateDegree(res.getInt("degree"));
+        fi.setFtype(FileType.values()[res.getInt("ftype")]);
         logger.debug("the file info is: {}", fi);
         return fi;
     }
