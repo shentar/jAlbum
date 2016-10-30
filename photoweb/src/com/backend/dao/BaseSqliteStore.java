@@ -105,7 +105,7 @@ public class BaseSqliteStore extends AbstractRecordsStore
             try
             {
                 lock.writeLock().lock();
-                prep = conn.prepareStatement("insert into files values(?,?,?,?,?,?,?,?,?,？);");
+                prep = conn.prepareStatement("insert into files values(?,?,?,?,?,?,?,?,?,?);");
                 prep.setString(1, fi.getPath());
                 prep.setString(2, fi.getHash256());
                 prep.setLong(3, fi.getSize());
