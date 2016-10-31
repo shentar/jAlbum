@@ -104,7 +104,7 @@ public class AppConfig
 
     public long getMinFileSize()
     {
-        return config.getLong("config.minfilesize", 1024 * 50);
+        return config.getLong("minfilesize", 1024 * 50);
     }
 
     public List<String> getExcludedir()

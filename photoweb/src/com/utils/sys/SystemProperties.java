@@ -7,7 +7,7 @@ public final class SystemProperties
     private ThreadLocal<HashMap<String, Object>> contentLocal;
 
     private static SystemProperties instance = new SystemProperties();
-    
+
     static
     {
         instance.init();
@@ -33,7 +33,7 @@ public final class SystemProperties
             }
         };
     }
-    
+
     public static void clear()
     {
         instance.contentLocal.get().clear();

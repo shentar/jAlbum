@@ -7,7 +7,6 @@ public class RefreshFlag
 {
     private static final Logger logger = LoggerFactory.getLogger(RefreshFlag.class);
 
-
     private static RefreshFlag instance = new RefreshFlag();
 
     private boolean isNeedRefresh = false;

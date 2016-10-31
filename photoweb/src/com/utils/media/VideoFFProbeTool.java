@@ -4,6 +4,7 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.sql.Date;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
 import org.apache.commons.lang.StringUtils;
@@ -22,6 +23,8 @@ import net.bramp.ffmpeg.probe.FFmpegStream.CodecType;
 
 public class VideoFFProbeTool
 {
+    private static final long INVALID_TIME_IN＿MILLS = -1;
+
     private static final Logger logger = LoggerFactory.getLogger(VideoFFProbeTool.class);
 
     public static String getFFprobeInfo(String filePath)
@@ -103,7 +106,7 @@ public class VideoFFProbeTool
         return null;
     }
 
-    public static FFmpegStream getVideoStream(String filePath)
+    private static FFmpegStream getVideoStream(String filePath)
     {
         if (StringUtils.isBlank(filePath))
         {
@@ -135,42 +138,34 @@ public class VideoFFProbeTool
         return null;
     }
 
-    public static String getVideoCreateTime(FFmpegStream fs)
+    private static long getVideoCreateTime(FFmpegStream fs)
     {
         if (fs != null && fs.tags != null)
         {
             Object ti = fs.tags.get("creation_time");
             if (ti != null)
             {
-                // logger.warn("class type is: " + ti.getClass());
-                return ti.toString();
+                SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                try
+                {
+                    return sf.parse(ti.toString()).getTime();
+                }
+                catch (ParseException e)
+                {
+                    logger.warn("caused: ", e);
+                }
             }
         }
 
-        return null;
+        return INVALID_TIME_IN＿MILLS;
     }
 
-    public static double getDuration(FFmpegFormat fmt)
-    {
-        return fmt.duration;
-    }
-
-    public static long getBitrate(FFmpegFormat fmt)
-    {
-        return fmt.bit_rate;
-    }
-
-    public static long getSize(FFmpegFormat fmt)
-    {
-        return fmt.size;
-    }
-
-    public static int getWidth(FFmpegStream fs)
+    private static int getWidth(FFmpegStream fs)
     {
         return fs.width;
     }
 
-    public static int getHeight(FFmpegStream fs)
+    private static int getHeight(FFmpegStream fs)
     {
         return fs.height;
     }
@@ -183,7 +178,7 @@ public class VideoFFProbeTool
             if (fs != null)
             {
                 File f = new File(fpath);
-                SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
                 FileInfo fi = new FileInfo();
                 fi.setcTime(new Date(FileTools.getFileCreateTime(f)));
                 fi.setDel(false);
@@ -192,23 +187,12 @@ public class VideoFFProbeTool
                 fi.setPath(fpath);
                 fi.setSize(new File(fpath).length());
                 fi.setFtype(FileType.MP4);
-                String ptime = getVideoCreateTime(fs);
-                if (StringUtils.isNotBlank(ptime))
-                {
-                    fi.setPhotoTime(new Date(sf.parse(ptime).getTime()));
-                }
-                else
-                {
-                    fi.setPhotoTime(fi.getcTime());
-                }
+
+                long ptime = getVideoCreateTime(fs);
+                fi.setPhotoTime(ptime == INVALID_TIME_IN＿MILLS ? fi.getcTime() : new Date(ptime));
 
                 fi.setRoatateDegree(0);
-                String extrInfo = String.format("[%s,%s,%s,%s,%s,%s,%s,%s,%s,%s]",
-                        fs.avg_frame_rate.toString(), fs.bit_rate + "", fs.bits_per_raw_sample + "",
-                        fs.codec_name + "", fs.duration + "", fs.duration_ts + "",
-                        fs.display_aspect_ratio + "", fs.max_bit_rate + "", fs.width + "",
-                        fs.height + "");
-                fi.setExtrInfo(extrInfo);
+                fi.setExtrInfo(generateFingerStringForVideo(fs));
                 return fi;
             }
         }
@@ -218,5 +202,13 @@ public class VideoFFProbeTool
         }
 
         return null;
+    }
+
+    private static String generateFingerStringForVideo(FFmpegStream fs)
+    {
+        return String.format("[%s,%s,%s,%s,%s,%s,%s,%s,%s,%s]", fs.avg_frame_rate.toString(),
+                fs.bit_rate + "", fs.bits_per_raw_sample + "", fs.codec_name + "", fs.duration + "",
+                fs.duration_ts + "", fs.display_aspect_ratio + "", fs.max_bit_rate + "",
+                fs.width + "", fs.height + "");
     }
 }
