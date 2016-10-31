@@ -3,7 +3,7 @@
 <project name="resttest" basedir="." default="jar">
 	<property name="dist.dir" location="dist" />
 	<property name="lib.dir" location="lib" />
-	<property name="bin.dir" location="bin" />
+	<property name="bin.dir" location="classes" />
 	<property name="src.dir" location="src" />
 
 	<path id="master-classpath">
