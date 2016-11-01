@@ -23,4 +23,6 @@ public class SystemConstant
     public static final String IS_IOS = "is_ios";
 
     public static final String IS_VIDEO = "is_video";
+
+    public static final String RANGE_HEADER = "Range";
 }
