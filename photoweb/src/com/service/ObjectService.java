@@ -78,6 +78,7 @@ public class ObjectService
                         builder.header("Content-Range",
                                 "bytes " + rfi.getPos() + "-" + rfi.getEnd() + "/" + f.getSize());
                         builder.header("Content-length", rfi.getEnd() - rfi.getPos() + 1);
+                        builder.status(206);
                         fi = rfi;
                     }
                 }
