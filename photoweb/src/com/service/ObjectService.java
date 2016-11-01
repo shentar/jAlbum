@@ -147,32 +147,26 @@ public class ObjectService
                 return rlst;
             }
 
+            if (!ranges.contains(","))
+            {
+                Range r = getOneRange(ranges);
+                if (r != null)
+                {
+                    rlst.add(r);
+                }
+
+                return rlst;
+            }
+
             String[] rs = ranges.split(",");
             if (rs != null)
             {
                 for (String oner : rs)
                 {
-                    Matcher ro = oneRangePattern.matcher(oner);
-                    if (ro.matches())
+                    Range r = getOneRange(oner);
+                    if (r != null)
                     {
-                        Range r = new Range();
-                        if (StringUtils.isNotBlank(ro.group(1)))
-                        {
-                            r.setStart(Long.parseLong(ro.group(1)));
-                        }
-                        else
-                        {
-                            r.setStart(-1);
-                        }
-
-                        if (StringUtils.isNotBlank(ro.group(2)))
-                        {
-                            r.setEnd(Long.parseLong(ro.group(2)));
-                        }
-                        else
-                        {
-                            r.setEnd(-1);
-                        }
+                        rlst.add(r);
                     }
                 }
             }
@@ -180,6 +174,36 @@ public class ObjectService
         }
 
         return rlst;
+    }
+
+    private Range getOneRange(String oner)
+    {
+        Matcher ro = oneRangePattern.matcher(oner);
+        if (ro.matches())
+        {
+            Range r = new Range();
+            if (StringUtils.isNotBlank(ro.group(1)))
+            {
+                r.setStart(Long.parseLong(ro.group(1)));
+            }
+            else
+            {
+                r.setStart(-1);
+            }
+
+            if (StringUtils.isNotBlank(ro.group(2)))
+            {
+                r.setEnd(Long.parseLong(ro.group(2)));
+            }
+            else
+            {
+                r.setEnd(-1);
+            }
+
+            return r;
+        }
+
+        return null;
     }
 
     @SuppressWarnings("unused")
