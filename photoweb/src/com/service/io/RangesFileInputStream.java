@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 public class RangesFileInputStream extends InputStream
 {
     private static final Logger logger = LoggerFactory.getLogger(RangesFileInputStream.class);
-    private static final long MAX_DEFAULT_RANGELEN = 1024 * 1024;
+    private static final long MAX_DEFAULT_RANGELEN = 1024 * 1024 * 10;
     private RandomAccessFile raf;
     private long end;
     private boolean erroroccured = false;
