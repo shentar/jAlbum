@@ -2,6 +2,8 @@ package com.utils.sys;
 
 public class SystemConstant
 {
+    public static final String DEFAULT_LOG_VALUE = "-";
+
     public static final String REQUEST_ID_HEADER = "Request-ID";
 
     public static final String USER_AGENT_HEADER = "User-Agent";
@@ -25,4 +27,9 @@ public class SystemConstant
     public static final String IS_VIDEO = "is_video";
 
     public static final String RANGE_HEADER = "Range";
+
+    public static final String RANGE_HEADER_KEY = "range";
+
+    public static final String FILE_NAME = "filename";
+
 }

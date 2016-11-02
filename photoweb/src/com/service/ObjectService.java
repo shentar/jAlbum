@@ -22,6 +22,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.MDC;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,8 +55,8 @@ public class ObjectService
     }
 
     @GET
-    public Response getPhotoData(@Context HttpServletRequest req, @Context HttpServletResponse response)
-            throws IOException
+    public Response getPhotoData(@Context HttpServletRequest req,
+            @Context HttpServletResponse response) throws IOException
     {
         ResponseBuilder builder = Response.status(200);
         BaseSqliteStore meta = BaseSqliteStore.getInstance();
@@ -67,13 +68,15 @@ public class ObjectService
                 InputStream fi = null;
                 if (MediaTool.isVideo(f.getPath()))
                 {
+                    MDC.put(SystemConstant.RANGE_HEADER_KEY,
+                            req.getHeader(SystemConstant.RANGE_HEADER));
                     List<Range> rlst = parseRangeStrEx(req.getHeader(SystemConstant.RANGE_HEADER));
                     if (!rlst.isEmpty())
                     {
                         Range r = rlst.get(0);
                         @SuppressWarnings("resource")
-                        RangesFileInputStream rfi = new RangesFileInputStream(new File(f.getPath()), r.getStart(),
-                                r.getEnd());
+                        RangesFileInputStream rfi = new RangesFileInputStream(new File(f.getPath()),
+                                r.getStart(), r.getEnd());
                         // Content-Range:bytes 0-17190973/17190974
                         builder.header("Content-Range",
                                 "bytes " + rfi.getPos() + "-" + rfi.getEnd() + "/" + f.getSize());
@@ -104,11 +107,13 @@ public class ObjectService
 
                 if (fi != null)
                 {
+                    String fileName = new File(f.getPath()).getName();
+                    MDC.put(SystemConstant.FILE_NAME, fileName);
                     builder.entity(fi);
                     String contenttype = getContentType(f.getPath());
                     builder.header("Content-type", contenttype);
                     HeadUtils.setExpiredTime(builder);
-                    builder.header("Content-Disposition", "filename=" + new File(f.getPath()).getName());
+                    builder.header("Content-Disposition", "filename=" + fileName);
                     builder.header("PicFileFullPath", URLEncoder.encode(f.getPath(), "UTF-8"));
                     logger.info("the file is: {}, Mime: {}", f, contenttype);
                 }
@@ -129,51 +134,59 @@ public class ObjectService
         return builder.build();
     }
 
-    private List<Range> parseRangeStrEx(String rstr)
+    private List<Range> parseRangeStrEx(String rstr) throws IOException
     {
         List<Range> rlst = new LinkedList<Range>();
-        if (StringUtils.isBlank(rstr))
+        try
         {
-            return rlst;
-        }
-
-        Matcher rall = rangeStrPattern.matcher(rstr);
-        boolean isMatchAll = rall.matches();
-        if (isMatchAll)
-        {
-            String ranges = rall.group(1);
-            if (StringUtils.isBlank(ranges))
+            if (StringUtils.isBlank(rstr))
             {
                 return rlst;
             }
 
-            if (!ranges.contains(","))
+            Matcher rall = rangeStrPattern.matcher(rstr);
+            boolean isMatchAll = rall.matches();
+            if (isMatchAll)
             {
-                Range r = getOneRange(ranges);
-                if (r != null)
+                String ranges = rall.group(1);
+                if (StringUtils.isBlank(ranges))
                 {
-                    rlst.add(r);
+                    return rlst;
                 }
 
-                return rlst;
-            }
-
-            String[] rs = ranges.split(",");
-            if (rs != null)
-            {
-                for (String oner : rs)
+                if (!ranges.contains(","))
                 {
-                    Range r = getOneRange(oner);
+                    Range r = getOneRange(ranges);
                     if (r != null)
                     {
                         rlst.add(r);
                     }
+
+                    return rlst;
                 }
+
+                String[] rs = ranges.split(",");
+                if (rs != null)
+                {
+                    for (String oner : rs)
+                    {
+                        Range r = getOneRange(oner);
+                        if (r != null)
+                        {
+                            rlst.add(r);
+                        }
+                    }
+                }
+
             }
 
+            return rlst;
         }
-
-        return rlst;
+        catch (Exception e)
+        {
+            logger.warn("caused: ", e);
+            throw new IOException("some error occured when parse the range header.");
+        }
     }
 
     private Range getOneRange(String oner)
@@ -265,8 +278,8 @@ public class ObjectService
     }
 
     @DELETE
-    public Response deletePhotoData(@Context HttpServletRequest req, @Context HttpServletResponse response)
-            throws IOException
+    public Response deletePhotoData(@Context HttpServletRequest req,
+            @Context HttpServletResponse response) throws IOException
     {
         logger.warn("try to delete the photo: " + id);
         ResponseBuilder builder = Response.status(204);

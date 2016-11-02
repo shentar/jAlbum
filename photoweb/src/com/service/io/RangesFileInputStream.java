@@ -11,12 +11,11 @@ import org.slf4j.LoggerFactory;
 public class RangesFileInputStream extends InputStream
 {
     private static final Logger logger = LoggerFactory.getLogger(RangesFileInputStream.class);
+    private static final long MAX_DEFAULT_RANGELEN = 1024 * 1024;
     private RandomAccessFile raf;
-
     private long end;
     private boolean erroroccured = false;
     private long pos = 0;
-    // private long MAX_DEFAULT_RANGELEN = 1024 * 512;
 
     public RangesFileInputStream(File in, long start, long end)
     {
@@ -34,7 +33,8 @@ public class RangesFileInputStream extends InputStream
         {
             if (in != null)
             {
-                end = in.length();
+                end = (in.length() > (start + MAX_DEFAULT_RANGELEN) ? (start + MAX_DEFAULT_RANGELEN)
+                        : in.length());
                 --end;
             }
         }

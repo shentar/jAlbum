@@ -413,12 +413,15 @@ public class GenerateHTML
         if (MediaTool.isVideo(f.getPath()))
         {
             String video = "<video ";
-            video += (restrictSize(f) ? "width" : "height") + "=" + "\"" + size + "px\"";
-            video += "controls=\"controls\">";
+            if (f.getHeight() > size || f.getWidth() > size)
+            {
+                video += " " + (restrictSize(f) ? "width" : "height") + "=" + "\"" + size + "\"";
+            }
+            video += " controls=\"controls\">";
 
             video += "<source";
             video += " src = \"/photos/" + f.getHash256() + "?content=true&size=" + size + "\""
-                    + "type=\"video/mp4\">";
+                    + "type=\"video/mp4\"/>";
             video += "Your browser does not support the video tag.</video>";
             content = video;
         }
@@ -430,14 +433,16 @@ public class GenerateHTML
             {
                 img += " id=\"" + id + "\"";
             }
-            img += (restrictSize(f) ? "width" : "height") + "=" + "\"" + size + "px\"";
+            if (f.getHeight() > size || f.getWidth() > size)
+            {
+                img += " " + (restrictSize(f) ? "width" : "height") + "=" + "\"" + size + "px\"";
+            }
             if (HeadUtils.needRotatePic(f, size))
             {
                 img += " style=\"transform: rotate(" + f.getRoatateDegree()
                         + "deg); transform-origin: 50% 50% 0px;\"";
             }
             img += " src = \"/photos/" + f.getHash256() + "?content=true&size=" + size + "\">";
-
             img += "</img>";
             content = img;
         }

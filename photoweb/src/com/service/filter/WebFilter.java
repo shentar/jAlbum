@@ -39,6 +39,7 @@ public class WebFilter implements Filter
         long startTime = System.currentTimeMillis();
         try
         {
+            initMDC();
             MDC.put(SystemConstant.REQEUSTIDKEY, UUIDGenerator.getUUID());
 
             if (!(req instanceof HttpServletRequest) || !(res instanceof HttpServletResponse))
@@ -69,7 +70,12 @@ public class WebFilter implements Filter
             MDC.put(SystemConstant.REMOTE_ADDR,
                     newreq.getRemoteAddr() + ":" + newreq.getRemotePort());
 
-            MDC.put(SystemConstant.HTTP_URI, newreq.getRequestURI());
+            String url = newreq.getRequestURI();
+            if (StringUtils.isNotBlank(newreq.getQueryString()))
+            {
+                url += ("?" + newreq.getQueryString());
+            }
+            MDC.put(SystemConstant.HTTP_URI, url);
 
             chains.doFilter(newreq, newres);
 
@@ -84,6 +90,19 @@ public class WebFilter implements Filter
             SystemProperties.clear();
             MDC.clear();
         }
+    }
+
+    private void initMDC()
+    {
+        MDC.put(SystemConstant.CONSUMED_TIME, SystemConstant.DEFAULT_LOG_VALUE);
+        MDC.put(SystemConstant.IS_MOBILE_KEY, SystemConstant.DEFAULT_LOG_VALUE);
+        MDC.put(SystemConstant.HTTP_STATUS, SystemConstant.DEFAULT_LOG_VALUE);
+        MDC.put(SystemConstant.REMOTE_ADDR, SystemConstant.DEFAULT_LOG_VALUE);
+        MDC.put(SystemConstant.USER_AGENT, SystemConstant.DEFAULT_LOG_VALUE);
+        MDC.put(SystemConstant.REQEUSTIDKEY, SystemConstant.DEFAULT_LOG_VALUE);
+        MDC.put(SystemConstant.FILE_NAME, SystemConstant.DEFAULT_LOG_VALUE);
+        MDC.put(SystemConstant.HTTP_URI, SystemConstant.DEFAULT_LOG_VALUE);
+        MDC.put(SystemConstant.RANGE_HEADER_KEY, SystemConstant.DEFAULT_LOG_VALUE);
     }
 
     @Override
