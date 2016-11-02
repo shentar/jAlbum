@@ -63,7 +63,8 @@ public class GenerateHTML
             }
 
             sb.append("<td width=\"20%\" height=\"18%\" bordercolor=\"#000000\"><br/>");
-            sb.append("<a href=\"/photos/" + f.getHash256() + "\">");
+            sb.append("<a href=\"/photos/" + f.getHash256()
+                    + (HeadUtils.isVideo() ? "?video=true" : "") + "\">");
             sb.append(generateImgTag(f, 310));
             sb.append("</a></td>");
 
