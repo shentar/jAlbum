@@ -63,27 +63,14 @@ public class ObjectService
         FileInfo f = meta.getOneFileByHashID(id);
         if ("true".equalsIgnoreCase(req.getParameter("content")))
         {
-            if (f != null && new File(f.getPath()).isFile())
+            File cfile = new File(f.getPath());
+            if (f != null && cfile.isFile())
             {
                 InputStream fi = null;
                 if (MediaTool.isVideo(f.getPath()))
                 {
-                    MDC.put(SystemConstant.RANGE_HEADER_KEY,
-                            req.getHeader(SystemConstant.RANGE_HEADER));
-                    List<Range> rlst = parseRangeStrEx(req.getHeader(SystemConstant.RANGE_HEADER));
-                    if (!rlst.isEmpty())
-                    {
-                        Range r = rlst.get(0);
-                        @SuppressWarnings("resource")
-                        RangesFileInputStream rfi = new RangesFileInputStream(new File(f.getPath()),
-                                r.getStart(), r.getEnd());
-                        // Content-Range:bytes 0-17190973/17190974
-                        builder.header("Content-Range",
-                                "bytes " + rfi.getPos() + "-" + rfi.getEnd() + "/" + f.getSize());
-                        builder.header("Content-length", rfi.getEnd() - rfi.getPos() + 1);
-                        builder.status(206);
-                        fi = rfi;
-                    }
+                    String rangeStr = req.getHeader(SystemConstant.RANGE_HEADER);
+                    fi = dealWitVideoRangeDownload(builder, f, cfile, rangeStr);
                 }
                 else
                 {
@@ -92,17 +79,22 @@ public class ObjectService
 
                     if (size <= 400)
                     {
-                        fi = ThumbnailManager.getThumbnail(id);
-                        if (fi == null)
+                        File cf = ThumbnailManager.getThumbnail(id);
+                        if (cf == null)
                         {
                             FileTools.submitAnThumbnailTask(f);
+                        }
+                        else
+                        {
+                            cfile = cf;
                         }
                     }
                 }
 
-                if (fi == null)
+                if (fi == null && cfile != null)
                 {
-                    fi = new BufferedInputStream(new FileInputStream(new File(f.getPath())));
+                    fi = new BufferedInputStream(new FileInputStream(cfile));
+                    builder.header("Content-length", cfile.length() + "");
                 }
 
                 if (fi != null)
@@ -132,6 +124,29 @@ public class ObjectService
         }
 
         return builder.build();
+    }
+
+    private InputStream dealWitVideoRangeDownload(ResponseBuilder builder, FileInfo f, File cfile,
+            String rangeStr) throws IOException
+    {
+        if (StringUtils.isNotBlank(rangeStr))
+        {
+            MDC.put(SystemConstant.RANGE_HEADER_KEY, rangeStr);
+        }
+
+        List<Range> rlst = parseRangeStrEx(rangeStr);
+        if (!rlst.isEmpty())
+        {
+            Range r = rlst.get(0);
+            RangesFileInputStream rfi = new RangesFileInputStream(cfile, r.getStart(), r.getEnd());
+            // Content-Range:bytes 0-17190973/17190974
+            builder.header("Content-Range",
+                    "bytes " + rfi.getPos() + "-" + rfi.getEnd() + "/" + f.getSize());
+            builder.header("Content-length", rfi.getEnd() - rfi.getPos() + 1);
+            builder.status(206);
+            return rfi;
+        }
+        return null;
     }
 
     private List<Range> parseRangeStrEx(String rstr) throws IOException

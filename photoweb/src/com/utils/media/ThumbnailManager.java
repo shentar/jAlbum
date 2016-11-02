@@ -1,11 +1,7 @@
 package com.utils.media;
 
-import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -114,7 +110,7 @@ public class ThumbnailManager
         }
     }
 
-    public static InputStream getThumbnail(String id)
+    public static File getThumbnail(String id)
     {
         if (!isBaseDriValid)
         {
@@ -125,14 +121,7 @@ public class ThumbnailManager
         File f = new File(path);
         if (f.isFile())
         {
-            try
-            {
-                return new BufferedInputStream(new FileInputStream(f));
-            }
-            catch (FileNotFoundException e)
-            {
-                logger.warn("caused by: ", e);
-            }
+            return f;
         }
 
         return null;
