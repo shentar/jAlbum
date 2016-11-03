@@ -23,7 +23,7 @@ import net.bramp.ffmpeg.probe.FFmpegStream.CodecType;
 
 public class VideoFFProbeTool
 {
-    private static final long INVALID_TIME_IN＿MILLS = -1;
+    private static final long INVALID_TIME_IN_MILLS = -1;
 
     private static final Logger logger = LoggerFactory.getLogger(VideoFFProbeTool.class);
 
@@ -157,7 +157,7 @@ public class VideoFFProbeTool
             }
         }
 
-        return INVALID_TIME_IN＿MILLS;
+        return INVALID_TIME_IN_MILLS;
     }
 
     private static int getWidth(FFmpegStream fs)
@@ -189,7 +189,7 @@ public class VideoFFProbeTool
                 fi.setFtype(FileType.MP4);
 
                 long ptime = getVideoCreateTime(fs);
-                fi.setPhotoTime(ptime == INVALID_TIME_IN＿MILLS ? fi.getcTime() : new Date(ptime));
+                fi.setPhotoTime(ptime == INVALID_TIME_IN_MILLS ? fi.getcTime() : new Date(ptime));
 
                 fi.setRoatateDegree(0);
                 fi.setExtrInfo(generateFingerStringForVideo(fs));

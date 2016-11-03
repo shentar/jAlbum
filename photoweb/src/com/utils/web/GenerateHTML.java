@@ -63,8 +63,7 @@ public class GenerateHTML
             }
 
             sb.append("<td width=\"20%\" height=\"18%\" bordercolor=\"#000000\"><br/>");
-            sb.append("<a href=\"/photos/" + f.getHash256()
-                    + (HeadUtils.isVideo() ? "?video=true" : "") + "\">");
+            sb.append("<a href=\"/photos/" + f.getHash256() + videoTab(true) + "\">");
             sb.append(generateImgTag(f, 310));
             sb.append("</a></td>");
 
@@ -87,6 +86,11 @@ public class GenerateHTML
         sb.append(getHtmlFoot());
 
         return sb.toString();
+    }
+
+    private static String videoTab(boolean isFirst)
+    {
+        return HeadUtils.isVideo() ? ((isFirst ? "?" : "&") + "video=true") : "";
     }
 
     private static String genIndexNavigate(FileInfo firstP, FileInfo endP)
@@ -129,8 +133,7 @@ public class GenerateHTML
     {
         String pPara = isNext ? "next" : "prev";
 
-        return "/?" + pPara + "=" + f.getHash256() + "&count=" + count
-                + (HeadUtils.isVideo() ? "&video=true" : "");
+        return "/?" + pPara + "=" + f.getHash256() + "&count=" + count + videoTab(false);
     }
 
     public static String genYearNavigate()
@@ -212,8 +215,6 @@ public class GenerateHTML
                 + "<html xmlns=\"http://www.w3.org/1999/xhtml\" lang=\"zh-CN\">"
                 + "<head profile=\"http://gmpg.org/xfn/11\">"
                 + "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"/> "
-                // + "<meta name=\"viewport\" content=\"width=device-width,
-                // initial-scale=1\" />"
                 + "<script type=\"text/javascript\" src=\"/js/jquery-3.1.0.js\"></script>";
 
         if (HeadUtils.isMobile())
@@ -288,9 +289,10 @@ public class GenerateHTML
             // 隐藏照片
             sb.append("<script type=\"text/javascript\">"
                     + "function changeUrl(url){window.history.pushState({},0,'http://'+window.location.host+'/'+url);}"
-                    + "window.onload=changeUrl(" + "'photos/" + f.getHash256() + "');"
+                    + "window.onload=changeUrl(" + "'photos/" + f.getHash256() + videoTab(true)
+                    + "');"
                     + "function deletephoto(path){jConfirm('该操作将永久隐藏照片，无法撤消，确认是否继续？','确认',function(r){if (r){"
-                    + "changeUrl('?next=" + f.getHash256() + "&count=1');"
+                    + "changeUrl('?next=" + f.getHash256() + videoTab(false) + "&count=1');"
                     + "window.location.reload();" + "$.ajax({url:path,type:'DELETE',"
                     + "success:function(result){}});}});}");
 
@@ -333,14 +335,11 @@ public class GenerateHTML
             String dayStr = HeadUtils.formatDate(f.getPhotoTime());
             String viewDayStr = String.format("%s年%s月%s日", dayStr.substring(0, 4),
                     dayStr.substring(4, 6), dayStr.substring(6, 8));
-            String returnToDayPage = "<a href=\"/day/" + dayStr + "\">浏览 <b>" + viewDayStr
-                    + "</b></a>";
-
+            String returnToDayPage = "<a href=\"/day/" + dayStr + videoTab(true) + "\">浏览 <b>"
+                    + viewDayStr + "</b></a>";
             sb.append("<tr><td width=\"100%\" bordercolor=\"#000000\">");
             sb.append(returnToDayPage + seprator);
-            sb.append(
-
-                    getPhotoLink(f, false) + seprator);
+            sb.append(getPhotoLink(f, false) + seprator);
             sb.append(getPhotoLink(f, 1, false));
             sb.append("&nbsp;" + f.getPhotoTime() + "&nbsp;");
             sb.append(getPhotoLink(f, 1, true) + seprator);
@@ -570,7 +569,7 @@ public class GenerateHTML
             }
 
             sb.append("<td width=\"20%\" height=\"18%\" bordercolor=\"#000000\">");
-            sb.append("<a href=\"/photos/" + f.getHash256() + "\">");
+            sb.append("<a href=\"/photos/" + f.getHash256() + videoTab(true) + "\">");
             sb.append(generateImgTag(f, 310));
             sb.append("</a></td>");
 
