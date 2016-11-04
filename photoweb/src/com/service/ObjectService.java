@@ -140,9 +140,12 @@ public class ObjectService
             Range r = rlst.get(0);
             RangesFileInputStream rfi = new RangesFileInputStream(cfile, r.getStart(), r.getEnd());
             // Content-Range:bytes 0-17190973/17190974
-            builder.header("Content-Range",
-                    "bytes " + rfi.getPos() + "-" + rfi.getEnd() + "/" + f.getSize());
-            builder.header("Content-length", rfi.getEnd() - rfi.getPos() + 1);
+            String contentRange = "bytes " + rfi.getPos() + "-" + rfi.getEnd() + "/" + f.getSize();
+            logger.debug("Content-Range is: " + contentRange);
+            String contentLength = "" + (rfi.getEnd() - rfi.getPos() + 1);
+            logger.debug("Content-Length is: " + contentLength);
+            builder.header("Content-Range", contentRange);
+            builder.header("Content-Length", contentLength);
             builder.status(206);
             return rfi;
         }
