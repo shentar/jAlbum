@@ -75,6 +75,7 @@ public class RangesFileInputStream extends InputStream
     {
         if (erroroccured || buf == null || off < 0 || len < 0 || off + len > buf.length)
         {
+            logger.warn("error occured!");
             throw new IOException("error in put buffer!");
         }
 
