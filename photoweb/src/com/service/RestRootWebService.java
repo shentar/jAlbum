@@ -99,7 +99,8 @@ public class RestRootWebService extends HttpServlet
             throws IOException
     {
         ResponseBuilder builder = Response.status(200);
-        String body = GenerateHTML.genIndexPage(getFileList(req), HeadUtils.isMobile() ? 3 : 5);
+        String body = GenerateHTML.genIndexPage(getFileList(req),
+                (HeadUtils.isMobile() || HeadUtils.isVideo()) ? 3 : 5);
         if (StringUtils.isNotBlank(body))
         {
             builder.entity(body);
@@ -148,9 +149,9 @@ public class RestRootWebService extends HttpServlet
         boolean isvideo = HeadUtils.isVideo();
         if (isvideo)
         {
-            if (count > 5)
+            if (count > 6)
             {
-                count = 5;
+                count = 6;
             }
         }
 

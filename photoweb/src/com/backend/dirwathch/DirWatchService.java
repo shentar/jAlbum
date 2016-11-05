@@ -157,6 +157,7 @@ public class DirWatchService
                     final String fullPath = rootPath + event.context();
                     @SuppressWarnings("unchecked")
                     Kind<Path> kd = (Kind<Path>) event.kind();
+
                     if (kd.equals(StandardWatchEventKinds.ENTRY_CREATE))
                     {
                         final File cf = new File(fullPath);
@@ -200,9 +201,9 @@ public class DirWatchService
                     else if (kd.equals(StandardWatchEventKinds.ENTRY_MODIFY))
                     {
                         final File cf = new File(fullPath);
-                        logger.warn("the entry is modified: " + cf);
                         if (cf.isFile())
                         {
+                            logger.warn("the entry is modified: " + cf);
                             FileTools.threadPool.submit(new Runnable()
                             {
                                 @Override

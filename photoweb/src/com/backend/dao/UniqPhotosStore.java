@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -138,7 +139,15 @@ public class UniqPhotosStore extends AbstractRecordsStore
 
                 if (fi != null)
                 {
-                    sqlstr += " where phototime<?";
+                    sqlstr += " where phototime";
+                    if (isnext)
+                    {
+                        sqlstr += "<?";
+                    }
+                    else
+                    {
+                        sqlstr += ">?";
+                    }
 
                     if (isvideo)
                     {
@@ -189,6 +198,11 @@ public class UniqPhotosStore extends AbstractRecordsStore
                 {
                     FileInfo f = getFileInfoFromTable(res);
                     lst.add(f);
+                }
+
+                if (!isnext && !lst.isEmpty())
+                {
+                    Collections.reverse(lst);
                 }
 
                 res.close();
