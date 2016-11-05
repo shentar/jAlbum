@@ -61,10 +61,17 @@ public class ObjectService
         ResponseBuilder builder = Response.status(200);
         BaseSqliteStore meta = BaseSqliteStore.getInstance();
         FileInfo f = meta.getOneFileByHashID(id);
+
+        if (f == null)
+        {
+            builder.status(404);
+            return builder.build();
+        }
+
         if ("true".equalsIgnoreCase(req.getParameter("content")))
         {
             File cfile = new File(f.getPath());
-            if (f != null && cfile.isFile())
+            if (cfile.isFile())
             {
                 InputStream fi = null;
                 if (MediaTool.isVideo(f.getPath()))
