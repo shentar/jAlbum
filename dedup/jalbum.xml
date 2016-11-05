@@ -31,7 +31,7 @@ thumbnaildir specify the folder which to store the thumbnail to.
     <excludedir>
         <dir>C:\\windows\\</dir>
         <dir>C:\\Program Files\\</dir>
-        <dir>.\\</dir>        
+        <dir>./</dir>        
     </excludedir>
     
     <thumbnaildir>
