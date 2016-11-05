@@ -3,6 +3,8 @@ package com.utils.media;
 import org.apache.commons.lang.StringUtils;
 
 import com.backend.FileInfo;
+import com.backend.FileType;
+import com.utils.web.HeadUtils;
 
 public class MediaTool
 {
@@ -25,11 +27,6 @@ public class MediaTool
 
     public static boolean isVideo(String filePath)
     {
-        if (StringUtils.isBlank(filePath))
-        {
-            return false;
-        }
-
-        return filePath.toLowerCase().endsWith(".mp4");
+        return FileType.VIDEO.equals(HeadUtils.getFileType(filePath));
     }
 }

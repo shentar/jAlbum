@@ -378,7 +378,7 @@ public class GenerateHTML
 
             int r = 0;
 
-            if (HeadUtils.needRotatePic(f, 860))
+            if (HeadUtils.needRotatePic(f))
             {
                 r = f.getRoatateDegree() / 90;
             }
@@ -415,13 +415,22 @@ public class GenerateHTML
             String video = "<video ";
             if (f.getHeight() > size || f.getWidth() > size)
             {
-                video += " " + (restrictSize(f) ? "width" : "height") + "=" + "\"" + size + "\"";
+                boolean isWidth = (f.getRoatateDegree() == 0 || f.getRoatateDegree() == 180)
+                        && restrictSize(f);
+                video += " " + (isWidth ? "width" : "height") + "=" + "\"" + size + "\"";
             }
+
+            /*
+             * if (HeadUtils.needRotatePic(f)) { video +=
+             * " style=\"transform: rotate(" + f.getRoatateDegree() +
+             * "deg); transform-origin: 50% 50% 0px;\""; }
+             */
+
             video += " controls=\"controls\">";
 
             video += "<source";
             video += " src = \"/photos/" + f.getHash256() + "?content=true&size=" + size + "\""
-                    + "type=\"video/mp4\"/>";
+                    + "type=\"" + HeadUtils.judgeMIME(f.getPath()) + "\"/>";
             video += "Your browser does not support the video tag.</video>";
             content = video;
         }
@@ -437,7 +446,7 @@ public class GenerateHTML
             {
                 img += " " + (restrictSize(f) ? "width" : "height") + "=" + "\"" + size + "px\"";
             }
-            if (HeadUtils.needRotatePic(f, size))
+            if (HeadUtils.needRotatePic(f))
             {
                 img += " style=\"transform: rotate(" + f.getRoatateDegree()
                         + "deg); transform-origin: 50% 50% 0px;\"";

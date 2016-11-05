@@ -171,14 +171,14 @@ public class UniqPhotosStore extends AbstractRecordsStore
                     prep.setDate(1, fi.getPhotoTime());
                     if (isvideo)
                     {
-                        prep.setInt(2, FileType.MP4.ordinal());
+                        prep.setInt(2, FileType.VIDEO.ordinal());
                     }
                 }
                 else
                 {
                     if (isvideo)
                     {
-                        prep.setInt(1, FileType.MP4.ordinal());
+                        prep.setInt(1, FileType.VIDEO.ordinal());
                     }
                 }
 

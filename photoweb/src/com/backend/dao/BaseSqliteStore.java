@@ -20,6 +20,7 @@ import com.utils.conf.AppConfig;
 import com.utils.media.MediaTool;
 import com.utils.media.ThumbnailManager;
 import com.utils.sys.PerformanceStatistics;
+import com.utils.web.HeadUtils;
 
 public class BaseSqliteStore extends AbstractRecordsStore
 {
@@ -285,7 +286,7 @@ public class BaseSqliteStore extends AbstractRecordsStore
             {
                 boolean bneedupdate = false;
 
-                FileType ftype = FileTools.getFileType(oldfi.getPath());
+                FileType ftype = HeadUtils.getFileType(oldfi.getPath());
                 if (!oldfi.getFtype().equals(ftype))
                 {
                     bneedupdate = true;

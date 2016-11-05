@@ -21,6 +21,7 @@ import com.drew.metadata.exif.ExifIFD0Directory;
 import com.drew.metadata.exif.ExifSubIFDDirectory;
 import com.drew.metadata.jpeg.JpegDirectory;
 import com.drew.metadata.png.PngDirectory;
+import com.utils.web.HeadUtils;
 
 public class ReadEXIF
 {
@@ -44,7 +45,7 @@ public class ReadEXIF
         try
         {
             fi = new FileInfo();
-            fi.setFtype(FileTools.getFileType(filePath));
+            fi.setFtype(HeadUtils.getFileType(filePath));
             fi.setPath(f.getCanonicalPath());
             fi.setSize(f.length());
             fi.setcTime(new java.sql.Date(FileTools.getFileCreateTime(new File(fi.getPath()))));

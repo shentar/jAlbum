@@ -160,6 +160,27 @@ public class VideoFFProbeTool
         return INVALID_TIME_IN_MILLS;
     }
 
+    private static int getVideoRotate(FFmpegStream fs)
+    {
+        if (fs != null && fs.tags != null)
+        {
+            Object ti = fs.tags.get("rotate");
+            if (ti != null)
+            {
+                try
+                {
+                    return Integer.parseInt(ti.toString());
+                }
+                catch (Exception e)
+                {
+                    logger.warn("caused: ", e);
+                }
+            }
+        }
+
+        return 0;
+    }
+
     private static int getWidth(FFmpegStream fs)
     {
         return fs.width;
@@ -186,12 +207,12 @@ public class VideoFFProbeTool
                 fi.setWidth(getWidth(fs));
                 fi.setPath(fpath);
                 fi.setSize(new File(fpath).length());
-                fi.setFtype(FileType.MP4);
+                fi.setFtype(FileType.VIDEO);
 
                 long ptime = getVideoCreateTime(fs);
                 fi.setPhotoTime(ptime == INVALID_TIME_IN_MILLS ? fi.getcTime() : new Date(ptime));
 
-                fi.setRoatateDegree(0);
+                fi.setRoatateDegree(getVideoRotate(fs));
                 fi.setExtrInfo(generateFingerStringForVideo(fs));
                 return fi;
             }

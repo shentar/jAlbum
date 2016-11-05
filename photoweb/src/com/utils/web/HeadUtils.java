@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.backend.FileInfo;
+import com.backend.FileType;
 import com.utils.conf.AppConfig;
 import com.utils.sys.SystemConstant;
 import com.utils.sys.SystemProperties;
@@ -31,9 +32,9 @@ public class HeadUtils
         return ismobile != null && ismobile.booleanValue();
     }
 
-    public static boolean needRotatePic(FileInfo f, int size)
+    public static boolean needRotatePic(FileInfo f)
     {
-        if (size >= 400 && !isIOS() && f.getRoatateDegree() != 0)
+        if (!isIOS() && f.getRoatateDegree() != 0)
         {
             return true;
         }
@@ -114,6 +115,40 @@ public class HeadUtils
         {
             contentType = "text/html";
         }
+        return contentType;
+    }
+
+    public static FileType getFileType(String filePath)
+    {
+        if (StringUtils.isBlank(filePath))
+        {
+            return FileType.JPG;
+        }
+
+        filePath = filePath.toLowerCase();
+        FileType contentType;
+
+        if (filePath.endsWith(".mp4"))
+        {
+            contentType = FileType.VIDEO;
+        }
+        else if (filePath.endsWith(".png"))
+        {
+            contentType = FileType.PNG;
+        }
+        else if (filePath.endsWith(".jpeg"))
+        {
+            contentType = FileType.JPEG;
+        }
+        else if (filePath.endsWith(".jpg"))
+        {
+            contentType = FileType.JPG;
+        }
+        else
+        {
+            contentType = FileType.JPG;
+        }
+
         return contentType;
     }
 
