@@ -111,6 +111,18 @@ public class HeadUtils
         {
             contentType = "video/mp4";
         }
+        else if (filePath.endsWith(".mkv"))
+        {
+            contentType = "video/x-matroska";
+        }
+        else if (filePath.endsWith(".avi"))
+        {
+            contentType = "video/x-msvideo";
+        }
+        else if (filePath.endsWith(".rmvb"))
+        {
+            contentType = "video/vnd.rn-realvideo";
+        }
         else
         {
             contentType = "text/html";
@@ -128,7 +140,8 @@ public class HeadUtils
         filePath = filePath.toLowerCase();
         FileType contentType;
 
-        if (filePath.endsWith(".mp4"))
+        if (filePath.endsWith(".mp4") || filePath.endsWith(".mkv") || filePath.endsWith(".avi")
+                || filePath.endsWith(".rmvb"))
         {
             contentType = FileType.VIDEO;
         }
