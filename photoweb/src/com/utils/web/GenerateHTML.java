@@ -413,7 +413,8 @@ public class GenerateHTML
         if (MediaTool.isVideo(f.getPath()))
         {
             String video = "<video ";
-            if (f.getHeight() > size || f.getWidth() > size)
+            if (f.getHeight() > size || f.getWidth() > size || f.getHeight() == 0
+                    || f.getWidth() == 0)
             {
                 boolean isWidth = (f.getRoatateDegree() == 0 || f.getRoatateDegree() == 180)
                         && restrictSize(f);
@@ -442,7 +443,8 @@ public class GenerateHTML
             {
                 img += " id=\"" + id + "\"";
             }
-            if (f.getHeight() > size || f.getWidth() > size)
+            if (f.getHeight() > size || f.getWidth() > size || f.getHeight() == 0
+                    || f.getWidth() == 0)
             {
                 img += " " + (restrictSize(f) ? "width" : "height") + "=" + "\"" + size + "px\"";
             }
