@@ -324,6 +324,8 @@ public class GenerateHTML
                         + "';");
                 sb.append("if(event.keyCode==39)top.location=" + "'" + getPhotoUrl(f, 1, true)
                         + "';");
+                sb.append("if(event.keyCode==46)deletephoto('/photos/" + f.getHash256()
+                    + "');");
                 sb.append("});});");
             }
 
