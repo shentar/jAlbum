@@ -29,7 +29,7 @@ import com.utils.conf.AppConfig;
 import com.utils.web.GenerateHTML;
 import com.utils.web.HeadUtils;
 
-@Produces(value = { "text/xml", "application/json", "application/xml", "text/html", "video/mp4" })
+@Produces(value = { "text/html", "application/octet-stream" })
 public class RestRootWebService extends HttpServlet
 {
     private static final Logger logger = LoggerFactory.getLogger(RestRootWebService.class);

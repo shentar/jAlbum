@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
@@ -38,6 +39,7 @@ import com.utils.web.GenerateHTML;
 import com.utils.web.HeadUtils;
 import com.utils.web.Range;
 
+@Produces(value = { "text/html", "application/octet-stream" })
 public class ObjectService
 {
 
