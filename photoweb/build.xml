@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<project name="resttest" basedir="." default="war">
+<project name="jAlbum" basedir="." default="war">
 	<property name="dist.dir" location="dist" />
 	<property name="lib.dir" location="lib" />
 	<property name="bin.dir" location="classes" />
@@ -27,7 +27,7 @@
 	</target>
 
 	<target name="jar" depends="build">
-		<jar jarfile="${dist.dir}/resttest.jar" basedir="${bin.dir}" includes="**/*.*">
+		<jar jarfile="${dist.dir}/jAlbum.jar" basedir="${bin.dir}" includes="**/*.*">
 		</jar>
 	</target>
 
@@ -38,7 +38,7 @@
 				<exclude name="jetty-server-8.0.0.M2.jar" />
 			</lib>
             <lib dir="${dist.dir}">
-				<include name="resttest.jar" />
+				<include name="jAlbum.jar" />
 			</lib>
 			<webinf dir="WEB-INF">
 				<exclude name="web.xml" />

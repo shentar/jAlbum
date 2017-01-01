@@ -113,6 +113,7 @@ public class ObjectService
                     builder.entity(fi);
                     String contenttype = getContentType(f.getPath());
                     builder.header("Content-type", contenttype);
+                    logger.info("content type is: {}", contenttype);
                     HeadUtils.setExpiredTime(builder);
                     builder.header("Content-Disposition", "filename=" + fileName);
                     builder.header("PicFileFullPath", URLEncoder.encode(f.getPath(), "UTF-8"));
@@ -331,7 +332,13 @@ public class ObjectService
 
     private static String getContentType(String pathToFile) throws IOException
     {
-        return Files.probeContentType(Paths.get(pathToFile));
+        String mime = Files.probeContentType(Paths.get(pathToFile));
+        if (StringUtils.isBlank(mime))
+        {
+            mime = "application/octet-stream";
+        }
+
+        return mime;
     }
 
     public String getId()

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="lib" path="lib/jetty-all-9.3.9.v20160517-uber.jar" sourcepath="/jetty-9.3.9"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="lib/jetty-all-9.3.14.v20161028-uber.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

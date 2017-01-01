@@ -73,37 +73,52 @@ public class RangesFileInputStream extends InputStream
 
     public int read(byte[] buf, int off, int len) throws IOException
     {
-        if (erroroccured || buf == null || off < 0 || len < 0 || off + len > buf.length)
+        try
         {
-            logger.warn("error occured!");
-            throw new IOException("error in put buffer!");
+            if (erroroccured || buf == null || off < 0 || len < 0 || off + len > buf.length)
+            {
+                logger.warn("error occured!");
+                throw new IOException("error in put buffer!");
+            }
+
+            if (pos >= end)
+            {
+                raf.close();
+                return -1;
+            }
+
+            int readLen = raf.read(buf, off, len);
+            if (readLen == -1)
+            {
+                raf.close();
+                return -1;
+            }
+
+            pos += readLen;
+            return readLen;
+
+        }
+        catch (Exception e)
+        {
+            logger.warn("error occured: ", e);
+            throw new IOException("IO error occured: ", e);
         }
 
-        if (pos >= end)
-        {
-            raf.close();
-            return -1;
-        }
-
-        int readLen = raf.read(buf, off, len);
-        if (readLen == -1)
-        {
-            raf.close();
-            return -1;
-        }
-
-        pos += readLen;
-
-        return readLen;
     }
 
     public int read(byte[] buf) throws IOException
     {
         if (erroroccured || buf == null)
         {
+            logger.error("error occured: {}", erroroccured);
             throw new IOException("error in put buffer!");
         }
         return read(buf, 0, buf.length);
+    }
+
+    public void close() throws IOException
+    {
+        raf.close();
     }
 
     public long getEnd()
