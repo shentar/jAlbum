@@ -1,6 +1,8 @@
 package com.shentar.frontend;
 
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.webapp.WebAppContext;
 
 import sun.misc.Signal;
@@ -30,11 +32,23 @@ public class FrontMain
             }
         }
 
-        final Server server = new Server(port);
+        QueuedThreadPool thp = new QueuedThreadPool();
+        thp.setIdleTimeout(900 * 1000);
+        thp.setMinThreads(32);
+        thp.setMaxThreads(200);
+        final Server server = new Server(thp);
 
         WebAppContext context = new WebAppContext();
         context.setContextPath("/");
         context.setWar("root.war");
+        ServerConnector connector = new ServerConnector(server);
+        connector.setIdleTimeout(5000);
+        connector.setPort(port);
+        connector.setAcceptQueueSize(4);
+        // connector.setSoLingerTime(5000);
+
+        server.addConnector(connector);
+
         server.setHandler(context);
 
         SignalHandler sig = new SignalHandler()
