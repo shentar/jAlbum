@@ -4,6 +4,7 @@
 	<property name="dedup.dir" location="dedup" />
 	<property name="photoweb.dir" location="photoweb" />
     <property name="distribute.dir" location="distribute" />
+    <property name="scripts.dir" location="scripts" />
     <property name="jdbc.dir" location="jdbcsqlitenative" />
     
     <target name="all" >
@@ -34,7 +35,7 @@
                 <include name="jalbum.xml" />
                 <include name="log4j.xml" /> 
             </fileset> 
-            <fileset dir="${basedir}">
+            <fileset dir="${scripts.dir}">
                 <include name="jalbum_for_Raspberry3.sh" />
             </fileset>  			
         </copy>

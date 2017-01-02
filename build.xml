@@ -5,7 +5,7 @@
     <property name="dedup.dir" location="dedup" />
     <property name="photoweb.dir" location="photoweb" />
     <property name="distribute.dir" location="distribute" />
-    
+    <property name="scripts.dir" location="scripts" />
     <target name="test" depends="all" />
     
     <target name="all" >
@@ -32,7 +32,7 @@
                 <include name="jalbum.xml" />
                 <include name="log4j.xml" /> 
             </fileset> 
-            <fileset dir="${basedir}">
+            <fileset dir="${scripts.dir}">
                 <include name="start.sh" />
                 <include name="start.bat" />
             </fileset> 
