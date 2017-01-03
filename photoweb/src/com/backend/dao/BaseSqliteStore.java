@@ -359,17 +359,14 @@ public class BaseSqliteStore extends AbstractRecordsStore
                 }
                 else
                 {
-                    if (!MediaTool.isVideo(fi.getPath()))
+                    if (ThumbnailManager.checkTheThumbnailExist(fi.getHash256()))
                     {
-                        if (ThumbnailManager.checkTheThumbnailExist(fi.getHash256()))
-                        {
-                            PerformanceStatistics.getInstance().addOneFile(false);
-                            continue;
-                        }
-                        else
-                        {
-                            FileTools.submitAnThumbnailTask(fi);
-                        }
+                        PerformanceStatistics.getInstance().addOneFile(false);
+                        continue;
+                    }
+                    else
+                    {
+                        FileTools.submitAnThumbnailTask(fi);
                     }
                 }
             }
