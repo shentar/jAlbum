@@ -126,10 +126,8 @@ public class BaseSqliteStore extends AbstractRecordsStore
 
             RefreshFlag.getInstance().getAndSet(true);
 
-            if (!MediaTool.isVideo(fi.getPath()))
-            {
-                FileTools.submitAnThumbnailTask(fi);
-            }
+            FileTools.submitAnThumbnailTask(fi);
+
         }
         catch (Exception e)
         {

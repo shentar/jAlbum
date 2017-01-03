@@ -76,47 +76,67 @@ public class ObjectService
             if (cfile.isFile())
             {
                 InputStream fi = null;
-                if (MediaTool.isVideo(f.getPath()))
+                File thumbnail = null;
+                String sizestr = req.getParameter("size");
+                if (StringUtils.isNotBlank(sizestr))
                 {
-                    String rangeStr = req.getHeader(SystemConstant.RANGE_HEADER);
-                    fi = dealWitVideoRangeDownload(builder, f, cfile, rangeStr);
-                }
-                else
-                {
-                    String sizestr = req.getParameter("size");
                     int size = Integer.parseInt(sizestr);
-
                     if (size <= 400)
                     {
-                        File cf = ThumbnailManager.getThumbnail(id);
-                        if (cf == null)
+                        thumbnail = ThumbnailManager.getThumbnail(id);
+                        if (thumbnail == null)
                         {
+                            // 提交异步任务生成缩略图。
                             FileTools.submitAnThumbnailTask(f);
+                            if (MediaTool.isVideo(f.getPath()))
+                            {
+                                thumbnail = new File(SystemConstant.DEFAULT_VIDEO_PIC_PATH);
+                            }
+                            else
+                            {
+                                thumbnail = cfile;
+                            }
                         }
-                        else
-                        {
-                            cfile = cf;
-                        }
+
                     }
                 }
 
-                if (fi == null && cfile != null)
+                if (thumbnail != null)
                 {
-                    fi = new BufferedInputStream(new FileInputStream(cfile));
-                    builder.header("Content-length", cfile.length() + "");
+                    // 缩略图存在则使用缩略图。
+                    fi = new BufferedInputStream(new FileInputStream(thumbnail));
+                    builder.header("Content-length", thumbnail.length() + "");
+                }
+                else
+                {
+                    if (MediaTool.isVideo(f.getPath()))
+                    {
+                        String rangeStr = req.getHeader(SystemConstant.RANGE_HEADER);
+                        fi = dealWitVideoRangeDownload(builder, f, cfile, rangeStr);
+                    }
+                    else
+                    {
+                        fi = new BufferedInputStream(new FileInputStream(cfile));
+                        builder.header("Content-length", cfile.length() + "");
+                    }
                 }
 
                 if (fi != null)
                 {
-                    String fileName = new File(f.getPath()).getName();
+                    String fileName = thumbnail != null ? thumbnail.getName()
+                            : new File(f.getPath()).getName();
+                    String contenttype = thumbnail != null
+                            ? getContentType(thumbnail.getCanonicalPath())
+                            : getContentType(f.getPath());
+
                     MDC.put(SystemConstant.FILE_NAME, fileName);
                     builder.entity(fi);
-                    String contenttype = getContentType(f.getPath());
+
                     builder.header("Content-type", contenttype);
                     logger.info("content type is: {}", contenttype);
                     HeadUtils.setExpiredTime(builder);
                     builder.header("Content-Disposition", "filename=" + fileName);
-                    builder.header("PicFileFullPath", URLEncoder.encode(f.getPath(), "UTF-8"));
+                    builder.header("MediaFileFullPath", URLEncoder.encode(f.getPath(), "UTF-8"));
                     logger.info("the file is: {}, Mime: {}", f, contenttype);
                 }
             }

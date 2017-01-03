@@ -10,11 +10,20 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
 
 import javax.imageio.ImageIO;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.backend.FileInfo;
+import com.backend.scan.FileTools;
+import com.utils.sys.SystemConstant;
+
+import net.bramp.ffmpeg.FFmpeg;
+import net.bramp.ffmpeg.builder.FFmpegBuilder;
+import net.bramp.ffmpeg.builder.FFmpegBuilder.Verbosity;
 
 public class ThumbnailGenerator
 {
@@ -110,7 +119,77 @@ public class ThumbnailGenerator
         return null;
     }
 
-    public static boolean createThumbnail(String fpath, String thumbnailPath, int w, int h,
+    public static boolean createThumbnail(FileInfo fi, String thumbnailPath, int w, int h,
+            boolean force)
+    {
+        String filePath = fi.getPath();
+        if (MediaTool.isVideo(filePath))
+        {
+            return generateThumbnailForVideo(fi, thumbnailPath, w, h, force);
+        }
+        else
+        {
+            return generateThumbnailForPic(filePath, thumbnailPath, w, h, force);
+        }
+    }
+
+    private static boolean generateThumbnailForVideo(FileInfo fi, String thumbnailPath, int w,
+            int h, boolean force)
+    {
+        try
+        {
+            FFmpegBuilder builder = new FFmpegBuilder();
+            builder.setInput(fi.getPath());
+            builder.setStartOffset(0, TimeUnit.SECONDS);
+            builder.setVerbosity(Verbosity.QUIET);
+
+            if (!force)
+            {
+                long width = fi.getWidth();
+                long height = fi.getHeight();
+                if (!(fi.getRoatateDegree() % 180 == 0))
+                {
+                    width = fi.getHeight();
+                    height = fi.getWidth();
+                }
+
+                if (w < fi.getWidth() || h < fi.getHeight())
+                {
+                    if ((width * 1.0) / w > (height * 1.0) / h)
+                    {
+                        h = Integer.parseInt(new java.text.DecimalFormat("0")
+                                .format(height * w / (width * 1.0)));
+
+                    }
+                    else
+                    {
+                        w = Integer.parseInt(new java.text.DecimalFormat("0")
+                                .format(width * h / (height * 1.0)));
+                    }
+                }
+            }
+
+            FFmpegBuilder target = builder.addOutput(thumbnailPath).setFormat("image2")
+                    .setVideoResolution(w, h).setFrames(1).done();
+            // builder.set
+            FFmpeg ffmpeg = new FFmpeg();
+            ffmpeg.run(target, null);
+            return true;
+        }
+        catch (Exception e)
+        {
+            logger.warn("error occured.", e);
+        }
+
+        if (!FileTools.copyFile(SystemConstant.DEFAULT_VIDEO_PIC_PATH, thumbnailPath))
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    private static boolean generateThumbnailForPic(String fpath, String thumbnailPath, int w, int h,
             boolean force)
     {
         try
@@ -119,7 +198,7 @@ public class ThumbnailGenerator
             BufferedImage bi = generateThumbnail(fpath, w, h, force);
             if (bi == null)
             {
-                return false;
+                throw new IOException();
             }
 
             ImageIO.write(bi, suffix, new File(thumbnailPath));
@@ -128,6 +207,11 @@ public class ThumbnailGenerator
         catch (Exception e)
         {
             logger.warn("caused by: ", e);
+        }
+
+        if (!FileTools.copyFile(fpath, thumbnailPath))
+        {
+            return true;
         }
 
         return false;

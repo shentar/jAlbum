@@ -8,7 +8,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.backend.FileInfo;
-import com.backend.scan.FileTools;
 import com.utils.conf.AppConfig;
 
 public class ThumbnailManager
@@ -96,13 +95,7 @@ public class ThumbnailManager
 
         String tmpFile = "." + File.separator + fi.getHash256();
         File tmpF = new File(tmpFile);
-        if (!ThumbnailGenerator.createThumbnail(fi.getPath(), tmpFile, 400, 400, false))
-        {
-            if (!FileTools.copyFile(fi.getPath(), tmpFile))
-            {
-                return;
-            }
-        }
+        ThumbnailGenerator.createThumbnail(fi, tmpFile, 400, 400, false);
 
         if (!tmpF.renameTo(new File(getPicThumbnailPath(id))))
         {

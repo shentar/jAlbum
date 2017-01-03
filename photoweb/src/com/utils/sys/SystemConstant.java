@@ -32,4 +32,6 @@ public class SystemConstant
 
     public static final String FILE_NAME = "filename";
 
+    public static final String DEFAULT_VIDEO_PIC_PATH = "js/default.png";
+
 }

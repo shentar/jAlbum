@@ -68,16 +68,12 @@
 	<classpathentry kind="lib" path="lib/jcl-over-slf4j-1.7.21.jar"/>
 	<classpathentry kind="lib" path="lib/commons-io-2.5.jar"/>
 	<classpathentry kind="lib" path="lib/commons-configuration-1.10.jar"/>
-	<classpathentry kind="lib" path="lib/ffmpeg-0.5.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="jar:file:/C:/Users/tyanq/Desktop/ffmpeg-0.5-javadoc.jar!/"/>
-		</attributes>
-	</classpathentry>
 	<classpathentry kind="lib" path="lib/gson-2.6.2.jar"/>
 	<classpathentry kind="lib" path="lib/annotations-3.0.1.jar"/>
 	<classpathentry kind="lib" path="lib/commons-lang3-3.4.jar"/>
-	<classpathentry kind="lib" path="lib/guava-19.0.jar"/>
 	<classpathentry kind="lib" path="lib/modelmapper-0.7.5.jar"/>
 	<classpathentry kind="lib" path="lib/commons-lang-2.6.jar"/>
+	<classpathentry kind="lib" path="lib/ffmpeg-0.6.1.jar"/>
+	<classpathentry kind="lib" path="lib/guava-20.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

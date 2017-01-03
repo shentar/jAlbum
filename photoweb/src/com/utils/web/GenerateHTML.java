@@ -324,8 +324,7 @@ public class GenerateHTML
                         + "';");
                 sb.append("if(event.keyCode==39)top.location=" + "'" + getPhotoUrl(f, 1, true)
                         + "';");
-                sb.append("if(event.keyCode==46)deletephoto('/photos/" + f.getHash256()
-                    + "');");
+                sb.append("if(event.keyCode==46)deletephoto('/photos/" + f.getHash256() + "');");
                 sb.append("});});");
             }
 
@@ -412,14 +411,14 @@ public class GenerateHTML
     private static String generateImgTag(FileInfo f, int size, String exinfo, String id)
     {
         String content = null;
-        if (MediaTool.isVideo(f.getPath()))
+        if (MediaTool.isVideo(f.getPath()) && size > 400)
         {
+            // 非缩略图 视频。
             String video = "<video ";
             if (f.getHeight() > size || f.getWidth() > size || f.getHeight() == 0
                     || f.getWidth() == 0)
             {
-                boolean isWidth = (f.getRoatateDegree() == 0 || f.getRoatateDegree() == 180)
-                        && restrictSize(f);
+                boolean isWidth = (f.getRoatateDegree() % 180 == 0) && restrictSize(f);
                 video += " " + (isWidth ? "width" : "height") + "=" + "\"" + size + "\"";
             }
 
@@ -445,16 +444,35 @@ public class GenerateHTML
             {
                 img += " id=\"" + id + "\"";
             }
-            if (f.getHeight() > size || f.getWidth() > size || f.getHeight() == 0
-                    || f.getWidth() == 0)
+
+            if (MediaTool.isVideo(f.getPath()))
             {
-                img += " " + (restrictSize(f) ? "width" : "height") + "=" + "\"" + size + "px\"";
+                // 视频缩略图 不需要旋转，在视频角度不正确时才需要颠倒长和高。
+                if (f.getHeight() > size || f.getWidth() > size || f.getHeight() == 0
+                        || f.getWidth() == 0)
+                {
+                    boolean isWidth = (f.getRoatateDegree() % 180 == 0) && restrictSize(f);
+                    img += " " + (isWidth ? "width" : "height") + "=" + "\"" + size
+                            + "px\"";
+                }
             }
-            if (HeadUtils.needRotatePic(f))
+            else
             {
-                img += " style=\"transform: rotate(" + f.getRoatateDegree()
-                        + "deg); transform-origin: 50% 50% 0px;\"";
+                // 普通照片
+                if (f.getHeight() > size || f.getWidth() > size || f.getHeight() == 0
+                        || f.getWidth() == 0)
+                {
+                    img += " " + (restrictSize(f) ? "width" : "height") + "=" + "\"" + size
+                            + "px\"";
+                }
+
+                if (HeadUtils.needRotatePic(f))
+                {
+                    img += " style=\"transform: rotate(" + f.getRoatateDegree()
+                            + "deg); transform-origin: 50% 50% 0px;\"";
+                }
             }
+
             img += " src = \"/photos/" + f.getHash256() + "?content=true&size=" + size + "\">";
             img += "</img>";
             content = img;
