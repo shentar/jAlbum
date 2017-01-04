@@ -12,6 +12,10 @@ input {
     border-radius: 6px;
 }
 
+a {
+	text-decoration:none;
+}
+
 #popup_container {
 	font-family: 微软雅黑,Arial, sans-serif;
 	font-size: 12px;

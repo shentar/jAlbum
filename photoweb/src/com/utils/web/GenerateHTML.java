@@ -452,9 +452,9 @@ public class GenerateHTML
                         || f.getWidth() == 0)
                 {
                     boolean isWidth = (f.getRoatateDegree() % 180 == 0) && restrictSize(f);
-                    img += " " + (isWidth ? "width" : "height") + "=" + "\"" + size
-                            + "px\"";
+                    img += " " + (isWidth ? "width" : "height") + "=" + "\"" + size + "px\"";
                 }
+
             }
             else
             {
@@ -475,6 +475,15 @@ public class GenerateHTML
 
             img += " src = \"/photos/" + f.getHash256() + "?content=true&size=" + size + "\">";
             img += "</img>";
+
+            if (MediaTool.isVideo(f.getPath()) && !HeadUtils.isVideo())
+            {
+                // img += "</br><span style=\"text-align: center;font-family:
+                // sans-serif;font-weight: bold;\">"
+                // + "视频</span>";
+                img += "</br><img width=\"20px\" style=\"padding: 2px 0 0px 0;\" src=\"js/player.png\">";
+            }
+
             content = img;
         }
         return content;
