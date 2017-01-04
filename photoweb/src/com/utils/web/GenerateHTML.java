@@ -428,7 +428,7 @@ public class GenerateHTML
              * "deg); transform-origin: 50% 50% 0px;\""; }
              */
 
-            video += " controls=\"controls\">";
+            video += " controls=\"controls\" autoplay=\"autoplay\">";
 
             video += "<source";
             video += " src = \"/photos/" + f.getHash256() + "?content=true&size=" + size + "\""
