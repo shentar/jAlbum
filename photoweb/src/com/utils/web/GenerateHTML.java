@@ -481,7 +481,7 @@ public class GenerateHTML
                 // img += "</br><span style=\"text-align: center;font-family:
                 // sans-serif;font-weight: bold;\">"
                 // + "视频</span>";
-                img += "</br><img width=\"20px\" style=\"padding: 2px 0 0px 0;\" src=\"js/player.png\">";
+                img += "</br><img width=\"20px\" style=\"padding: 2px 0 0px 0;\" src=\"/js/player.png\">";
             }
 
             content = img;

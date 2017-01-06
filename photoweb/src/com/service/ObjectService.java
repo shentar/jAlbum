@@ -177,9 +177,12 @@ public class ObjectService
             builder.header("Content-Range", contentRange);
             builder.header("Content-Length", contentLength);
             builder.status(206);
-            return rfi;
+            return new BufferedInputStream(rfi);
         }
-        return null;
+        else
+        {
+            return new BufferedInputStream(new FileInputStream(cfile));
+        }
     }
 
     private List<Range> parseRangeStrEx(String rstr) throws IOException
