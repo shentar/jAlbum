@@ -181,6 +181,7 @@ public class ObjectService
         }
         else
         {
+            builder.header("Content-Length", cfile.length());
             return new BufferedInputStream(new FileInputStream(cfile));
         }
     }
