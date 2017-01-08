@@ -51,9 +51,18 @@
         <fixcrlf srcdir="${distribute.dir}" includes="**/*.xml" eol="crlf" />
         <fixcrlf srcdir="${distribute.dir}" includes="**/*.sh" eol="lf" />
         
+  
+        
         <ant antfile="build.xml" dir="${dedup.dir}" target="clean"/>  
         <ant antfile="build.xml" dir="${photoweb.dir}" target="clean"/>  
     
+    </target>
+    
+    <target name="release" depends="all">
+        <zip destfile="jAlbum_release.zip" >
+            <zipfileset dir="${distribute.dir}" excludes=".svn/**, thumbnail/**, log/**, dedup.db"/>
+            <zipfileset dir="${dedup.dir}" includes="dedup.db"/>
+        </zip>      
     </target>
     
 </project>
