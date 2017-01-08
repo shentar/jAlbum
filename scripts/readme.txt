@@ -1,0 +1,1 @@
+See https://github.com/shentar/jAlbum for details.

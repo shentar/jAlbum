@@ -37,6 +37,7 @@
             </fileset> 
             <fileset dir="${scripts.dir}">
                 <include name="jalbum_for_Raspberry3.sh" />
+                <include name="readme.txt">
             </fileset>  			
         </copy>
         

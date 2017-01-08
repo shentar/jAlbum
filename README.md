@@ -52,7 +52,7 @@ edit the jalbum.xml
 	</thumbnaildir>
 </config>
 ```
-***picfilesuffix*** the file type with the suffix that can be scaned by the tool. It is ignorecase. If the "mp4" suffix is configured, You must make sure there is ffprobe exe command in the server.<br/>
+***picfilesuffix*** the file type with the suffix that can be scaned by the tool. It is ignorecase. If the "mp4" suffix is configured, You must make sure there is ffprobe exe command in the server. See [FFmpeg](http://www.ffmpeg.org/). for details.<br/>
 ***inputdir*** specify the folder which nedd to scan.<br/>
 ***minfilesize*** specify the min size of Pic file in byte.<br/>
 ***maxpicsperonepage*** specify the max pic count of one index page.</br>
