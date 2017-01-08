@@ -47,10 +47,6 @@
             <fileset dir="${dedup.dir}/js" />
         </copy>
 
-        <fixcrlf srcdir="${distribute.dir}" includes="**/*.bat" eol="crlf" />
-        <fixcrlf srcdir="${distribute.dir}" includes="**/*.xml" eol="crlf" />
-        <fixcrlf srcdir="${distribute.dir}" includes="**/*.sh" eol="lf" />
-
         <ant antfile="build.xml" dir="${dedup.dir}" target="clean"/>  
         <ant antfile="build.xml" dir="${photoweb.dir}" target="clean"/>  
     
