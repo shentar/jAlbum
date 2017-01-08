@@ -8,6 +8,8 @@ import java.io.RandomAccessFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.utils.web.HeadUtils;
+
 public class RangesFileInputStream extends InputStream
 {
     private static final Logger logger = LoggerFactory.getLogger(RangesFileInputStream.class);
@@ -33,7 +35,7 @@ public class RangesFileInputStream extends InputStream
         long reangeLen = MAX_DEFAULT_RANGELEN;
         if (start == 0)
         {
-            reangeLen = FIRST_RANGE_LENGtH;
+            reangeLen = HeadUtils.isMobile() ? in.length() : FIRST_RANGE_LENGtH;
         }
 
         if (end == -1)
