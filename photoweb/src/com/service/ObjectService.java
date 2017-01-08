@@ -359,7 +359,7 @@ public class ObjectService
         String mime = Files.probeContentType(Paths.get(pathToFile));
         if (StringUtils.isBlank(mime))
         {
-            mime = "application/octet-stream";
+            mime = MediaTool.isVideo(pathToFile) ? "video/mp4" : "application/octet-stream";
         }
 
         return mime;
