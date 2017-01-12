@@ -502,11 +502,11 @@ public class BaseSqliteStore extends AbstractRecordsStore
             lock.writeLock().lock();
             if (isPath)
             {
-                prep = conn.prepareStatement("update files set deleted='true' where sha256=?;");
+                prep = conn.prepareStatement("update files set deleted='true' where path=?;");
             }
             else
             {
-                prep = conn.prepareStatement("update files set deleted='true' where path=?;");
+                prep = conn.prepareStatement("update files set deleted='true' where sha256=?;");
             }
             prep.setString(1, file);
             prep.execute();
