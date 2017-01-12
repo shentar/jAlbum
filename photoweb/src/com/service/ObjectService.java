@@ -337,7 +337,7 @@ public class ObjectService
         ResponseBuilder builder = Response.status(204);
 
         BaseSqliteStore meta = BaseSqliteStore.getInstance();
-        meta.setPhotoToBeHidenByID(id);
+        meta.setPhotoToBeHiden(id, false);
 
         UniqPhotosStore umeta = UniqPhotosStore.getInstance();
         // List<FileInfo> fnext = umeta.getNextNineFileByHashStr(id, 1);

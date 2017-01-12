@@ -50,8 +50,8 @@ public class BaseSqliteStore extends AbstractRecordsStore
         try
         {
             lock.readLock().lock();
-            prep = conn.prepareStatement(
-                    "select * from files where sha256=? and (deleted <> 'true' or deleted is null);");
+            prep = conn
+                    .prepareStatement("select * from files where sha256=? and (deleted <> 'true' or deleted is null);");
             prep.setString(1, id);
             res = prep.executeQuery();
 
@@ -156,7 +156,7 @@ public class BaseSqliteStore extends AbstractRecordsStore
             logger.warn("input file's path is empty.");
             return;
         }
-        deleteRecord(fi.getPath(), true);
+        setPhotoToBeHiden(fi.getPath(), true);
     }
 
     public FileInfo getOneFileByPath(String path)
@@ -313,8 +313,8 @@ public class BaseSqliteStore extends AbstractRecordsStore
         try
         {
             lock.writeLock().lock();
-            PreparedStatement prep = conn.prepareStatement(
-                    "update files set phototime=?,width=?,height=?,ftype=? where path=?;");
+            PreparedStatement prep = conn
+                    .prepareStatement("update files set phototime=?,width=?,height=?,ftype=? where path=?;");
             prep.setDate(1, fi.getPhotoTime());
             prep.setLong(2, fi.getWidth());
             prep.setLong(3, fi.getHeight());
@@ -343,8 +343,7 @@ public class BaseSqliteStore extends AbstractRecordsStore
         try
         {
             logger.warn("start to check all records in the files table.");
-            prep = conn.prepareStatement(
-                    "select * from files where deleted is null or deleted <> 'true';");
+            prep = conn.prepareStatement("select * from files where deleted is null or deleted <> 'true';");
             res = prep.executeQuery();
             lock.readLock().unlock();
 
@@ -352,6 +351,12 @@ public class BaseSqliteStore extends AbstractRecordsStore
             {
                 FileInfo fi = getFileInfoFromTable(res);
 
+                if (fi.isDel())
+                {
+                    // 处于deleted状态的图片不予检查。
+                    continue;
+                }
+                
                 if (FileTools.checkFileDeleted(fi, excludeDirs))
                 {
                     deleteOneRecordByID(fi);
@@ -422,7 +427,7 @@ public class BaseSqliteStore extends AbstractRecordsStore
             logger.warn("input file's path is empty.");
             return;
         }
-        deleteRecord(fi.getHash256(), false);
+        setPhotoToBeHiden(fi.getHash256(), false);
     }
 
     public void deleteRecordsInDirs(String dir)
@@ -465,8 +470,8 @@ public class BaseSqliteStore extends AbstractRecordsStore
         try
         {
             lock.writeLock().lock();
-            prep = conn.prepareStatement(
-                    "delete from files where path like ? and (deleted <>'true' or deleted is null);");
+            prep = conn
+                    .prepareStatement("update files set deleted='true' where path like ? and (deleted <>'true' or deleted is null);");
             prep.setString(1, dir + "%");
 
             prep.execute();
@@ -483,11 +488,11 @@ public class BaseSqliteStore extends AbstractRecordsStore
         }
     }
 
-    public void setPhotoToBeHidenByID(String id)
+    public void setPhotoToBeHiden(String file, boolean isPath)
     {
-        if (id == null || StringUtils.isBlank(id))
+        if (StringUtils.isBlank(file))
         {
-            logger.warn("input id is empty.");
+            logger.warn("input file is empty.");
             return;
         }
 
@@ -495,15 +500,22 @@ public class BaseSqliteStore extends AbstractRecordsStore
         try
         {
             lock.writeLock().lock();
-            prep = conn.prepareStatement("update files set deleted='true' where sha256=?;");
-            prep.setString(1, id);
+            if (isPath)
+            {
+                prep = conn.prepareStatement("update files set deleted='true' where sha256=?;");
+            }
+            else
+            {
+                prep = conn.prepareStatement("update files set deleted='true' where path=?;");
+            }
+            prep.setString(1, file);
             prep.execute();
             prep.close();
             RefreshFlag.getInstance().getAndSet(true);
         }
         catch (Exception e)
         {
-            logger.error("caught: " + id, e);
+            logger.error("caught: " + file, e);
         }
         finally
         {
