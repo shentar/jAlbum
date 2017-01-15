@@ -94,14 +94,7 @@ public class BaseSqliteStore extends AbstractRecordsStore
         try
         {
             // 检查是否已经存在隐藏的照片的记录。
-            if (checkPhotoAlreadyHidenByID(fi.getHash256()))
-            {
-                fi.setDel(true);
-            }
-            else
-            {
-                fi.setDel(false);
-            }
+            checkAndRefreshIfHidden(fi);
 
             try
             {
@@ -523,14 +516,16 @@ public class BaseSqliteStore extends AbstractRecordsStore
         }
     }
 
-    public boolean checkPhotoAlreadyHidenByID(String id)
+    public boolean  checkAndRefreshIfHidden(FileInfo fi)
     {
         boolean isHidden = false;
-        if (id == null || StringUtils.isBlank(id))
+        
+        if (fi == null || StringUtils.isBlank(fi.getHash256()))
         {
             logger.warn("input id is empty.");
             return isHidden;
         }
+        String id = fi.getHash256();
         ResultSet res = null;
         PreparedStatement prep = null;
         try
@@ -543,6 +538,14 @@ public class BaseSqliteStore extends AbstractRecordsStore
             if (res.next())
             {
                 isHidden = true;
+                FileInfo fexist = getFileInfoFromTable(res);
+                // refresh the file info when the file is deleted
+                fi.setDel(true);
+                fi.setcTime(fexist.getcTime());
+                fi.setPhotoTime(fexist.getPhotoTime());
+            }
+            {
+                fi.setDel(false);
             }
 
             res.close();
