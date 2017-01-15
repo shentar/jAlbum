@@ -516,14 +516,12 @@ public class BaseSqliteStore extends AbstractRecordsStore
         }
     }
 
-    public boolean  checkAndRefreshIfHidden(FileInfo fi)
+    public void checkAndRefreshIfHidden(FileInfo fi)
     {
-        boolean isHidden = false;
-        
         if (fi == null || StringUtils.isBlank(fi.getHash256()))
         {
             logger.warn("input id is empty.");
-            return isHidden;
+            return;
         }
         String id = fi.getHash256();
         ResultSet res = null;
@@ -531,21 +529,18 @@ public class BaseSqliteStore extends AbstractRecordsStore
         try
         {
             lock.readLock().lock();
-            prep = conn.prepareStatement("select * from files where sha256=? and deleted='true';");
+            // prep = conn.prepareStatement("select * from files where sha256=? and deleted='true';");
+            prep = conn.prepareStatement("select * from files where sha256=?;");
             prep.setString(1, id);
             res = prep.executeQuery();
 
             if (res.next())
             {
-                isHidden = true;
                 FileInfo fexist = getFileInfoFromTable(res);
                 // refresh the file info when the file is deleted
-                fi.setDel(true);
+                fi.setDel(fexist.isDel());
                 fi.setcTime(fexist.getcTime());
                 fi.setPhotoTime(fexist.getPhotoTime());
-            }
-            {
-                fi.setDel(false);
             }
 
             res.close();
@@ -560,7 +555,5 @@ public class BaseSqliteStore extends AbstractRecordsStore
         {
             lock.readLock().unlock();
         }
-
-        return isHidden;
     }
 }
