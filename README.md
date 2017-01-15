@@ -68,10 +68,15 @@ For the ARM platforms like Raspberry3 ubuntu-mate system: <br/>
 cd jAlbum/distribute
 sh start_for_Raspberry3.sh
 ```
-For other platforms: 
+For other linux platforms: 
 ```shell
 cd jAlbum/distribute
-java -jar start.jar 
+sh start.sh
+```
+For Windows platforms:
+```
+cd jAlbum/distribute
+start.bat
 ```
 
 ## access
