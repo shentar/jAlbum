@@ -3,9 +3,11 @@ package com.backend.dao;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Properties;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.sqlite.SQLiteConfig.Pragma;
 
 public class SqliteConnManger
 {
@@ -39,8 +41,11 @@ public class SqliteConnManger
             }
 
             isinit = true;
+            Properties prop = new Properties();
+            prop.setProperty(Pragma.SHARED_CACHE.pragmaName, "true");
+            prop.setProperty(Pragma.CACHE_SIZE.pragmaName, "8000");
             Class.forName("org.sqlite.JDBC");
-            setConn(DriverManager.getConnection("jdbc:sqlite:dedup.db"));
+            setConn(DriverManager.getConnection("jdbc:sqlite:dedup.db", prop));
         }
         catch (SQLException e)
         {
