@@ -156,7 +156,6 @@ public class FileTools
         {
             return -1;
         }
-
         Path path = FileSystems.getDefault().getPath(f.getParent(), f.getName());
         BasicFileAttributes attrs = Files.readAttributes(path, BasicFileAttributes.class, LinkOption.NOFOLLOW_LINKS);
         return attrs.creationTime().toMillis();

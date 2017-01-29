@@ -112,6 +112,7 @@ public class BaseSqliteStore extends AbstractRecordsStore
                 prep.setLong(9, fi.getRoatateDegree());
                 prep.setInt(10, fi.getFtype().ordinal());
                 prep.execute();
+                logger.warn("insert one file to the table successfully!" + fi);
             }
             finally
             {
@@ -200,8 +201,8 @@ public class BaseSqliteStore extends AbstractRecordsStore
             {
                 FileInfo oldfi = getFileInfoFromTable(res);
 
-                if (oldfi.getSize() == f.length() && oldfi.getcTime() != null
-                        && oldfi.getcTime().getTime() == FileTools.getFileCreateTime(f))
+                long fileTime = FileTools.getFileCreateTime(f);
+                if (oldfi.getSize() == f.length() && oldfi.getcTime() != null && oldfi.getcTime().getTime() == fileTime)
                 {
                     logger.info("the file is exist: " + f);
                     checkPhotoTime(oldfi);
@@ -209,7 +210,9 @@ public class BaseSqliteStore extends AbstractRecordsStore
                 }
                 else
                 {
-                    logger.warn("the file was changed, rebuild the record: " + oldfi);
+                    logger.warn("the file was changed, the file info is: {}:{}, {}:{}], rebuild the record: {}",
+                            oldfi.getSize(), f.length(), oldfi.getcTime().getTime(), fileTime, oldfi);
+
                     deleteOneRecordByPath(oldfi);
                     return PicStatus.NOT_EXIST;
                 }
@@ -545,7 +548,7 @@ public class BaseSqliteStore extends AbstractRecordsStore
                 FileInfo fexist = getFileInfoFromTable(res);
                 // refresh the file info when the file is deleted
                 fi.setDel(fexist.isDel());
-                fi.setcTime(fexist.getcTime());
+                // fi.setcTime(fexist.getcTime());
                 fi.setPhotoTime(fexist.getPhotoTime());
                 alreadyexist = true;
             }

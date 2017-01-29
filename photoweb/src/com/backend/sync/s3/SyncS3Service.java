@@ -108,7 +108,6 @@ public class SyncS3Service
             return;
         }
 
-        isInit = true;
         try
         {
             logger.warn("try to get the object list: start.");
@@ -122,6 +121,7 @@ public class SyncS3Service
             }
             logger.warn("the objlist size is: " + allobjs.size());
             logger.warn("try to get the object list: end.");
+            isInit = true;
         }
         catch (S3ServiceException e)
         {
