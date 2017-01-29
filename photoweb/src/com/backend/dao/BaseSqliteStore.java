@@ -150,7 +150,7 @@ public class BaseSqliteStore extends AbstractRecordsStore
             logger.warn("input file's path is empty.");
             return;
         }
-        setPhotoToBeHiden(fi.getPath(), true);
+        deleteRecord(fi.getPath(), true);
     }
 
     public FileInfo getOneFileByPath(String path)
@@ -210,7 +210,7 @@ public class BaseSqliteStore extends AbstractRecordsStore
                 else
                 {
                     logger.warn("the file was changed, rebuild the record: " + oldfi);
-                    deleteOneRecordByID(oldfi);
+                    deleteOneRecordByPath(oldfi);
                     return PicStatus.NOT_EXIST;
                 }
             }
@@ -356,7 +356,7 @@ public class BaseSqliteStore extends AbstractRecordsStore
 
                 if (FileTools.checkFileDeleted(fi, excludeDirs))
                 {
-                    deleteOneRecordByID(fi);
+                    setPhotoToBeHiden(fi);
                     PerformanceStatistics.getInstance().addOneFile(true);
                 }
                 else
@@ -417,7 +417,7 @@ public class BaseSqliteStore extends AbstractRecordsStore
         }
     }
 
-    public void deleteOneRecordByID(FileInfo fi)
+    public void setPhotoToBeHiden(FileInfo fi)
     {
         if (fi == null || StringUtils.isBlank(fi.getHash256()))
         {
@@ -520,12 +520,13 @@ public class BaseSqliteStore extends AbstractRecordsStore
         }
     }
 
-    public void checkAndRefreshIfHidden(FileInfo fi)
+    public boolean checkAndRefreshIfHidden(FileInfo fi)
     {
+        boolean alreadyexist = false;
         if (fi == null || StringUtils.isBlank(fi.getHash256()))
         {
             logger.warn("input id is empty.");
-            return;
+            return alreadyexist;
         }
         String id = fi.getHash256();
         ResultSet res = null;
@@ -546,11 +547,13 @@ public class BaseSqliteStore extends AbstractRecordsStore
                 fi.setDel(fexist.isDel());
                 fi.setcTime(fexist.getcTime());
                 fi.setPhotoTime(fexist.getPhotoTime());
+                alreadyexist = true;
             }
 
             res.close();
             prep.close();
             // RefreshFlag.getInstance().getAndSet(true);
+
         }
         catch (Exception e)
         {
@@ -560,5 +563,7 @@ public class BaseSqliteStore extends AbstractRecordsStore
         {
             lock.readLock().unlock();
         }
+
+        return alreadyexist;
     }
 }
