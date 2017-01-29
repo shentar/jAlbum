@@ -27,8 +27,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.backend.FileInfo;
-import com.backend.sync.s3.SyncS3Service;
-import com.backend.sync.s3.SyncS3Task;
 import com.utils.conf.AppConfig;
 import com.utils.media.ExifCreator;
 import com.utils.media.ThumbnailManager;
@@ -284,12 +282,6 @@ public class FileTools
         });
     }
 
-    public static void submitSyncTask(FileInfo fi)
-    {
-        if (SyncS3Service.getInstane().isS3Configed() && new File(fi.getPath()).exists())
-        {
-            threadPool.submit(new SyncS3Task(fi));
-        }
-    }
+
 
 }

@@ -168,4 +168,9 @@ public class AppConfig
     {
         return config.getString("s3.bucketname", "");
     }
+
+    public int getConcurrentThreads()
+    {
+        return config.getInt("s3.threadperbucket", 20);
+    }
 }

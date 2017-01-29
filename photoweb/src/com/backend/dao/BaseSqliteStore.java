@@ -16,6 +16,7 @@ import com.backend.FileType;
 import com.backend.PicStatus;
 import com.backend.scan.FileTools;
 import com.backend.scan.RefreshFlag;
+import com.backend.sync.s3.SyncTool;
 import com.utils.conf.AppConfig;
 import com.utils.media.MediaTool;
 import com.utils.media.ThumbnailManager;
@@ -118,7 +119,7 @@ public class BaseSqliteStore extends AbstractRecordsStore
             }
 
             RefreshFlag.getInstance().getAndSet(true);
-            FileTools.submitSyncTask(fi);
+            SyncTool.submitSyncTask(fi);
             FileTools.submitAnThumbnailTask(fi);
 
         }
@@ -345,7 +346,7 @@ public class BaseSqliteStore extends AbstractRecordsStore
                 FileInfo fi = getFileInfoFromTable(res);
 
                 // 检查同步S3。
-                FileTools.submitSyncTask(fi);
+                SyncTool.submitSyncTask(fi);
 
                 if (fi.isDel())
                 {
