@@ -37,4 +37,11 @@ thumbnaildir specify the folder which to store the thumbnail to.
     <thumbnaildir>
         ./thumbnail
     </thumbnaildir>
+
+    <s3>
+        <bucketname></bucketname>
+        <ak></ak>
+        <sk></sk>
+        <useHttps>false</useHttps>
+    </s3>
 </config>

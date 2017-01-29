@@ -27,6 +27,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.backend.FileInfo;
+import com.backend.sync.s3.SyncS3Service;
+import com.backend.sync.s3.SyncS3Task;
 import com.utils.conf.AppConfig;
 import com.utils.media.ExifCreator;
 import com.utils.media.ThumbnailManager;
@@ -35,8 +37,7 @@ import com.utils.sys.GloableLockBaseOnString;
 public class FileTools
 {
     private static final Logger logger = LoggerFactory.getLogger(FileTools.class);
-    public static boolean usesqlite = "true".equals(System.getProperty("usesqlite", "true")) ? true
-            : false;
+    public static boolean usesqlite = "true".equals(System.getProperty("usesqlite", "true")) ? true : false;
     public static long lastScanTime = 0;
     public static final ExecutorService threadPool = Executors
             .newFixedThreadPool(AppConfig.getInstance().getThreadCount());
@@ -44,8 +45,7 @@ public class FileTools
     // 对于树莓派等系统，最多只能2个线程同时计算缩略图。
     public static final ExecutorService threadPool4Thumbnail = Executors.newFixedThreadPool(2);
 
-    public static void readShortFileContent(byte[] buffer, File f)
-            throws FileNotFoundException, IOException
+    public static void readShortFileContent(byte[] buffer, File f) throws FileNotFoundException, IOException
     {
         int maxLen = buffer.length;
         FileInputStream fin = null;
@@ -79,8 +79,7 @@ public class FileTools
         }
     }
 
-    public static boolean checkFileDeleted(final FileInfo fi, List<String> excludeDirs)
-            throws IOException
+    public static boolean checkFileDeleted(final FileInfo fi, List<String> excludeDirs) throws IOException
     {
         if (fi != null)
         {
@@ -89,8 +88,7 @@ public class FileTools
             {
                 if (f.length() > AppConfig.getInstance().getMinFileSize())
                 {
-                    if (fi.getcTime().getTime() == FileTools
-                            .getFileCreateTime(new File(fi.getPath()))
+                    if (fi.getcTime().getTime() == FileTools.getFileCreateTime(new File(fi.getPath()))
                             && fi.getSize() == f.length())
                     {
                         if (excludeDirs != null)
@@ -145,8 +143,7 @@ public class FileTools
         {
             String tmpFilePath = fi.getPath() + "_tmpfile";
             new File(fi.getPath()).renameTo(new File(tmpFilePath));
-            ExifCreator.addExifDate(
-                    new String[] { tmpFilePath, fi.getPath(), sf.format(fi.getPhotoTime()) });
+            ExifCreator.addExifDate(new String[] { tmpFilePath, fi.getPath(), sf.format(fi.getPhotoTime()) });
 
         }
         catch (Exception e)
@@ -163,8 +160,7 @@ public class FileTools
         }
 
         Path path = FileSystems.getDefault().getPath(f.getParent(), f.getName());
-        BasicFileAttributes attrs = Files.readAttributes(path, BasicFileAttributes.class,
-                LinkOption.NOFOLLOW_LINKS);
+        BasicFileAttributes attrs = Files.readAttributes(path, BasicFileAttributes.class, LinkOption.NOFOLLOW_LINKS);
         return attrs.creationTime().toMillis();
     }
 
@@ -194,8 +190,7 @@ public class FileTools
 
             Rectangle rect_des = new Rectangle(new Dimension(swidth, sheight));
 
-            BufferedImage res = new BufferedImage(rect_des.width, rect_des.height,
-                    BufferedImage.TYPE_INT_RGB);
+            BufferedImage res = new BufferedImage(rect_des.width, rect_des.height, BufferedImage.TYPE_INT_RGB);
             Graphics2D g2 = res.createGraphics();
 
             g2.translate((rect_des.width - src_width) / 2, (rect_des.height - src_height) / 2);
@@ -289,5 +284,12 @@ public class FileTools
         });
     }
 
+    public static void submitSyncTask(FileInfo fi)
+    {
+        if (SyncS3Service.getInstane().isS3Configed() && new File(fi.getPath()).exists())
+        {
+            threadPool.submit(new SyncS3Task(fi));
+        }
+    }
 
 }

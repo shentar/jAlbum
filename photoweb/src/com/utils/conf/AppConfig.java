@@ -148,4 +148,24 @@ public class AppConfig
     {
         return config.getInt("maxpicsperonepage", defaultValue);
     }
+
+    public String getAK()
+    {
+        return config.getString("s3.ak", "");
+    }
+
+    public String getSK()
+    {
+        return config.getString("s3.sk", "");
+    }
+
+    public boolean useHTTPS()
+    {
+        return config.getBoolean("s3.useHttps", true);
+    }
+
+    public String getBucketName()
+    {
+        return config.getString("s3.bucketname", "");
+    }
 }

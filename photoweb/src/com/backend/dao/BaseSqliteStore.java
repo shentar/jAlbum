@@ -118,7 +118,7 @@ public class BaseSqliteStore extends AbstractRecordsStore
             }
 
             RefreshFlag.getInstance().getAndSet(true);
-
+            FileTools.submitSyncTask(fi);
             FileTools.submitAnThumbnailTask(fi);
 
         }
@@ -344,12 +344,15 @@ public class BaseSqliteStore extends AbstractRecordsStore
             {
                 FileInfo fi = getFileInfoFromTable(res);
 
+                // 检查同步S3。
+                FileTools.submitSyncTask(fi);
+
                 if (fi.isDel())
                 {
                     // 处于deleted状态的图片不予检查。
                     continue;
                 }
-                
+
                 if (FileTools.checkFileDeleted(fi, excludeDirs))
                 {
                     deleteOneRecordByID(fi);
@@ -463,8 +466,8 @@ public class BaseSqliteStore extends AbstractRecordsStore
         try
         {
             lock.writeLock().lock();
-            prep = conn
-                    .prepareStatement("update files set deleted='true' where path like ? and (deleted <>'true' or deleted is null);");
+            prep = conn.prepareStatement(
+                    "update files set deleted='true' where path like ? and (deleted <>'true' or deleted is null);");
             prep.setString(1, dir + "%");
 
             prep.execute();
@@ -529,7 +532,8 @@ public class BaseSqliteStore extends AbstractRecordsStore
         try
         {
             lock.readLock().lock();
-            // prep = conn.prepareStatement("select * from files where sha256=? and deleted='true';");
+            // prep = conn.prepareStatement("select * from files where sha256=?
+            // and deleted='true';");
             prep = conn.prepareStatement("select * from files where sha256=?;");
             prep.setString(1, id);
             res = prep.executeQuery();
