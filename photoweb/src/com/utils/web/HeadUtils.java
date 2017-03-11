@@ -1,5 +1,8 @@
 package com.utils.web;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -13,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import com.backend.FileInfo;
 import com.backend.FileType;
 import com.utils.conf.AppConfig;
+import com.utils.media.MediaTool;
 import com.utils.sys.SystemConstant;
 import com.utils.sys.SystemProperties;
 
@@ -26,6 +30,12 @@ public class HeadUtils
         return ismobile != null && ismobile.booleanValue();
     }
 
+    public static boolean isFaces()
+    {
+        Boolean isFaces = (Boolean) SystemProperties.get(SystemConstant.IS_FACES_KEY);
+        return isFaces != null && isFaces.booleanValue();
+    }
+    
     public static boolean isIOS()
     {
         Boolean ismobile = (Boolean) SystemProperties.get(SystemConstant.IS_IOS);
@@ -163,6 +173,17 @@ public class HeadUtils
         }
 
         return contentType;
+    }
+    
+    public static String getContentType(String pathToFile) throws IOException
+    {
+        String mime = Files.probeContentType(Paths.get(pathToFile));
+        if (StringUtils.isBlank(mime))
+        {
+            mime = MediaTool.isVideo(pathToFile) ? "video/mp4" : "application/octet-stream";
+        }
+
+        return mime;
     }
 
     public static String formatDate(java.sql.Date d)

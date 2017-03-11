@@ -232,53 +232,59 @@ public class UniqPhotosStore extends AbstractRecordsStore
         PreparedStatement prep = null;
         try
         {
-            prep = conn.prepareStatement("delete from uniqphotos2;");
-            prep.execute();
-            prep.close();
-            logger.warn("delete all records form uniqphotos2.");
+            boolean ut1 = checkTableExist("uniqphotos1");
+            boolean ut2 = checkTableExist("uniqphotos2");
+            boolean utmp = checkTableExist("uniqphotostmp");
 
+            if (ut1 && ut2 && utmp)
+            {
+                logger.warn("three tables are both exist.");
+                dropTable("uniqphotostmp");
+            }
+            else if ((!ut1) && ut2 && utmp)
+            {
+                lock.writeLock().lock();
+                renameTable("uniqphotos2", "uniqphotos1");
+                lock.writeLock().unlock();
+                renameTable("uniqphotostmp", "uniqphotos2");
+            }
+            else if (ut1 && (!ut2) && utmp)
+            {
+                renameTable("uniqphotostmp", "uniqphotos2");
+            }
+            else if (!(ut1 && ut2))
+            {
+                logger.error("some error occured.");
+                return;
+            }
+
+            cleanTable("uniqphotos2");
+            logger.info("delete all records form uniqphotos2.");
+
+            BaseSqliteStore.getInstance().lock.readLock().lock();
             prep = conn.prepareStatement("insert into uniqphotos2(path,hashstr,size,phototime,"
                     + "width,height,degree, ftype) select path,sha256,size,"
                     + "phototime,width,height,degree,ftype from files where "
-                    + "(deleted <>'true' or deleted is null) and "
+                    + "(deleted=='false' or deleted=='EXIST' or deleted is null) and "
                     + "sha256 in(select sha256 from files group by sha256) "
                     + "group by sha256 ORDER BY phototime DESC");
             prep.execute();
             prep.close();
-            logger.warn("insert new records to uniqphotos2.");
+            BaseSqliteStore.getInstance().lock.readLock().unlock();
+            logger.info("insert new records to uniqphotos2.");
 
-            try
-            {
-                lock.writeLock().lock();
-                prep = conn.prepareStatement("delete from uniqphotos1;");
-                prep.execute();
-                prep.close();
-                logger.warn("delete all records form uniqphotos1.");
+            lock.writeLock().lock();
+            renameTable("uniqphotos1", "uniqphotostmp");
+            logger.info("delete all records form uniqphotos1.");
+            renameTable("uniqphotos2", "uniqphotos1");
+            logger.info("insert new records to uniqphotos1.");
+            lock.writeLock().unlock();
 
-                prep = conn.prepareStatement("insert into uniqphotos1 select * from uniqphotos2;");
-                prep.execute();
-                prep.close();
-                logger.warn("insert new records to uniqphotos1.");
-            }
-            finally
-            {
-                lock.writeLock().unlock();
-            }
+            renameTable("uniqphotostmp", "uniqphotos2");
         }
         catch (Exception e)
         {
             logger.error("caught: ", e);
-        }
-        finally
-        {
-            try
-            {
-                prep.close();
-            }
-            catch (Exception e)
-            {
-                logger.error("caught: ", e);
-            }
         }
     }
 

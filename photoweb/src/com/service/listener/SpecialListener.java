@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import com.backend.dao.SqliteConnManger;
 import com.backend.dirwathch.DirWatchService;
+import com.backend.facer.FaceRecService;
 import com.backend.scan.FileTools;
 import com.backend.scan.FreshAllData;
 import com.backend.scan.ToolMain;
@@ -83,5 +84,35 @@ public class SpecialListener implements ServletContextListener
                 }
             }
         }, 10, 5, TimeUnit.SECONDS);
+
+        new Thread()
+        {
+            public void run()
+            {
+                try
+                {
+                    FaceRecService.getInstance().checkAllFacesID();
+                }
+                catch (Throwable e)
+                {
+                    logger.error("caught: ", e);
+                }
+            }
+        }.start();
+
+        new Thread()
+        {
+            public void run()
+            {
+                try
+                {
+                    FaceRecService.getInstance().checkAndGetFaceidList();
+                }
+                catch (Throwable e)
+                {
+                    logger.error("caught: ", e);
+                }
+            }
+        }.start();
     }
 }

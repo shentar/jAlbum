@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import com.backend.FileInfo;
 import com.backend.FileType;
+import com.backend.PicStatus;
 import com.backend.scan.FileTools;
 
 import net.bramp.ffmpeg.FFprobe;
@@ -202,7 +203,7 @@ public class VideoFFProbeTool
 
                 FileInfo fi = new FileInfo();
                 fi.setcTime(new Date(FileTools.getFileCreateTime(f)));
-                fi.setDel(false);
+                fi.setStatus(PicStatus.EXIST);
                 fi.setHeight(getHeight(fs));
                 fi.setWidth(getWidth(fs));
                 fi.setPath(fpath);

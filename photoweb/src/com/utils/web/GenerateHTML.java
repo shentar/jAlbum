@@ -10,25 +10,30 @@ import java.util.Set;
 import java.util.TreeMap;
 
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.backend.FileInfo;
 import com.backend.dao.DateRecords;
 import com.backend.dao.DateTableDao;
 import com.backend.dao.UniqPhotosStore;
+import com.backend.facer.Face;
 import com.utils.media.MediaTool;;
 
 public class GenerateHTML
 {
     private static final String seprator = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
 
+    private static final Logger logger = LoggerFactory.getLogger(GenerateHTML.class);
+
     public static String genIndexPage(List<FileInfo> flst)
     {
-        return genIndexPage(flst, 5);
+        return genIndexPage(flst, 5, true);
     }
 
-    public static String genIndexPage(List<FileInfo> flst, int rowCount)
+    public static String genIndexPage(List<FileInfo> flst, int rowCount, boolean needNavigate)
     {
-        if (flst == null || flst.isEmpty())
+        if (flst == null || flst.isEmpty() || rowCount <= 0)
         {
             return generate404Notfound();
         }
@@ -38,8 +43,6 @@ public class GenerateHTML
             return generateSinglePhoto(flst.get(0));
         }
 
-        FileInfo firstP = flst.get(0);
-        FileInfo endP = flst.get(flst.size() - 1);
         StringBuffer sb = new StringBuffer();
         sb.append(getHtmlHead());
         String yearNavigate = genYearNavigate();
@@ -47,8 +50,16 @@ public class GenerateHTML
         {
             sb.append(yearNavigate);
         }
-        String indexPageNavi = genIndexNavigate(firstP, endP);
-        sb.append(indexPageNavi);
+
+        String indexPageNavi = null;
+        if (needNavigate)
+        {
+            FileInfo firstP = flst.get(0);
+            FileInfo endP = flst.get(flst.size() - 1);
+            indexPageNavi = genIndexNavigate(firstP, endP);
+            sb.append(indexPageNavi);
+        }
+
         sb.append("<table style=\"text-align: center;\" width=\"100%\" height=\"100%\" "
                 + "border=\"0\" bordercolor=\"#000000\">");
         int i = 0;
@@ -63,7 +74,7 @@ public class GenerateHTML
             }
 
             sb.append("<td width=\"20%\" height=\"18%\" bordercolor=\"#000000\"><br/>");
-            sb.append("<a href=\"/photos/" + f.getHash256() + videoTab(true) + "\">");
+            sb.append("<a href=\"" + "/photos/" + f.getHash256() + videoTab(true) + "\">");
             sb.append(generateImgTag(f, 310));
             sb.append("</a></td>");
 
@@ -81,10 +92,15 @@ public class GenerateHTML
         }
 
         sb.append("</table>");
-        sb.append(indexPageNavi);
+
+        if (needNavigate)
+        {
+            sb.append(indexPageNavi);
+        }
+
         sb.append(yearNavigate);
         sb.append(getHtmlFoot());
-
+        logHtml(sb);
         return sb.toString();
     }
 
@@ -136,7 +152,7 @@ public class GenerateHTML
         return "/?" + pPara + "=" + f.getHash256() + "&count=" + count + videoTab(false);
     }
 
-    public static String genYearNavigate()
+    private static String genYearNavigate()
     {
         TreeMap<String, TreeMap<String, TreeMap<String, DateRecords>>> allrecords = DateTableDao
                 .getInstance().getAllDateRecord();
@@ -170,10 +186,15 @@ public class GenerateHTML
 
                     ylst.append("<td width=\"5%\" height=\"30px\" bordercolor=\"#000000\">");
                     ylst.append(
+                            "<a href=\"/faces/\"><input type=\"button\" value=\"人物\"/></a></td>");
+                    i++;
+
+                    ylst.append("<td width=\"5%\" height=\"30px\" bordercolor=\"#000000\">");
+                    ylst.append(
                             "<a href=\"/?video=true\"><input type=\"button\" value=\"视频\"/></a></td>");
                     i++;
 
-                    if (HeadUtils.isVideo())
+                    if (HeadUtils.isVideo() || HeadUtils.isFaces())
                     {
                         break;
                     }
@@ -203,12 +224,12 @@ public class GenerateHTML
         return "";
     }
 
-    public static String getHtmlHead()
+    private static String getHtmlHead()
     {
         return getHtmlHead(false);
     }
 
-    public static String getHtmlHead(boolean isSinglePage)
+    private static String getHtmlHead(boolean isSinglePage)
     {
         String hh = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" "
                 + "\"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">"
@@ -266,7 +287,7 @@ public class GenerateHTML
         return arrayList;
     }
 
-    public static String getHtmlFoot()
+    private static String getHtmlFoot()
     {
         return "</body></html>";
     }
@@ -362,7 +383,7 @@ public class GenerateHTML
                         + "," + "'" + getPhotoUrl(f, 1, true) + "'" + ")\"";
             }
 
-            sb.append(generateImgTag(f, 860, extraInfo, "singlephoto"));
+            sb.append(generateImgTag(f, 860, extraInfo, "singlephoto", false));
             // sb.append("</a>");
             sb.append("</td></tr>");
 
@@ -398,6 +419,8 @@ public class GenerateHTML
             sb.append(yearNavigage);
 
             sb.append(getHtmlFoot());
+
+            logHtml(sb);
             return sb.toString();
         }
 
@@ -405,10 +428,11 @@ public class GenerateHTML
 
     private static String generateImgTag(FileInfo f, int size)
     {
-        return generateImgTag(f, size, "", "");
+        return generateImgTag(f, size, "", "", false);
     }
 
-    private static String generateImgTag(FileInfo f, int size, String exinfo, String id)
+    private static String generateImgTag(FileInfo f, int size, String exinfo, String id,
+            boolean isFace)
     {
         String content = null;
         if (MediaTool.isVideo(f.getPath()) && size > 400)
@@ -438,23 +462,32 @@ public class GenerateHTML
         }
         else
         {
-            String img = "<img";
+            boolean isVideo = MediaTool.isVideo(f.getPath());
+            boolean needRoatate = HeadUtils.needRotatePic(f);
+            boolean needRestrict = restrictSize(f);
+            String img = "";
+            if (size < 400 && needRoatate)
+            {
+                String style = "width:" + size + "px;height: " + (isVideo ? size + 20 : size)
+                        + "px;text-align: center;vertical-align: middle;display: table-cell;";
+                img += "<dvi style=" + "\"" + style + "\">";
+            }
+            img += "<img";
             img += " " + exinfo;
             if (StringUtils.isNotBlank(id))
             {
                 img += " id=\"" + id + "\"";
             }
 
-            if (MediaTool.isVideo(f.getPath()))
+            if (isVideo)
             {
                 // 视频缩略图 不需要旋转，在视频角度不正确时才需要颠倒长和高。
                 if (f.getHeight() > size || f.getWidth() > size || f.getHeight() == 0
                         || f.getWidth() == 0)
                 {
-                    boolean isWidth = (f.getRoatateDegree() % 180 == 0) && restrictSize(f);
+                    boolean isWidth = (f.getRoatateDegree() % 180 == 0) && needRestrict;
                     img += " " + (isWidth ? "width" : "height") + "=" + "\"" + size + "px\"";
                 }
-
             }
             else
             {
@@ -462,21 +495,21 @@ public class GenerateHTML
                 if (f.getHeight() > size || f.getWidth() > size || f.getHeight() == 0
                         || f.getWidth() == 0)
                 {
-                    img += " " + (restrictSize(f) ? "width" : "height") + "=" + "\"" + size
-                            + "px\"";
+                    img += " " + (needRestrict ? "width" : "height") + "=" + "\"" + size + "px\"";
                 }
 
-                if (HeadUtils.needRotatePic(f))
+                if (needRoatate)
                 {
                     img += " style=\"transform: rotate(" + f.getRoatateDegree()
                             + "deg); transform-origin: 50% 50% 0px;\"";
                 }
             }
 
-            img += " src = \"/photos/" + f.getHash256() + "?content=true&size=" + size + "\">";
+            img += " src = \"/photos/" + f.getHash256() + "?content=true&size=" + size
+                    + (isFace ? "isface=true" : "") + "\">";
             img += "</img>";
 
-            if (MediaTool.isVideo(f.getPath()) && !HeadUtils.isVideo())
+            if (isVideo && !HeadUtils.isVideo())
             {
                 // img += "</br><span style=\"text-align: center;font-family:
                 // sans-serif;font-weight: bold;\">"
@@ -484,7 +517,13 @@ public class GenerateHTML
                 img += "</br><img width=\"20px\" style=\"padding: 2px 0 0px 0;\" src=\"/js/player.png\">";
             }
 
+            if (size < 400 && needRoatate)
+            {
+                img += "</div>";
+            }
+
             content = img;
+
         }
         return content;
     }
@@ -492,7 +531,7 @@ public class GenerateHTML
     public static String generateYearPage(String year,
             TreeMap<String, TreeMap<String, DateRecords>> currentyear)
     {
-        if (currentyear == null || currentyear.isEmpty())
+        if (StringUtils.isBlank(year) || currentyear == null || currentyear.isEmpty())
         {
             return generate404Notfound();
         }
@@ -560,7 +599,7 @@ public class GenerateHTML
         sb.append("</table>");
         sb.append(yearNavigete);
         sb.append(getHtmlFoot());
-
+        logHtml(sb);
         return sb.toString();
     }
 
@@ -573,7 +612,7 @@ public class GenerateHTML
     public static String generateDayPage(String day, String prevDay, String nextDay,
             List<FileInfo> flst, int rowCount)
     {
-        if (flst == null || flst.isEmpty())
+        if (StringUtils.isBlank(day) || flst == null || flst.isEmpty() || rowCount <= 0)
         {
             return generate404Notfound();
         }
@@ -633,7 +672,7 @@ public class GenerateHTML
         sb.append(yearNavigate);
 
         sb.append(getHtmlFoot());
-
+        logHtml(sb);
         return sb.toString();
     }
 
@@ -676,7 +715,7 @@ public class GenerateHTML
     public static Object generateMonthPage(String monthstr, String nextMonth, String prevMonth,
             TreeMap<String, DateRecords> map)
     {
-        if (map == null || map.isEmpty())
+        if (StringUtils.isBlank(monthstr) || map == null || map.isEmpty())
         {
             return generate404Notfound();
         }
@@ -736,7 +775,7 @@ public class GenerateHTML
         sb.append(monthNavigate);
         sb.append(yearNavigate);
         sb.append(getHtmlFoot());
-
+        logHtml(sb);
         return sb.toString();
     }
 
@@ -771,7 +810,7 @@ public class GenerateHTML
         return getHtmlHead() + "404 not found" + getHtmlFoot();
     }
 
-    public static boolean restrictSize(FileInfo f)
+    private static boolean restrictSize(FileInfo f)
     {
         boolean ret = true;
         if (f.getHeight() > 0 && f.getWidth() > 0)
@@ -793,6 +832,118 @@ public class GenerateHTML
         // }
 
         return ret;
+    }
+
+    private static void logHtml(StringBuffer sb)
+    {
+        logHtml(sb, false);
+    }
+
+    private static void logHtml(StringBuffer sb, boolean forced)
+    {
+        if (forced)
+        {
+            logger.warn("html body: {}", sb);
+        }
+        else
+        {
+            logger.info("html body: {}", sb);
+        }
+    }
+
+    public static String generateFacesIndex(List<Face> fflist, int rowCount)
+    {
+        if (fflist == null || fflist.isEmpty())
+        {
+            return generate404Notfound();
+        }
+        return genFaceIndexPage(fflist, rowCount);
+    }
+
+    private static String generateImgTag(String facetoken)
+    {
+        return "<img style=\"border-radius: 50%;\" width=\"200px\" src=\"/facetoken/" + facetoken
+                + "\"/>";
+    }
+
+    private static String genFaceIndexPage(List<Face> flst, int rowCount)
+    {
+        if (flst == null || flst.isEmpty() || rowCount <= 0)
+        {
+            return generate404Notfound();
+        }
+
+        if (flst.size() == 1)
+        {
+            return generateSinglePhoto(flst.get(0));
+        }
+
+        StringBuffer sb = new StringBuffer();
+        sb.append(getHtmlHead());
+        String yearNavigate = genYearNavigate();
+        if (!HeadUtils.isMobile())
+        {
+            sb.append(yearNavigate);
+        }
+
+        sb.append("<table style=\"text-align: center;\" width=\"100%\" height=\"100%\" "
+                + "border=\"0\" bordercolor=\"#000000\">");
+        int i = 0;
+        int start = 0;
+        int end = 0;
+        for (Face f : flst)
+        {
+            if (i % rowCount == 0)
+            {
+                start++;
+                sb.append("<tr>");
+            }
+
+            sb.append("<td width=\"20%\" height=\"18%\" bordercolor=\"#000000\"><br/>");
+            sb.append("<a href=\"" + "/faces/" + f.getFaceid() + videoTab(true) + "\">");
+            sb.append(generateImgTag(f.getFacetoken()));
+            sb.append("</a></td>");
+
+            if ((i + 1) % rowCount == 0)
+            {
+                end++;
+                sb.append("</tr>");
+            }
+
+            i++;
+        }
+        if (end != start)
+        {
+            sb.append("</tr>");
+        }
+        sb.append("</table>");
+
+        sb.append(yearNavigate);
+        sb.append(getHtmlFoot());
+        logHtml(sb);
+        return sb.toString();
+    }
+
+    private static String generateSinglePhoto(Face face)
+    {
+        if (face.getFi() != null)
+        {
+            return generateSinglePhoto(face.getFi());
+        }
+        else
+        {
+            return generateSinglePhoto(
+                    UniqPhotosStore.getInstance().getOneFileByHashStr(face.getEtag()));
+        }
+    }
+
+    public static String generateFacesForOneFaceID(List<FileInfo> fflist)
+    {
+        if (fflist == null || fflist.isEmpty())
+        {
+            return generate404Notfound();
+        }
+        return genIndexPage(fflist, (HeadUtils.isMobile() || HeadUtils.isVideo()) ? 3 : 5, false);
     }
 
 }

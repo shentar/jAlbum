@@ -6,14 +6,15 @@ import org.slf4j.LoggerFactory;
 import com.backend.dao.DateTableDao;
 import com.backend.dao.UniqPhotosStore;
 import com.backend.dirwathch.DirWatchService;
+import com.utils.conf.AppConfig;
 
 public class FreshAllData
 {
     private static final Logger logger = LoggerFactory.getLogger(FreshAllData.class);
 
-    private static final long FIVE_MINS_IN_MILLS = 5 * 60 * 1000;
+    private static final long IDLE_REFRESH_INTEVAL = AppConfig.getInstance().getIdleRefreshInteval();
 
-    private static final long TEN_SECS_IN_MILLS = 10 * 1000;
+    private static final long BUSY_REFRESH_INTERVAL = AppConfig.getInstance().getBusyRefreshInteval();
 
     private static final FreshAllData instance = new FreshAllData();
 
@@ -48,8 +49,8 @@ public class FreshAllData
         logger.info("the refresh info is: {}", this);
 
         if (firstTime || lastEventTime != 0
-                && (System.currentTimeMillis() - lastEventTime >= TEN_SECS_IN_MILLS
-                        || System.currentTimeMillis() - lastFreshTime >= FIVE_MINS_IN_MILLS))
+                && (System.currentTimeMillis() - lastEventTime >= BUSY_REFRESH_INTERVAL
+                        || System.currentTimeMillis() - lastFreshTime >= IDLE_REFRESH_INTEVAL))
         {
             doRefresh();
             firstTime = false;
@@ -58,11 +59,11 @@ public class FreshAllData
 
     private void doRefresh()
     {
-        logger.warn("start to refresh all tables: {}", this);
+        logger.info("start to refresh all tables: {}", this);
         photostore.getDupFiles();
         datestore.refreshDate();
-        logger.warn("end to refresh all tables: {}", this);
-        logger.warn("the count of dir which is monitered is "
+        logger.info("end to refresh all tables: {}", this);
+        logger.info("the count of dir which is monitered is "
                 + DirWatchService.getInstance().getTheWatchDirCount() + ".");
         lastFreshTime = System.currentTimeMillis();
         lastEventTime = 0;

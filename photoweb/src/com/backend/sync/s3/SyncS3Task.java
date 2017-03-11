@@ -1,6 +1,7 @@
 package com.backend.sync.s3;
 
 import com.backend.FileInfo;
+import com.utils.conf.AppConfig;
 
 public class SyncS3Task implements Runnable
 {
@@ -14,12 +15,12 @@ public class SyncS3Task implements Runnable
     @Override
     public void run()
     {
-        if (fi == null || !SyncS3Service.getInstane().isS3Configed())
+        if (fi == null || !AppConfig.getInstance().isS3Configed())
         {
             return;
         }
 
-        SyncS3Service.getInstane().uploadObject(fi);
+        SyncS3Service.getInstance().uploadObject(fi);
     }
 
 }

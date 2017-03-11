@@ -100,7 +100,7 @@ public class RestRootWebService extends HttpServlet
     {
         ResponseBuilder builder = Response.status(200);
         String body = GenerateHTML.genIndexPage(getFileList(req),
-                (HeadUtils.isMobile() || HeadUtils.isVideo()) ? 3 : 5);
+                (HeadUtils.isMobile() || HeadUtils.isVideo()) ? 3 : 5, true);
         if (StringUtils.isNotBlank(body))
         {
             builder.entity(body);
@@ -180,12 +180,47 @@ public class RestRootWebService extends HttpServlet
 
     }
 
+    @Path("/faces/")
+    public Object getFaces()
+    {
+        return new FacesService(-1);
+    }
+
+    @Path("/faces/{id}")
+    public Object getFaceFiles(@PathParam("id") String id)
+    {
+        try
+        {
+            long faceid = Long.parseLong(id);
+            return new FacesService(faceid);
+        }
+        catch (Exception e)
+        {
+            logger.warn("caused by: ", e);
+        }
+        return new ErrorResource();
+    }
+
+    @Path("/facetoken/{id}")
+    public Object getFace(@PathParam("id") String id)
+    {
+        if (StringUtils.isNotBlank(id))
+        {
+            return new FacesTokenService(id);
+        }
+        else
+        {
+            return new ErrorResource();
+        }
+    }
+
     @Path("/photos/{id}")
     public Object getPhoto(@PathParam("id") String id, @Context HttpServletRequest req,
             @Context HttpServletResponse response, @Context HttpHeaders headers, InputStream body)
     {
         if (StringUtils.isNotBlank(id))
         {
+
             return new ObjectService(id);
         }
         else

@@ -1,11 +1,10 @@
 package com.backend.scan;
 
 import java.io.File;
-import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,7 +64,6 @@ public class ToolMain
     }
 
     public static void mapAllfiles(final File f, List<String> excludeDirs)
-            throws IOException, InterruptedException, NoSuchAlgorithmException
     {
         if (f == null || excludeDirs == null)
         {
@@ -87,11 +85,26 @@ public class ToolMain
         }
         else
         {
+            String fpath = null;
+            try
+            {
+                fpath = f.getCanonicalPath();
+            }
+            catch (Exception e)
+            {
+                logger.warn("caught: ", e);
+            }
+
+            if (StringUtils.isBlank(fpath))
+            {
+                return;
+            }
+
             for (String s : excludeDirs)
             {
-                if (f.getCanonicalPath().startsWith(s))
+                if (fpath.startsWith(s))
                 {
-                    logger.info("this folder is execluded: " + f.getCanonicalPath());
+                    logger.info("this folder is execluded: " + fpath);
                     return;
                 }
             }
@@ -99,7 +112,7 @@ public class ToolMain
             File[] files = f.listFiles();
             if (files == null)
             {
-                logger.warn("some empty folder: " + f.getCanonicalPath());
+                logger.info("some empty folder: " + fpath);
                 return;
             }
 
@@ -108,6 +121,7 @@ public class ToolMain
                 mapAllfiles(cf, excludeDirs);
             }
         }
+
     }
 
     public static void checkOneFile(File f)
@@ -119,9 +133,10 @@ public class ToolMain
             {
                 if (f.getName().toLowerCase().endsWith(s))
                 {
-                    if (f.length() < AppConfig.getInstance().getMinFileSize())
+                    if (!FileTools.checkFileLengthValid(f.getCanonicalPath()))
                     {
-                        logger.info("the size is too small maybe not a normal photo file: " + f);
+                        logger.info("the size is too small or too big. "
+                                + "it maybe not a normal photo file: " + f);
                         break;
                     }
 

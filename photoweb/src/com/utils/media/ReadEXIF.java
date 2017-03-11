@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.backend.FileInfo;
+import com.backend.PicStatus;
 import com.backend.scan.FileTools;
 import com.drew.imaging.ImageMetadataReader;
 import com.drew.metadata.Directory;
@@ -48,6 +49,7 @@ public class ReadEXIF
             fi.setFtype(HeadUtils.getFileType(filePath));
             fi.setPath(f.getCanonicalPath());
             fi.setSize(f.length());
+            fi.setStatus(PicStatus.EXIST);
             fi.setcTime(new java.sql.Date(FileTools.getFileCreateTime(new File(fi.getPath()))));
             if (needExif)
             {
@@ -163,7 +165,7 @@ public class ReadEXIF
         if (dirSub != null)
         {
             d = dirSub.getDate(ExifDirectoryBase.TAG_DATETIME_ORIGINAL);
-            if (d == null)
+            if (d == null || d.getTime() < 0)
             {
                 d = dirSub.getDate(ExifDirectoryBase.TAG_DATETIME_DIGITIZED);
             }
@@ -177,18 +179,25 @@ public class ReadEXIF
             }
         }
 
-        if (d == null)
+        if (d == null || d.getTime() < 0)
         {
             fi.setPhotoTime(fi.getcTime());
+            logger.info("the ptime is null use the ctime: {}", fi);
         }
         else if (d.getTime() > fi.getcTime().getTime())
         {
             if (fi.getcTime().getTime() > System.currentTimeMillis())
             {
+                logger.warn(
+                        "the ptime is newer than ctime, "
+                                + "and ctime is newer than current time, now use the ctime instead of ptime: {}",
+                        fi);
                 fi.setPhotoTime(new java.sql.Date(System.currentTimeMillis()));
             }
             else
             {
+                logger.warn("the ptime is newer than ctime, now use the ctime instead of ptime: {}",
+                        fi);
                 fi.setPhotoTime(fi.getcTime());
             }
         }

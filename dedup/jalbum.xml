@@ -19,6 +19,7 @@ thumbnaildir specify the folder which to store the thumbnail to.
     </picfilesuffix>   
     
     <minfilesize>51200</minfilesize>
+    <maxfilesize>512000000</maxfilesize>
     <threadcount>20</threadcount>
     <maxpicsperonepage>25</maxpicsperonepage>
     <hashalog>MD5</hashalog>
@@ -38,10 +39,22 @@ thumbnaildir specify the folder which to store the thumbnail to.
         ./thumbnail
     </thumbnaildir>
 
+    <Proxy>
+        <host></host>
+        <port></port>
+        <user></user>
+        <password></password>
+    </Proxy>
+
     <s3>
         <bucketname></bucketname>
         <ak></ak>
         <sk></sk>
         <useHttps>false</useHttps>
     </s3>
+
+    <Facer>
+        <ak></ak>
+        <sk></sk>
+    </Facer>
 </config>

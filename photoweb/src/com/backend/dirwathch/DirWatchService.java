@@ -192,18 +192,19 @@ public class DirWatchService
                             @Override
                             public void run()
                             {
-                                logger.warn("try to delete the records in path: " + fullPath);
+                                logger.info("try to delete the records in path: " + fullPath);
                                 BaseSqliteStore.getInstance().deleteRecordsInDirs(fullPath);
-                                logger.warn("deleteed the records in path: " + fullPath);
+                                logger.info("deleteed the records in path: " + fullPath);
                             }
                         });
                     }
                     else if (kd.equals(StandardWatchEventKinds.ENTRY_MODIFY))
                     {
                         final File cf = new File(fullPath);
+                        // 只需要处理文件变化，文件夹变化不予处理。
                         if (cf.isFile())
                         {
-                            logger.warn("the entry is modified: " + cf);
+                            logger.info("the entry is modified: " + cf);
                             FileTools.threadPool.submit(new Runnable()
                             {
                                 @Override

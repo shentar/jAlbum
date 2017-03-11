@@ -6,8 +6,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLEncoder;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -29,6 +27,7 @@ import org.slf4j.LoggerFactory;
 
 import com.backend.FileInfo;
 import com.backend.dao.BaseSqliteStore;
+import com.backend.dao.FaceTableDao;
 import com.backend.dao.UniqPhotosStore;
 import com.backend.scan.FileTools;
 import com.service.io.RangesFileInputStream;
@@ -126,8 +125,8 @@ public class ObjectService
                     String fileName = thumbnail != null ? thumbnail.getName()
                             : new File(f.getPath()).getName();
                     String contenttype = thumbnail != null
-                            ? getContentType(thumbnail.getCanonicalPath())
-                            : getContentType(f.getPath());
+                            ? HeadUtils.getContentType(thumbnail.getCanonicalPath())
+                            : HeadUtils.getContentType(f.getPath());
 
                     MDC.put(SystemConstant.FILE_NAME, fileName);
                     builder.entity(fi);
@@ -336,12 +335,9 @@ public class ObjectService
         logger.warn("try to delete the photo: " + id);
         ResponseBuilder builder = Response.status(204);
 
-        BaseSqliteStore meta = BaseSqliteStore.getInstance();
-        meta.setPhotoToBeHiden(id, false);
-
-        UniqPhotosStore umeta = UniqPhotosStore.getInstance();
-        // List<FileInfo> fnext = umeta.getNextNineFileByHashStr(id, 1);
-        umeta.deleteRecordByID(id);
+        BaseSqliteStore.getInstance().setPhotoToBeHiden(id, false);
+        UniqPhotosStore.getInstance().deleteRecordByID(id);
+        FaceTableDao.getInstance().deleteOneFile(id);
 
         /*
          * if (fnext!= null && !fnext.isEmpty()) { // 刷新整个页面。 String bodyContent
@@ -352,17 +348,6 @@ public class ObjectService
          */
         logger.warn("deleted the photo: " + id);
         return builder.build();
-    }
-
-    private static String getContentType(String pathToFile) throws IOException
-    {
-        String mime = Files.probeContentType(Paths.get(pathToFile));
-        if (StringUtils.isBlank(mime))
-        {
-            mime = MediaTool.isVideo(pathToFile) ? "video/mp4" : "application/octet-stream";
-        }
-
-        return mime;
     }
 
     public String getId()

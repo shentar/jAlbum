@@ -14,7 +14,7 @@ public class SyncTool
 
     public static void submitSyncTask(FileInfo fi)
     {
-        if (SyncS3Service.getInstane().isS3Configed() && new File(fi.getPath()).exists())
+        if (AppConfig.getInstance().isS3Configed() && new File(fi.getPath()).exists())
         {
             threadPool.submit(new SyncS3Task(fi));
         }

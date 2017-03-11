@@ -18,7 +18,7 @@ public class FileInfo
 
     private long size;
 
-    private boolean isDel = false;
+    private PicStatus status = PicStatus.ERRORFILE;
 
     private int roatateDegree = 0;
 
@@ -59,9 +59,9 @@ public class FileInfo
     public String getHashStr()
     {
         return String.format(
-                "[ptime: %s, hashstr: %s, x/y: %s/%s, size: %s, roatate: %s, isDel: %s, extrInfo: %s]",
+                "[ptime: %s, hashstr: %s, x/y: %s/%s, size: %s, roatate: %s, extrInfo: %s]",
                 photoTime + "", hash256, width + "", height + "", size + "", roatateDegree + "",
-                isDel + "", extrInfo);
+                extrInfo);
     }
 
     public String toString()
@@ -69,7 +69,7 @@ public class FileInfo
         return String.format(
                 "[path: %s, ptime: %s, ctime: %s, hashstr: %s, x/y: %s/%s, size: %s, roatate: %s, isDel: %s, filetype: %s]",
                 path, photoTime + "", cTime + "", hash256, width + "", height + "", size + "",
-                roatateDegree + "", isDel + "", ftype + "");
+                roatateDegree + "", status + "", ftype + "");
     }
 
     public long getHeight()
@@ -112,14 +112,14 @@ public class FileInfo
         this.cTime = cTime;
     }
 
-    public boolean isDel()
+    public PicStatus getStatus()
     {
-        return isDel;
+        return status;
     }
 
-    public void setDel(boolean isDel)
+    public void setStatus(PicStatus status)
     {
-        this.isDel = isDel;
+        this.status = status;
     }
 
     public int getRoatateDegree()

@@ -3,6 +3,7 @@ package com.utils.media;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -13,7 +14,11 @@ import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
 import javax.imageio.ImageIO;
+import javax.imageio.ImageReadParam;
+import javax.imageio.ImageReader;
+import javax.imageio.stream.ImageInputStream;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -97,19 +102,20 @@ public class ThumbnailGenerator
         return suffix;
     }
 
-    public static InputStream generateThumbnailInputStream(String fpath, int w, int h,
-            boolean force)
+    public static byte[] generateThumbnailBuffer(String fpath, int w, int h, boolean force)
     {
         try
         {
             String suffix = checkPicType(new File(fpath));
             BufferedImage bi = generateThumbnail(fpath, w, h, force);
+            if (bi == null)
+            {
+                return null;
+            }
             ByteArrayOutputStream bf = new ByteArrayOutputStream();
 
             ImageIO.write(bi, suffix, bf);
-            byte[] b = bf.toByteArray();
-            ByteArrayInputStream bfin = new ByteArrayInputStream(b);
-            return bfin;
+            return bf.toByteArray();
         }
         catch (Exception e)
         {
@@ -215,5 +221,115 @@ public class ThumbnailGenerator
         }
 
         return false;
+    }
+
+    public static boolean createFaceThumbnail(Object origFile, String suffix, String pos,
+            String tmpFile)
+    {
+        if (StringUtils.isBlank(pos) || StringUtils.isBlank(suffix) || origFile == null
+                || StringUtils.isBlank(tmpFile))
+        {
+            logger.warn("input arguments error!");
+            return false;
+        }
+
+        ImageInputStream iis = null;
+        try
+        {
+            if (origFile instanceof byte[])
+            {
+                iis = ImageIO.createImageInputStream(new ByteArrayInputStream((byte[]) origFile));
+            }
+            else if (origFile instanceof File || origFile instanceof InputStream)
+            {
+                iis = ImageIO.createImageInputStream(origFile);
+            }
+            else if (origFile instanceof String)
+            {
+                iis = ImageIO.createImageInputStream(new File((String) origFile));
+            }
+            else
+            {
+                logger.warn("unknown type of input file: {}", origFile);
+                return false;
+            }
+
+            /**
+             * width,height,left,top
+             */
+            String[] ss = pos.split(",");
+            if (ss.length != 4)
+            {
+                return false;
+            }
+
+            int w = Integer.parseInt(ss[0]);
+            int h = Integer.parseInt(ss[1]);
+            int x = Integer.parseInt(ss[2]);
+            int y = Integer.parseInt(ss[3]);
+            Rectangle rect = new Rectangle(x, y, w, h);
+            Rectangle newRect = getNewRectangle(rect);
+            if (!(genFaceThumbnail(suffix, tmpFile, iis, newRect)
+                    || genFaceThumbnail(suffix, tmpFile, iis, rect)))
+            {
+                logger.warn("generate the face thumbnail failed: {}", origFile);
+                return false;
+            }
+
+            return true;
+        }
+        catch (Exception e)
+        {
+            logger.warn("caused by: ", e);
+        }
+        finally
+        {
+            if (iis != null)
+            {
+                try
+                {
+                    iis.close();
+                }
+                catch (IOException e)
+                {
+                    logger.warn("caused by: ", e);
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private static boolean genFaceThumbnail(String suffix, String tmpFile, ImageInputStream iis,
+            Rectangle newRect)
+    {
+        try
+        {
+            ImageReader reader = ImageIO.getImageReadersBySuffix(suffix).next();
+            reader.setInput(iis, true);
+            ImageReadParam param = reader.getDefaultReadParam();
+            param.setSourceRegion(newRect);
+            BufferedImage bi = reader.read(0, param);
+            ImageIO.write(bi, suffix, new File(tmpFile));
+            return true;
+        }
+        catch (Exception e)
+        {
+            logger.warn("caused by: ", e);
+        }
+        return false;
+    }
+
+    private static Rectangle getNewRectangle(Rectangle rect)
+    {
+        int addInterval = (int) (rect.getHeight() * 0.3);
+        if (rect.getX() < addInterval || rect.getY() < addInterval)
+        {
+            return null;
+        }
+
+        return new Rectangle((int) (rect.getX() - addInterval), (int) (rect.getY() - addInterval),
+                (int) (rect.getWidth() + 2 * addInterval),
+                (int) (rect.getHeight() + 2 * addInterval));
     }
 }
