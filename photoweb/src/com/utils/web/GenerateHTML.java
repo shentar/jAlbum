@@ -982,10 +982,22 @@ public class GenerateHTML
 
     public static String generateSinglePhoto(Face f)
     {
-        if (f == null || f.getFi() == null)
+        if (f == null)
         {
             return generate404Notfound();
         }
+
+        FileInfo fi = f.getFi();
+        if (fi == null)
+        {
+            fi = UniqPhotosStore.getInstance().getOneFileByHashStr(f.getEtag());
+        }
+
+        if (fi == null)
+        {
+            return generate404Notfound();
+        }
+        f.setFi(fi);
 
         StringBuffer sb = new StringBuffer(getHtmlHead(true));
         String yearNavigage = genYearNavigate();
