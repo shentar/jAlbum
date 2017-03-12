@@ -455,10 +455,11 @@ public class FaceTableDao extends AbstractRecordsStore
                 return null;
             }
 
-            String sqlstr = "select * from faces where quality" + (isnext ? "<" : ">")
+            String sqlstr = "select * from faces where faceid=? and quality" + (isnext ? "<" : ">")
                     + "=? order by quality desc limit " + count;
             prep = conn.prepareStatement(sqlstr);
-            prep.setString(1, f.getQuality());
+            prep.setLong(1, faceID);
+            prep.setString(2, f.getQuality());
             res = prep.executeQuery();
 
             List<Face> flst = new LinkedList<Face>();
