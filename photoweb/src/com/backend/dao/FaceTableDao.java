@@ -4,6 +4,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -13,6 +14,7 @@ import org.slf4j.LoggerFactory;
 
 import com.backend.FileInfo;
 import com.backend.facer.Face;
+import com.backend.facer.FacerUtils;
 
 public class FaceTableDao extends AbstractRecordsStore
 {
@@ -455,17 +457,46 @@ public class FaceTableDao extends AbstractRecordsStore
                 return null;
             }
 
-            String sqlstr = "select * from faces where faceid=? and quality" + (isnext ? "<" : ">")
-                    + "=? order by quality desc limit " + count;
-            prep = conn.prepareStatement(sqlstr);
-            prep.setLong(1, faceID);
-            prep.setString(2, f.getQuality());
-            res = prep.executeQuery();
+            /*
+             * String sqlstr = "select * from faces where faceid=? and quality"
+             * + (isnext ? "<" : ">") + "=? order by quality desc limit " +
+             * count; prep = conn.prepareStatement(sqlstr); prep.setLong(1,
+             * faceID); prep.setString(2, f.getQuality()); res =
+             * prep.executeQuery();
+             * 
+             * List<Face> flst = new LinkedList<Face>(); while (res.next()) {
+             * flst.add(getFaceFromTableRecord(res)); }
+             */
 
-            List<Face> flst = new LinkedList<Face>();
-            while (res.next())
+            List<Face> allf = getFacesByID(faceID);
+            FacerUtils.sortByQuality(allf);
+            if (!isnext)
             {
-                flst.add(getFaceFromTableRecord(res));
+                Collections.reverse(allf);
+            }
+
+            int maxCount = allf.size() < count ? allf.size() : count;
+
+            int c = 0;
+            List<Face> flst = new LinkedList<Face>();
+            boolean start = false;
+            for (Face face : allf)
+            {
+                if (!start && face.getFacetoken().equals(f.getFacetoken()))
+                {
+                    start = true;
+                    continue;
+                }
+
+                if (start)
+                {
+                    flst.add(face);
+                    c++;
+                    if (c >= maxCount)
+                    {
+                        break;
+                    }
+                }
             }
 
             return flst;
