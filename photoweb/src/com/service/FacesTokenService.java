@@ -93,7 +93,7 @@ public class FacesTokenService
                 logger.info("use the face file: {}", face);
             }
 
-            if (fi == null)
+            if (face == null || fi == null)
             {
                 logger.warn("the special facetoken id is not exist {}", id);
                 builder.entity(GenerateHTML.generate404Notfound());
@@ -101,6 +101,7 @@ public class FacesTokenService
             }
             else
             {
+                face.setFi(fi);
                 builder.entity(GenerateHTML.generateSinglePhoto(face));
                 logger.info("generate the single face photo file successfully {}", face);
             }
