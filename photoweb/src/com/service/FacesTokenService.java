@@ -23,16 +23,19 @@ import com.backend.dao.UniqPhotosStore;
 import com.backend.facer.Face;
 import com.utils.media.ThumbnailManager;
 import com.utils.sys.SystemConstant;
+import com.utils.sys.SystemProperties;
 import com.utils.web.GenerateHTML;
 import com.utils.web.HeadUtils;
 
 public class FacesTokenService
 {
     private static final Logger logger = LoggerFactory.getLogger(FacesTokenService.class);
+
     private String id = null;
 
     public FacesTokenService(String id)
     {
+        SystemProperties.add(SystemConstant.IS_FACES_KEY, true);
         this.id = id;
     }
 
@@ -42,39 +45,65 @@ public class FacesTokenService
     {
         ResponseBuilder builder = Response.status(200);
 
-        File faceThumbnail = ThumbnailManager.getFaceThumbnail(id);
-        InputStream is = null;
-        if (faceThumbnail.exists() && faceThumbnail.isFile())
+        if (req.getParameter("facethumbnail") != null)
         {
-            is = new BufferedInputStream(new FileInputStream(faceThumbnail));
-            builder.header("Content-type",
-                    HeadUtils.getContentType(faceThumbnail.getCanonicalPath()));
-            logger.info("use the thumbnail: {}", faceThumbnail);
+            File faceThumbnail = ThumbnailManager.getFaceThumbnail(id);
+            InputStream is = null;
+            if (faceThumbnail.exists() && faceThumbnail.isFile())
+            {
+                is = new BufferedInputStream(new FileInputStream(faceThumbnail));
+                builder.header("Content-type",
+                        HeadUtils.getContentType(faceThumbnail.getCanonicalPath()));
+                logger.info("use the thumbnail: {}", faceThumbnail);
+            }
+            else
+            {
+                Face face = FaceTableDao.getInstance().getFace(id);
+                if (face != null)
+                {
+                    FileInfo fi = UniqPhotosStore.getInstance().getOneFileByHashStr(face.getEtag());
+                    is = new BufferedInputStream(new FileInputStream(fi.getPath()));
+                    builder.header("Content-type", HeadUtils.getContentType(fi.getPath()));
+                    logger.info("use the face file: {}", face);
+                    ThumbnailManager.checkAndGenFaceThumbnail(face);
+                }
+            }
+
+            if (is != null)
+            {
+                MDC.put(SystemConstant.FILE_NAME, id);
+                HeadUtils.setExpiredTime(builder);
+                builder.header("Content-Disposition", "filename=" + id);
+                builder.entity(is);
+            }
+            else
+            {
+                logger.warn("the special facetoken id is not exist {}", id);
+                builder.entity(GenerateHTML.generate404Notfound());
+                builder.status(404);
+            }
         }
         else
         {
             Face face = FaceTableDao.getInstance().getFace(id);
+            FileInfo fi = null;
             if (face != null)
             {
-                FileInfo fi = UniqPhotosStore.getInstance().getOneFileByHashStr(face.getEtag());
-                is = new BufferedInputStream(new FileInputStream(fi.getPath()));
-                builder.header("Content-type", HeadUtils.getContentType(fi.getPath()));
+                fi = UniqPhotosStore.getInstance().getOneFileByHashStr(face.getEtag());
                 logger.info("use the face file: {}", face);
             }
-        }
 
-        if (is != null)
-        {
-            MDC.put(SystemConstant.FILE_NAME, id);
-            HeadUtils.setExpiredTime(builder);
-            builder.header("Content-Disposition", "filename=" + id);
-            builder.entity(is);
-        }
-        else
-        {
-            logger.warn("the special facetoken id is not exist {}", id);
-            builder.entity(GenerateHTML.generate404Notfound());
-            builder.status(404);
+            if (fi == null)
+            {
+                logger.warn("the special facetoken id is not exist {}", id);
+                builder.entity(GenerateHTML.generate404Notfound());
+                builder.status(404);
+            }
+            else
+            {
+                builder.entity(GenerateHTML.generateSinglePhoto(face));
+                logger.info("generate the single face photo file successfully {}", face);
+            }
         }
 
         return builder.build();

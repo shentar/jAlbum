@@ -23,7 +23,7 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.backend.FileInfo;
+import com.backend.dao.FaceTableDao;
 import com.backend.dao.UniqPhotosStore;
 import com.utils.conf.AppConfig;
 import com.utils.web.GenerateHTML;
@@ -121,9 +121,9 @@ public class RestRootWebService extends HttpServlet
      * response) throws IOException { return new VideoRootResource(var); }
      */
 
-    public List<FileInfo> getFileList(HttpServletRequest req)
+    public List<?> getFileList(HttpServletRequest req)
     {
-        List<FileInfo> lst = null;
+        List<?> lst = null;
 
         int count = 0;
         int maxCount = AppConfig.getInstance().getMaxCountOfPicInOnePage(25);
@@ -169,13 +169,24 @@ public class RestRootWebService extends HttpServlet
             isnext = false;
         }
 
-        lst = UniqPhotosStore.getInstance().getNextNineFileByHashStr(id, count, isnext, isvideo);
-        if ((lst == null || lst.isEmpty()) && id != null)
+        if (HeadUtils.isFaces())
         {
-            lst = UniqPhotosStore.getInstance().getNextNineFileByHashStr(null, count, isnext,
-                    isvideo);
+            lst = FaceTableDao.getInstance().getNextNineFileByHashStr(id, count, isnext);
+            if ((lst == null || lst.isEmpty()) && id != null)
+            {
+                lst = FaceTableDao.getInstance().getNextNineFileByHashStr(null, count, isnext);
+            }
         }
-
+        else
+        {
+            lst = UniqPhotosStore.getInstance().getNextNineFileByHashStr(id, count, isnext,
+                    isvideo);
+            if ((lst == null || lst.isEmpty()) && id != null)
+            {
+                lst = UniqPhotosStore.getInstance().getNextNineFileByHashStr(null, count, isnext,
+                        isvideo);
+            }
+        }
         return lst;
 
     }

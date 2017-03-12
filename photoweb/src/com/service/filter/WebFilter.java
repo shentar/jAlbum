@@ -67,6 +67,17 @@ public class WebFilter implements Filter
                 SystemProperties.add(SystemConstant.IS_VIDEO, new Boolean(true));
             }
 
+            if (newreq.getParameter("face") != null)
+            {
+                SystemProperties.add(SystemConstant.IS_FACES_KEY, new Boolean(true));
+            }
+
+            String ft = newreq.getParameter("facetoken");
+            if (ft != null && ft.length() >= 32)
+            {
+                SystemProperties.add(SystemConstant.FACE_TOKEN_KEY, ft);
+            }
+
             MDC.put(SystemConstant.REMOTE_ADDR,
                     newreq.getRemoteAddr() + ":" + newreq.getRemotePort());
 

@@ -430,4 +430,77 @@ public class FaceTableDao extends AbstractRecordsStore
         }
     }
 
+    public List<Face> getNextNineFileByHashStr(String id, int count, boolean isnext)
+    {
+        PreparedStatement prep = null;
+        ResultSet res = null;
+
+        try
+        {
+            lock.readLock().lock();
+            Face f = null;
+            if (id != null)
+            {
+                f = getFace(id);
+            }
+
+            if (f == null)
+            {
+                return null;
+            }
+
+            long faceID = f.getFaceid();
+            if (faceID == -1)
+            {
+                return null;
+            }
+
+            String sqlstr = "select * from faces where quality" + (isnext ? "<" : ">")
+                    + "=? order by quality desc limit " + count;
+            prep = conn.prepareStatement(sqlstr);
+            prep.setString(1, f.getQuality());
+            res = prep.executeQuery();
+
+            List<Face> flst = new LinkedList<Face>();
+            while (res.next())
+            {
+                flst.add(getFaceFromTableRecord(res));
+            }
+
+            return flst;
+        }
+        catch (Exception e)
+        {
+            logger.error("caught: ", e);
+        }
+        finally
+        {
+            try
+            {
+                if (prep != null)
+                {
+                    prep.close();
+                }
+            }
+            catch (SQLException e)
+            {
+                logger.warn("caused by: ", e);
+            }
+            try
+            {
+                if (res != null)
+                {
+                    res.close();
+                }
+            }
+            catch (SQLException e)
+            {
+                logger.warn("caused by: ", e);
+            }
+            lock.readLock().unlock();
+        }
+
+        return null;
+    }
+
 }

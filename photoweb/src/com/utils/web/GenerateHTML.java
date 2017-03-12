@@ -31,7 +31,7 @@ public class GenerateHTML
         return genIndexPage(flst, 5, true);
     }
 
-    public static String genIndexPage(List<FileInfo> flst, int rowCount, boolean needNavigate)
+    public static String genIndexPage(List<?> flst, int rowCount, boolean needNavigate)
     {
         if (flst == null || flst.isEmpty() || rowCount <= 0)
         {
@@ -40,24 +40,42 @@ public class GenerateHTML
 
         if (flst.size() == 1)
         {
-            return generateSinglePhoto(flst.get(0));
+            Object o = flst.get(0);
+            if (o instanceof Face)
+            {
+                return generateSinglePhoto((Face) flst.get(0));
+            }
+            else if (o instanceof FileInfo)
+            {
+                return generateSinglePhoto((FileInfo) o);
+            }
+            else
+            {
+                return generate404Notfound();
+            }
         }
 
         StringBuffer sb = new StringBuffer();
         sb.append(getHtmlHead());
+
         String yearNavigate = genYearNavigate();
         if (!HeadUtils.isMobile())
         {
             sb.append(yearNavigate);
         }
 
-        String indexPageNavi = null;
+        String indexPageNavi = "";
         if (needNavigate)
         {
-            FileInfo firstP = flst.get(0);
-            FileInfo endP = flst.get(flst.size() - 1);
-            indexPageNavi = genIndexNavigate(firstP, endP);
-            sb.append(indexPageNavi);
+            Object o1 = flst.get(0);
+            Object o2 = flst.get(flst.size() - 1);
+            if (o1 instanceof FileInfo && o2 instanceof FileInfo)
+            {
+                FileInfo firstP = (FileInfo) flst.get(0);
+                FileInfo endP = (FileInfo) flst.get(flst.size() - 1);
+                indexPageNavi = genIndexNavigate(firstP, endP);
+                sb.append(indexPageNavi);
+            }
         }
 
         sb.append("<table style=\"text-align: center;\" width=\"100%\" height=\"100%\" "
@@ -65,8 +83,9 @@ public class GenerateHTML
         int i = 0;
         int start = 0;
         int end = 0;
-        for (FileInfo f : flst)
+        for (Object f : flst)
         {
+
             if (i % rowCount == 0)
             {
                 start++;
@@ -74,8 +93,33 @@ public class GenerateHTML
             }
 
             sb.append("<td width=\"20%\" height=\"18%\" bordercolor=\"#000000\"><br/>");
-            sb.append("<a href=\"" + "/photos/" + f.getHash256() + videoTab(true) + "\">");
-            sb.append(generateImgTag(f, 310));
+            if (f instanceof FileInfo)
+            {
+                FileInfo fi = (FileInfo) f;
+                sb.append("<a href=\"" + "/photos/" + fi.getHash256() + extraQueryParas(true)
+                        + "\">");
+                sb.append(generateImgTag(fi, 310));
+            }
+            else if (f instanceof Face)
+            {
+                Face face = (Face) f;
+                sb.append("<a href=\"" + "/facetoken/" + face.getFacetoken() + extraQueryParas(true)
+                        + "\">");
+                FileInfo fi = face.getFi();
+                if (fi == null)
+                {
+                    fi = UniqPhotosStore.getInstance().getOneFileByHashStr(((Face) f).getEtag());
+                }
+                if (fi != null)
+                {
+                    face.setFi(fi);
+                    sb.append(generateImgTag(face, false));
+                }
+            }
+            else
+            {
+                logger.error("unknown file info type: {}", f);
+            }
             sb.append("</a></td>");
 
             if ((i + 1) % rowCount == 0)
@@ -104,9 +148,24 @@ public class GenerateHTML
         return sb.toString();
     }
 
-    private static String videoTab(boolean isFirst)
+    private static String extraQueryParas(boolean isFirst)
     {
-        return HeadUtils.isVideo() ? ((isFirst ? "?" : "&") + "video=true") : "";
+        String tag = "";
+        if (HeadUtils.isVideo() || HeadUtils.isFaces())
+        {
+            tag += (isFirst ? "?" : "&");
+
+            if (HeadUtils.isVideo() && HeadUtils.isFaces())
+            {
+                tag += "video=true&face=true";
+            }
+            else
+            {
+                tag += (HeadUtils.isVideo() ? "video=true" : "face=true");
+            }
+        }
+
+        return tag;
     }
 
     private static String genIndexNavigate(FileInfo firstP, FileInfo endP)
@@ -115,8 +174,8 @@ public class GenerateHTML
         sb.append("<table style=\"text-align: center;\" width=\"100%\" height=\"100%\" "
                 + "border=\"0\" bordercolor=\"#000000\">");
 
-        String prevPage = getPhotoLink(firstP, false);
-        String nextPage = getPhotoLink(endP, true);
+        String prevPage = getPhotoLink(firstP.getHash256(), false);
+        String nextPage = getPhotoLink(endP.getHash256(), true);
         String photoTime = firstP.getPhotoTime() + " ~ " + endP.getPhotoTime();
 
         sb.append("<tr><td width=\"100%\" bordercolor=\"#000000\">");
@@ -128,28 +187,28 @@ public class GenerateHTML
         return sb.toString();
     }
 
-    private static String getPhotoLink(FileInfo f, boolean isNext)
+    private static String getPhotoLink(String id, boolean isNext)
     {
-        return getPhotoLink(f, HeadUtils.getMaxCountOfOnePage(), isNext);
+        return getPhotoLink(id, HeadUtils.getMaxCountOfOnePage(), isNext);
     }
 
-    private static String getPhotoLink(FileInfo f, int count, boolean isNext)
+    private static String getPhotoLink(String id, int count, boolean isNext)
     {
         String value = isNext ? "下" : "上";
         value += "一";
         value += (count == 1 ? "张" : "页");
 
-        String prevPage = "<a href=\"" + getPhotoUrl(f, count, isNext) + "\"><input value=\""
+        String prevPage = "<a href=\"" + getPhotoUrl(id, count, isNext) + "\"><input value=\""
                 + value + "\" type=\"button\"/></a>";
 
         return prevPage;
     }
 
-    private static String getPhotoUrl(FileInfo f, int count, boolean isNext)
+    private static String getPhotoUrl(String id, int count, boolean isNext)
     {
         String pPara = isNext ? "next" : "prev";
 
-        return "/?" + pPara + "=" + f.getHash256() + "&count=" + count + videoTab(false);
+        return "/?" + pPara + "=" + id + "&count=" + count + extraQueryParas(false);
     }
 
     private static String genYearNavigate()
@@ -294,136 +353,134 @@ public class GenerateHTML
 
     public static String generateSinglePhoto(FileInfo f)
     {
-
         if (f == null)
         {
             return generate404Notfound();
         }
+
+        StringBuffer sb = new StringBuffer(getHtmlHead(true));
+        String yearNavigage = genYearNavigate();
+        if (!HeadUtils.isMobile())
+        {
+            sb.append(yearNavigage);
+        }
+        // 隐藏照片
+        sb.append("<script type=\"text/javascript\">"
+                + "function changeUrl(url){window.history.pushState({},0,'http://'+window.location.host+'/'+url);}"
+                + "window.onload=changeUrl(" + "'photos/" + f.getHash256() + extraQueryParas(true)
+                + "');"
+                + "function deletephoto(path){jConfirm('该操作将永久隐藏照片，无法撤消，确认是否继续？','确认',function(r){if (r){"
+                + "changeUrl('?next=" + f.getHash256() + extraQueryParas(false) + "&count=1');"
+                + "window.location.reload();" + "$.ajax({url:path,type:'DELETE',"
+                + "success:function(result){}});}});}");
+
+        if (HeadUtils.isMobile())
+        {
+            // 滑动翻页
+            sb.append("$(function() {");
+            sb.append("$(\"#singlephoto\").swipe({");
+            sb.append("swipe: function(event, direction, distance, duration, fingerCount) {");
+            sb.append("if (distance>=30){if (direction=='right'){top.location=" + "'"
+                    + getPhotoUrl(f.getHash256(), 1, false)
+                    + "';}else if (direction=='left') {top.location=" + "'"
+                    + getPhotoUrl(f.getHash256(), 1, true) + "';" + "}");
+            sb.append("}},});});");
+            /*
+             * sb.append("$(document).ready(function(){"); sb.append(
+             * "$(\"#singlephoto\").on(\"swipeleft\",function(){top.location=" +
+             * "'" + getPhotoUrl(f, 1, false) + "'" + ";});" +
+             * "$(\"#singlephoto\").on(\"swiperight\",function(){top.location="
+             * + "'" + getPhotoUrl(f, 1, true) + "'" + ";});");
+             * sb.append("});");
+             */
+        }
         else
         {
-            StringBuffer sb = new StringBuffer(getHtmlHead(true));
-            String yearNavigage = genYearNavigate();
-            if (!HeadUtils.isMobile())
-            {
-                sb.append(yearNavigage);
-            }
-            // 隐藏照片
-            sb.append("<script type=\"text/javascript\">"
-                    + "function changeUrl(url){window.history.pushState({},0,'http://'+window.location.host+'/'+url);}"
-                    + "window.onload=changeUrl(" + "'photos/" + f.getHash256() + videoTab(true)
-                    + "');"
-                    + "function deletephoto(path){jConfirm('该操作将永久隐藏照片，无法撤消，确认是否继续？','确认',function(r){if (r){"
-                    + "changeUrl('?next=" + f.getHash256() + videoTab(false) + "&count=1');"
-                    + "window.location.reload();" + "$.ajax({url:path,type:'DELETE',"
-                    + "success:function(result){}});}});}");
-
-            if (HeadUtils.isMobile())
-            {
-                // 滑动翻页
-                sb.append("$(function() {");
-                sb.append("$(\"#singlephoto\").swipe({");
-                sb.append("swipe: function(event, direction, distance, duration, fingerCount) {");
-                sb.append("if (distance>=30){if (direction=='right'){top.location=" + "'"
-                        + getPhotoUrl(f, 1, false) + "';}else if (direction=='left') {top.location="
-                        + "'" + getPhotoUrl(f, 1, true) + "';" + "}");
-                sb.append("}},});});");
-                /*
-                 * sb.append("$(document).ready(function(){"); sb.append(
-                 * "$(\"#singlephoto\").on(\"swipeleft\",function(){top.location="
-                 * + "'" + getPhotoUrl(f, 1, false) + "'" + ";});" +
-                 * "$(\"#singlephoto\").on(\"swiperight\",function(){top.location="
-                 * + "'" + getPhotoUrl(f, 1, true) + "'" + ";});");
-                 * sb.append("});");
-                 */
-            }
-            else
-            {
-                // 键盘翻页。
-                sb.append("$(document).ready(function(){");
-                sb.append("$(\"body\").keyup(function(event){");
-                sb.append("if(event.keyCode==37)top.location=" + "'" + getPhotoUrl(f, 1, false)
-                        + "';");
-                sb.append("if(event.keyCode==39)top.location=" + "'" + getPhotoUrl(f, 1, true)
-                        + "';");
-                sb.append("if(event.keyCode==46)deletephoto('/photos/" + f.getHash256() + "');");
-                sb.append("});});");
-            }
-
-            sb.append("</script>");
-
-            sb.append("<table style=\"text-align: center;\" width=\"100%\" "
-                    + "height=\"100%\" border=\"0\" bordercolor=\"#000000\">");
-
-            String dayStr = HeadUtils.formatDate(f.getPhotoTime());
-            String viewDayStr = String.format("%s年%s月%s日", dayStr.substring(0, 4),
-                    dayStr.substring(4, 6), dayStr.substring(6, 8));
-            String returnToDayPage = "<a href=\"/day/" + dayStr + videoTab(true) + "\">浏览 <b>"
-                    + viewDayStr + "</b></a>";
-            sb.append("<tr><td width=\"100%\" bordercolor=\"#000000\">");
-            sb.append(returnToDayPage + seprator);
-            sb.append(getPhotoLink(f, false) + seprator);
-            sb.append(getPhotoLink(f, 1, false));
-            sb.append("&nbsp;" + f.getPhotoTime() + "&nbsp;");
-            sb.append(getPhotoLink(f, 1, true) + seprator);
-            sb.append(getPhotoLink(f, true));
-            sb.append("</td></tr>");
-            sb.append("</table>");
-
-            sb.append("<table style=\"text-align: center;\" width=\"100%\" "
-                    + "height=\"890px\" border=\"0\" bordercolor=\"#000000\">");
-
-            sb.append("<tr><td width=\"100%\" height=\"100%\" bordercolor=\"#000000\">");
-            // sb.append("<a href=\"/photos/" + f.getHash256() + "?content=true"
-            // + "\" target=\"_blank\">");
-
-            String extraInfo = "";
-            if (!HeadUtils.isMobile())
-            {
-                extraInfo = "onmouseover=\"upNext(this" + "," + "'" + getPhotoUrl(f, 1, false) + "'"
-                        + "," + "'" + getPhotoUrl(f, 1, true) + "'" + ")\"";
-            }
-
-            sb.append(generateImgTag(f, 860, extraInfo, "singlephoto", false));
-            // sb.append("</a>");
-            sb.append("</td></tr>");
-
-            sb.append("<tr><td width=\"100%\" height=\"100%\" bordercolor=\"#000000\">");
-
-            String leftRotateLink = "<input id=\"leftrotate\" type=\"button\" value=\"左旋转\" />";
-            String rightRotateLink = "<input id=\"rightrotate\" type=\"button\" value=\"右旋转\" />";
-            String deleteLink = "<input id=\"deletephotob\" type=\"button\" value=\"隐藏\" />";
-
-            sb.append(leftRotateLink + seprator);
-            sb.append(deleteLink + seprator);
-            sb.append(rightRotateLink + seprator);
-            sb.append("</td><tr>");
-
-            int r = 0;
-
-            if (HeadUtils.needRotatePic(f))
-            {
-                r = f.getRoatateDegree() / 90;
-            }
-
-            // 左旋转和右旋转照片
-            sb.append("<script type=\"text/javascript\">" + "var r = " + r + ";"
-                    + "$(\"#rightrotate\").click(function(){r++; if (r > 3){r = 0;}"
-                    + "$(\"#singlephoto\").rotate(90*r);}); "
-                    + "$(\"#leftrotate\").click(function(){r--; if (r < 0){ r = 3;}"
-                    + "$(\"#singlephoto\").rotate(90*r);}); "
-                    + "$(\"#deletephotob\").click(function(){deletephoto('/photos/" + f.getHash256()
-                    + "');});" + "</script>");
-
-            sb.append("</table>");
-
-            sb.append(yearNavigage);
-
-            sb.append(getHtmlFoot());
-
-            logHtml(sb);
-            return sb.toString();
+            // 键盘翻页。
+            sb.append("$(document).ready(function(){");
+            sb.append("$(\"body\").keyup(function(event){");
+            sb.append("if(event.keyCode==37)top.location=" + "'"
+                    + getPhotoUrl(f.getHash256(), 1, false) + "';");
+            sb.append("if(event.keyCode==39)top.location=" + "'"
+                    + getPhotoUrl(f.getHash256(), 1, true) + "';");
+            sb.append("if(event.keyCode==46)deletephoto('/photos/" + f.getHash256() + "');");
+            sb.append("});});");
         }
 
+        sb.append("</script>");
+
+        sb.append("<table style=\"text-align: center;\" width=\"100%\" "
+                + "height=\"100%\" border=\"0\" bordercolor=\"#000000\">");
+
+        String dayStr = HeadUtils.formatDate(f.getPhotoTime());
+        String viewDayStr = String.format("%s年%s月%s日", dayStr.substring(0, 4),
+                dayStr.substring(4, 6), dayStr.substring(6, 8));
+        String returnToDayPage = "<a href=\"/day/" + dayStr + extraQueryParas(true) + "\">浏览 <b>"
+                + viewDayStr + "</b></a>";
+        sb.append("<tr><td width=\"100%\" bordercolor=\"#000000\">");
+        sb.append(returnToDayPage + seprator);
+        sb.append(getPhotoLink(f.getHash256(), false) + seprator);
+        sb.append(getPhotoLink(f.getHash256(), 1, false));
+        sb.append("&nbsp;" + f.getPhotoTime() + "&nbsp;");
+        sb.append(getPhotoLink(f.getHash256(), 1, true) + seprator);
+        sb.append(getPhotoLink(f.getHash256(), true));
+        sb.append("</td></tr>");
+        sb.append("</table>");
+
+        sb.append("<table style=\"text-align: center;\" width=\"100%\" "
+                + "height=\"890px\" border=\"0\" bordercolor=\"#000000\">");
+
+        sb.append("<tr><td width=\"100%\" height=\"100%\" bordercolor=\"#000000\">");
+        // sb.append("<a href=\"/photos/" + f.getHash256() + "?content=true"
+        // + "\" target=\"_blank\">");
+
+        String extraInfo = "";
+        if (!HeadUtils.isMobile())
+        {
+            extraInfo = "onmouseover=\"upNext(this" + "," + "'"
+                    + getPhotoUrl(f.getHash256(), 1, false) + "'" + "," + "'"
+                    + getPhotoUrl(f.getHash256(), 1, true) + "'" + ")\"";
+        }
+
+        sb.append(generateImgTag(f, 860, extraInfo, "singlephoto", false));
+        // sb.append("</a>");
+        sb.append("</td></tr>");
+
+        sb.append("<tr><td width=\"100%\" height=\"100%\" bordercolor=\"#000000\">");
+
+        String leftRotateLink = "<input id=\"leftrotate\" type=\"button\" value=\"左旋转\" />";
+        String rightRotateLink = "<input id=\"rightrotate\" type=\"button\" value=\"右旋转\" />";
+        String deleteLink = "<input id=\"deletephotob\" type=\"button\" value=\"隐藏\" />";
+
+        sb.append(leftRotateLink + seprator);
+        sb.append(deleteLink + seprator);
+        sb.append(rightRotateLink + seprator);
+        sb.append("</td><tr>");
+
+        int r = 0;
+
+        if (HeadUtils.needRotatePic(f))
+        {
+            r = f.getRoatateDegree() / 90;
+        }
+
+        // 左旋转和右旋转照片
+        sb.append("<script type=\"text/javascript\">" + "var r = " + r + ";"
+                + "$(\"#rightrotate\").click(function(){r++; if (r > 3){r = 0;}"
+                + "$(\"#singlephoto\").rotate(90*r);}); "
+                + "$(\"#leftrotate\").click(function(){r--; if (r < 0){ r = 3;}"
+                + "$(\"#singlephoto\").rotate(90*r);}); "
+                + "$(\"#deletephotob\").click(function(){deletephoto('/photos/" + f.getHash256()
+                + "');});" + "</script>");
+
+        sb.append("</table>");
+
+        sb.append(yearNavigage);
+
+        sb.append(getHtmlFoot());
+
+        logHtml(sb);
+        return sb.toString();
     }
 
     private static String generateImgTag(FileInfo f, int size)
@@ -648,7 +705,7 @@ public class GenerateHTML
             }
 
             sb.append("<td width=\"20%\" height=\"18%\" bordercolor=\"#000000\">");
-            sb.append("<a href=\"/photos/" + f.getHash256() + videoTab(true) + "\">");
+            sb.append("<a href=\"/photos/" + f.getHash256() + extraQueryParas(true) + "\">");
             sb.append(generateImgTag(f, 310));
             sb.append("</a></td>");
 
@@ -851,22 +908,20 @@ public class GenerateHTML
         }
     }
 
-    public static String generateFacesIndex(List<Face> fflist, int rowCount)
+    private static String generateImgTag(Face f, boolean isThumbnail)
     {
-        if (fflist == null || fflist.isEmpty())
+        if (isThumbnail)
         {
-            return generate404Notfound();
+            return "<img style=\"border-radius: 50%;\" width=\"200px\" src=\"/facetoken/"
+                    + f.getFacetoken() + "?facethumbnail=true\"/>";
         }
-        return genFaceIndexPage(fflist, rowCount);
+        else
+        {
+            return generateImgTag(f.getFi(), 310);
+        }
     }
 
-    private static String generateImgTag(String facetoken)
-    {
-        return "<img style=\"border-radius: 50%;\" width=\"200px\" src=\"/facetoken/" + facetoken
-                + "\"/>";
-    }
-
-    private static String genFaceIndexPage(List<Face> flst, int rowCount)
+    public static String genFaceIndexPage(List<Face> flst, int rowCount)
     {
         if (flst == null || flst.isEmpty() || rowCount <= 0)
         {
@@ -900,8 +955,9 @@ public class GenerateHTML
             }
 
             sb.append("<td width=\"20%\" height=\"18%\" bordercolor=\"#000000\"><br/>");
-            sb.append("<a href=\"" + "/faces/" + f.getFaceid() + videoTab(true) + "\">");
-            sb.append(generateImgTag(f.getFacetoken()));
+            sb.append("<a href=\"" + "/faces/" + f.getFaceid() + "?facetoken=" + f.getFacetoken()
+                    + extraQueryParas(false) + "\">");
+            sb.append(generateImgTag(f, true));
             sb.append("</a></td>");
 
             if ((i + 1) % rowCount == 0)
@@ -924,26 +980,138 @@ public class GenerateHTML
         return sb.toString();
     }
 
-    private static String generateSinglePhoto(Face face)
+    public static String generateSinglePhoto(Face f)
     {
-        if (face.getFi() != null)
-        {
-            return generateSinglePhoto(face.getFi());
-        }
-        else
-        {
-            return generateSinglePhoto(
-                    UniqPhotosStore.getInstance().getOneFileByHashStr(face.getEtag()));
-        }
-    }
-
-    public static String generateFacesForOneFaceID(List<FileInfo> fflist)
-    {
-        if (fflist == null || fflist.isEmpty())
+        if (f == null || f.getFi() == null)
         {
             return generate404Notfound();
         }
-        return genIndexPage(fflist, (HeadUtils.isMobile() || HeadUtils.isVideo()) ? 3 : 5, false);
+
+        StringBuffer sb = new StringBuffer(getHtmlHead(true));
+        String yearNavigage = genYearNavigate();
+        if (!HeadUtils.isMobile())
+        {
+            sb.append(yearNavigage);
+        }
+        // 隐藏照片
+        sb.append("<script type=\"text/javascript\">"
+                + "function changeUrl(url){window.history.pushState({},0,'http://'+window.location.host+'/'+url);}"
+                + "window.onload=changeUrl(" + "'facetoken/" + f.getFacetoken()
+                + extraQueryParas(true) + "');"
+                + "function deletephoto(path){jConfirm('该操作将永久隐藏照片，无法撤消，确认是否继续？','确认',function(r){if (r){"
+                + "changeUrl('?next=" + f.getFacetoken() + extraQueryParas(false) + "&count=1');"
+                + "window.location.reload();" + "$.ajax({url:path,type:'DELETE',"
+                + "success:function(result){}});}});}");
+
+        if (HeadUtils.isMobile())
+        {
+            // 滑动翻页
+            sb.append("$(function() {");
+            sb.append("$(\"#singlephoto\").swipe({");
+            sb.append("swipe: function(event, direction, distance, duration, fingerCount) {");
+            sb.append("if (distance>=30){if (direction=='right'){top.location=" + "'"
+                    + getPhotoUrl(f.getFacetoken(), 1, false)
+                    + "';}else if (direction=='left') {top.location=" + "'"
+                    + getPhotoUrl(f.getFacetoken(), 1, true) + "';" + "}");
+            sb.append("}},});});");
+            /*
+             * sb.append("$(document).ready(function(){"); sb.append(
+             * "$(\"#singlephoto\").on(\"swipeleft\",function(){top.location=" +
+             * "'" + getPhotoUrl(f, 1, false) + "'" + ";});" +
+             * "$(\"#singlephoto\").on(\"swiperight\",function(){top.location="
+             * + "'" + getPhotoUrl(f, 1, true) + "'" + ";});");
+             * sb.append("});");
+             */
+        }
+        else
+        {
+            // 键盘翻页。
+            sb.append("$(document).ready(function(){");
+            sb.append("$(\"body\").keyup(function(event){");
+            sb.append("if(event.keyCode==37)top.location=" + "'"
+                    + getPhotoUrl(f.getFacetoken(), 1, false) + "';");
+            sb.append("if(event.keyCode==39)top.location=" + "'"
+                    + getPhotoUrl(f.getFacetoken(), 1, true) + "';");
+            sb.append(
+                    "if(event.keyCode==46)deletephoto('/photos/" + f.getFi().getHash256() + "');");
+            sb.append("});});");
+        }
+
+        sb.append("</script>");
+
+        sb.append("<table style=\"text-align: center;\" width=\"100%\" "
+                + "height=\"100%\" border=\"0\" bordercolor=\"#000000\">");
+
+        String dayStr = HeadUtils.formatDate(f.getFi().getPhotoTime());
+        String viewDayStr = String.format("%s年%s月%s日", dayStr.substring(0, 4),
+                dayStr.substring(4, 6), dayStr.substring(6, 8));
+        String returnToDayPage = "<a href=\"/day/" + dayStr + extraQueryParas(true) + "\">浏览 <b>"
+                + viewDayStr + "</b></a>";
+        sb.append("<tr><td width=\"100%\" bordercolor=\"#000000\">");
+        sb.append(returnToDayPage + seprator);
+        sb.append(getPhotoLink(f.getFacetoken(), false) + seprator);
+        sb.append(getPhotoLink(f.getFacetoken(), 1, false));
+        sb.append("&nbsp;" + f.getFi().getPhotoTime() + "&nbsp;");
+        sb.append(getPhotoLink(f.getFacetoken(), 1, true) + seprator);
+        sb.append(getPhotoLink(f.getFacetoken(), true));
+        sb.append("</td></tr>");
+        sb.append("</table>");
+
+        sb.append("<table style=\"text-align: center;\" width=\"100%\" "
+                + "height=\"890px\" border=\"0\" bordercolor=\"#000000\">");
+
+        sb.append("<tr><td width=\"100%\" height=\"100%\" bordercolor=\"#000000\">");
+        // sb.append("<a href=\"/photos/" + f.getHash256() + "?content=true"
+        // + "\" target=\"_blank\">");
+
+        String extraInfo = "";
+        if (!HeadUtils.isMobile())
+        {
+            extraInfo = "onmouseover=\"upNext(this" + "," + "'"
+                    + getPhotoUrl(f.getFacetoken(), 1, false) + "'" + "," + "'"
+                    + getPhotoUrl(f.getFacetoken(), 1, true) + "'" + ")\"";
+        }
+
+        sb.append(generateImgTag(f.getFi(), 860, extraInfo, "singlephoto", false));
+        // sb.append("</a>");
+        sb.append("</td></tr>");
+
+        sb.append("<tr><td width=\"100%\" height=\"100%\" bordercolor=\"#000000\">");
+
+        String leftRotateLink = "<input id=\"leftrotate\" type=\"button\" value=\"左旋转\" />";
+        String rightRotateLink = "<input id=\"rightrotate\" type=\"button\" value=\"右旋转\" />";
+        String deleteLink = "<input id=\"deletephotob\" type=\"button\" value=\"隐藏\" />";
+
+        sb.append(leftRotateLink + seprator);
+        sb.append(deleteLink + seprator);
+        sb.append(rightRotateLink + seprator);
+        sb.append("</td><tr>");
+
+        int r = 0;
+
+        if (HeadUtils.needRotatePic(f.getFi()))
+        {
+            r = f.getFi().getRoatateDegree() / 90;
+        }
+
+        // 左旋转和右旋转照片
+        sb.append("<script type=\"text/javascript\">" + "var r = " + r + ";"
+                + "$(\"#rightrotate\").click(function(){r++; if (r > 3){r = 0;}"
+                + "$(\"#singlephoto\").rotate(90*r);}); "
+                + "$(\"#leftrotate\").click(function(){r--; if (r < 0){ r = 3;}"
+                + "$(\"#singlephoto\").rotate(90*r);}); "
+                + "$(\"#deletephotob\").click(function(){deletephoto('/photos/"
+                + f.getFi().getHash256() + "');});" + "</script>");
+
+        sb.append("</table>");
+
+        sb.append(yearNavigage);
+
+        sb.append(getHtmlFoot());
+
+        logHtml(sb);
+        return sb.toString();
+
     }
 
 }
