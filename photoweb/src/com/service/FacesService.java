@@ -40,14 +40,17 @@ public class FacesService
         if (id < 0)
         {
             return b.entity(GenerateHTML.genFaceIndexPage(
-                    FaceRecService.getInstance().checkAndGetFaceidList(),
-                    HeadUtils.isMobile() ? 3 : 5)).build();
+                    FaceRecService.getInstance().checkAndGetFaceidList(), getRowCount())).build();
         }
         else
         {
-            return b.entity(GenerateHTML
-                    .genIndexPage(FaceRecService.getInstance().getSortedFaces(id), 3, false))
-                    .build();
+            return b.entity(GenerateHTML.genIndexPage(
+                    FaceRecService.getInstance().getSortedFaces(id), getRowCount(), false)).build();
         }
+    }
+
+    private int getRowCount()
+    {
+        return (HeadUtils.isVideo() || HeadUtils.isMobile()) ? 3 : 5;
     }
 }

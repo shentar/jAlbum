@@ -120,7 +120,6 @@ public class RestRootWebService extends HttpServlet
      * String var, @Context HttpServletRequest req, @Context HttpServletResponse
      * response) throws IOException { return new VideoRootResource(var); }
      */
-
     public List<?> getFileList(HttpServletRequest req)
     {
         List<?> lst = null;

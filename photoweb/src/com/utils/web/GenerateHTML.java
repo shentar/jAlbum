@@ -67,15 +67,8 @@ public class GenerateHTML
         String indexPageNavi = "";
         if (needNavigate)
         {
-            Object o1 = flst.get(0);
-            Object o2 = flst.get(flst.size() - 1);
-            if (o1 instanceof FileInfo && o2 instanceof FileInfo)
-            {
-                FileInfo firstP = (FileInfo) flst.get(0);
-                FileInfo endP = (FileInfo) flst.get(flst.size() - 1);
-                indexPageNavi = genIndexNavigate(firstP, endP);
-                sb.append(indexPageNavi);
-            }
+            indexPageNavi = genIndexNavigate(flst.get(0), flst.get(flst.size() - 1));
+            sb.append(indexPageNavi);
         }
 
         sb.append("<table style=\"text-align: center;\" width=\"100%\" height=\"100%\" "
@@ -168,16 +161,21 @@ public class GenerateHTML
         return tag;
     }
 
-    private static String genIndexNavigate(FileInfo firstP, FileInfo endP)
+    private static String genIndexNavigate(Object firstP, Object endP)
     {
         StringBuffer sb = new StringBuffer();
         sb.append("<table style=\"text-align: center;\" width=\"100%\" height=\"100%\" "
                 + "border=\"0\" bordercolor=\"#000000\">");
 
-        String prevPage = getPhotoLink(firstP.getHash256(), false);
-        String nextPage = getPhotoLink(endP.getHash256(), true);
-        String photoTime = firstP.getPhotoTime() + " ~ " + endP.getPhotoTime();
+        String prevPage = getPhotoLink(getID(firstP), false);
+        String nextPage = getPhotoLink(getID(endP), true);
 
+        String photoTime = "";
+        if (firstP instanceof FileInfo && endP instanceof FileInfo)
+        {
+            photoTime = ((FileInfo) firstP).getPhotoTime() + " ~ "
+                    + ((FileInfo) endP).getPhotoTime();
+        }
         sb.append("<tr><td width=\"100%\" bordercolor=\"#000000\">");
         sb.append(prevPage + seprator);
         sb.append(photoTime + seprator);
@@ -185,6 +183,21 @@ public class GenerateHTML
         sb.append("</td></tr></table>");
 
         return sb.toString();
+    }
+
+    private static String getID(Object o)
+    {
+        String id = "";
+        if (o instanceof FileInfo)
+        {
+            id = ((FileInfo) o).getHash256();
+        }
+        else if (o instanceof Face)
+        {
+            id = ((Face) o).getFacetoken();
+        }
+
+        return id;
     }
 
     private static String getPhotoLink(String id, boolean isNext)
