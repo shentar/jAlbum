@@ -19,7 +19,6 @@ import org.slf4j.LoggerFactory;
 
 import com.backend.FileInfo;
 import com.backend.dao.FaceTableDao;
-import com.backend.dao.UniqPhotosStore;
 import com.backend.facer.Face;
 import com.utils.media.ThumbnailManager;
 import com.utils.sys.SystemConstant;

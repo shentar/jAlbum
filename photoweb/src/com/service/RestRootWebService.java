@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 
 import com.backend.dao.FaceTableDao;
 import com.backend.dao.UniqPhotosStore;
+import com.backend.facer.Face;
 import com.utils.conf.AppConfig;
 import com.utils.web.GenerateHTML;
 import com.utils.web.HeadUtils;
@@ -174,6 +175,15 @@ public class RestRootWebService extends HttpServlet
             if ((lst == null || lst.isEmpty()) && id != null)
             {
                 lst = FaceTableDao.getInstance().getNextNineFileByHashStr(null, count, isnext);
+            }
+
+            if (lst != null)
+            {
+                for (Object f : lst)
+                {
+                    ((Face) f).setFi(UniqPhotosStore.getInstance()
+                            .getOneFileByHashStr(((Face) f).getEtag()));
+                }
             }
         }
         else
