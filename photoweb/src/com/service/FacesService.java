@@ -13,6 +13,7 @@ import javax.ws.rs.core.Response.ResponseBuilder;
 import org.apache.commons.lang.StringUtils;
 
 import com.backend.dao.FaceTableDao;
+import com.backend.dao.UniqPhotosStore;
 import com.backend.facer.Face;
 
 // import org.slf4j.Logger;
@@ -55,13 +56,7 @@ public class FacesService
             List<Face> flst = null;
             if (StringUtils.isNotBlank(faceToken))
             {
-                Face f = FaceTableDao.getInstance().getFace(faceToken);
-                if (f != null)
-                {
-                    flst = FaceTableDao.getInstance().getNextNineFileByHashStr(faceToken,
-                            AppConfig.getInstance().getMaxCountOfPicInOnePage(25) - 1, true);
-                    flst.add(0, f);
-                }
+                flst = getFaceThumbnailList(faceToken);
             }
             else
             {
@@ -71,6 +66,27 @@ public class FacesService
 
             return b.entity(GenerateHTML.genIndexPage(flst, getRowCount(), true)).build();
         }
+    }
+
+    private List<Face> getFaceThumbnailList(String faceToken)
+    {
+        List<Face> flst = null;
+        Face f = FaceTableDao.getInstance().getFace(faceToken);
+        if (f != null)
+        {
+            flst = FaceTableDao.getInstance().getNextNineFileByHashStr(faceToken,
+                    AppConfig.getInstance().getMaxCountOfPicInOnePage(25) - 1, true);
+
+            if (flst != null && !flst.isEmpty())
+            {
+                for (Face fa : flst)
+                {
+                    fa.setFi(UniqPhotosStore.getInstance().getOneFileByHashStr(fa.getEtag()));
+                }
+                flst.add(0, f);
+            }
+        }
+        return flst;
     }
 
     private int getRowCount()

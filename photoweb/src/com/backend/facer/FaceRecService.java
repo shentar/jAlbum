@@ -160,7 +160,7 @@ public class FaceRecService
 
                 for (Face rf : rlst)
                 {
-                    Face fc = FaceTableDao.getInstance().getFace(rf.getFacetoken());
+                    Face fc = FaceTableDao.getInstance().getFace(rf.getFacetoken(), false);
 
                     if (fc == null)
                     {

@@ -197,7 +197,7 @@ public class FaceTableDao extends AbstractRecordsStore
         return null;
     }
 
-    public Face getFace(String token)
+    public Face getFace(String token, boolean needFileInfo)
     {
         if (StringUtils.isBlank(token))
         {
@@ -217,9 +217,13 @@ public class FaceTableDao extends AbstractRecordsStore
             if (res.next())
             {
                 f = getFaceFromTableRecord(res);
-            }
 
-            return f;
+                if (f != null && needFileInfo)
+                {
+                    f.setFi(UniqPhotosStore.getInstance().getOneFileByHashStr(f.getEtag()));
+                }
+                return f;
+            }
         }
         catch (Exception e)
         {
@@ -232,6 +236,11 @@ public class FaceTableDao extends AbstractRecordsStore
         }
 
         return null;
+    }
+
+    public Face getFace(String token)
+    {
+        return getFace(token, true);
     }
 
     private Face getFaceFromTableRecord(ResultSet res) throws SQLException
@@ -530,7 +539,7 @@ public class FaceTableDao extends AbstractRecordsStore
             {
                 Collections.reverse(flst);
             }
-            
+
             return flst;
         }
         catch (Exception e)

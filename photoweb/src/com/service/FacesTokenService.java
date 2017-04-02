@@ -59,11 +59,11 @@ public class FacesTokenService
             else
             {
                 Face face = FaceTableDao.getInstance().getFace(id);
-                if (face != null)
+                if (face != null && face.getFi() != null)
                 {
-                    FileInfo fi = UniqPhotosStore.getInstance().getOneFileByHashStr(face.getEtag());
-                    is = new BufferedInputStream(new FileInputStream(fi.getPath()));
-                    builder.header("Content-type", HeadUtils.getContentType(fi.getPath()));
+                    is = new BufferedInputStream(new FileInputStream(face.getFi().getPath()));
+                    builder.header("Content-type",
+                            HeadUtils.getContentType(face.getFi().getPath()));
                     logger.info("use the face file: {}", face);
                     ThumbnailManager.checkAndGenFaceThumbnail(face);
                 }
@@ -87,9 +87,9 @@ public class FacesTokenService
         {
             Face face = FaceTableDao.getInstance().getFace(id);
             FileInfo fi = null;
-            if (face != null)
+            if (face != null && face.getFi() != null)
             {
-                fi = UniqPhotosStore.getInstance().getOneFileByHashStr(face.getEtag());
+                fi = face.getFi();
                 logger.info("use the face file: {}", face);
             }
 
