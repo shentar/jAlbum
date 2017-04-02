@@ -66,8 +66,6 @@ public class BaseSqliteStore extends AbstractRecordsStore
                 }
             }
 
-            prep.close();
-            res.close();
         }
         catch (SQLException e)
         {
@@ -75,6 +73,7 @@ public class BaseSqliteStore extends AbstractRecordsStore
         }
         finally
         {
+            closeResource(prep, res);
             lock.readLock().unlock();
         }
 
@@ -134,17 +133,7 @@ public class BaseSqliteStore extends AbstractRecordsStore
         }
         finally
         {
-            if (prep != null)
-            {
-                try
-                {
-                    prep.close();
-                }
-                catch (SQLException e)
-                {
-                    e.printStackTrace();
-                }
-            }
+            closeResource(prep, null);
         }
     }
 
@@ -186,6 +175,11 @@ public class BaseSqliteStore extends AbstractRecordsStore
         {
             logger.warn("caught: ", e);
         }
+        finally
+        {
+            closeResource(prep, res);
+        }
+
         return null;
     }
 
@@ -236,29 +230,7 @@ public class BaseSqliteStore extends AbstractRecordsStore
         }
         finally
         {
-            if (res != null)
-            {
-                try
-                {
-                    res.close();
-                }
-                catch (SQLException e)
-                {
-                    logger.error("caught: ", e);
-                }
-            }
-
-            if (prep != null)
-            {
-                try
-                {
-                    prep.close();
-                }
-                catch (SQLException e)
-                {
-                    logger.error("caught: ", e);
-                }
-            }
+            closeResource(prep, res);
         }
         return PicStatus.NOT_EXIST;
     }
@@ -335,10 +307,11 @@ public class BaseSqliteStore extends AbstractRecordsStore
             return;
         }
 
+        PreparedStatement prep = null;
         try
         {
             lock.writeLock().lock();
-            PreparedStatement prep = conn.prepareStatement(
+            prep = conn.prepareStatement(
                     "update files set phototime=?,width=?,height=?,deleted=?,ftype=? where path=?;");
             prep.setDate(1, fi.getPhotoTime());
             prep.setLong(2, fi.getWidth());
@@ -347,7 +320,6 @@ public class BaseSqliteStore extends AbstractRecordsStore
             prep.setInt(5, fi.getFtype().ordinal());
             prep.setString(6, fi.getPath());
             prep.execute();
-            prep.close();
             logger.warn("update the file to: {}", fi);
             RefreshFlag.getInstance().getAndSet(true);
         }
@@ -357,6 +329,7 @@ public class BaseSqliteStore extends AbstractRecordsStore
         }
         finally
         {
+            closeResource(prep, null);
             lock.writeLock().unlock();
         }
     }
@@ -402,13 +375,16 @@ public class BaseSqliteStore extends AbstractRecordsStore
                     PerformanceStatistics.getInstance().addOneFile(true);
                 }
             }
-            prep.close();
             PerformanceStatistics.getInstance().printPerformanceLog(System.currentTimeMillis());
             logger.warn("end checking all records in the files table.");
         }
         catch (Exception e)
         {
             logger.error("caught: ", e);
+        }
+        finally
+        {
+            closeResource(prep, res);
         }
     }
 
@@ -434,7 +410,6 @@ public class BaseSqliteStore extends AbstractRecordsStore
             }
             prep.setString(1, str);
             prep.execute();
-            prep.close();
             RefreshFlag.getInstance().getAndSet(true);
         }
         catch (Exception e)
@@ -443,6 +418,7 @@ public class BaseSqliteStore extends AbstractRecordsStore
         }
         finally
         {
+            closeResource(prep, null);
             lock.writeLock().unlock();
         }
     }
@@ -477,8 +453,6 @@ public class BaseSqliteStore extends AbstractRecordsStore
             {
                 needDel = true;
             }
-            prep.close();
-            res.close();
         }
         catch (Exception e)
         {
@@ -486,6 +460,7 @@ public class BaseSqliteStore extends AbstractRecordsStore
         }
         finally
         {
+            closeResource(prep, res);
             lock.readLock().unlock();
         }
 
@@ -504,7 +479,6 @@ public class BaseSqliteStore extends AbstractRecordsStore
             prep.setString(2, dir + "%");
 
             prep.execute();
-            prep.close();
             RefreshFlag.getInstance().getAndSet(true);
             logger.warn("end to delete the items in the folder: {}", dir);
         }
@@ -514,6 +488,7 @@ public class BaseSqliteStore extends AbstractRecordsStore
         }
         finally
         {
+            closeResource(prep, null);
             lock.writeLock().unlock();
         }
     }
@@ -540,7 +515,6 @@ public class BaseSqliteStore extends AbstractRecordsStore
             }
             prep.setString(1, file);
             prep.execute();
-            prep.close();
             RefreshFlag.getInstance().getAndSet(true);
         }
         catch (Exception e)
@@ -549,6 +523,7 @@ public class BaseSqliteStore extends AbstractRecordsStore
         }
         finally
         {
+            closeResource(prep, null);
             lock.writeLock().unlock();
         }
     }
@@ -564,7 +539,7 @@ public class BaseSqliteStore extends AbstractRecordsStore
             logger.warn("input id is empty.");
             return false;
         }
-        
+
         String id = fi.getHash256();
         ResultSet res = null;
         PreparedStatement prep = null;
@@ -587,8 +562,6 @@ public class BaseSqliteStore extends AbstractRecordsStore
                 fi.setPhotoTime(fexist.getPhotoTime());
             }
 
-            res.close();
-            prep.close();
             // RefreshFlag.getInstance().getAndSet(true);
         }
         catch (Exception e)
@@ -597,6 +570,7 @@ public class BaseSqliteStore extends AbstractRecordsStore
         }
         finally
         {
+            closeResource(prep, res);
             lock.readLock().unlock();
         }
 

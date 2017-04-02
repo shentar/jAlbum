@@ -51,17 +51,7 @@ public class AbstractRecordsStore
         }
         finally
         {
-            if (prep != null)
-            {
-                try
-                {
-                    prep.close();
-                }
-                catch (SQLException e)
-                {
-                    logger.warn("caused by: ", e);
-                }
-            }
+            closeResource(prep, res);
         }
 
         logger.info("the table {} is not exist.", tablename);
@@ -79,10 +69,7 @@ public class AbstractRecordsStore
         }
         finally
         {
-            if (prep != null)
-            {
-                prep.close();
-            }
+            closeResource(prep, null);
         }
 
     }
@@ -99,10 +86,7 @@ public class AbstractRecordsStore
         }
         finally
         {
-            if (prep != null)
-            {
-                prep.close();
-            }
+            closeResource(prep, null);
         }
 
     }
@@ -119,10 +103,7 @@ public class AbstractRecordsStore
         }
         finally
         {
-            if (prep != null)
-            {
-                prep.close();
-            }
+            closeResource(prep, null);
         }
 
     }

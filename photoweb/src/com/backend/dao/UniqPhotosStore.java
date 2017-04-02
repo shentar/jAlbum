@@ -38,32 +38,28 @@ public class UniqPhotosStore extends AbstractRecordsStore
 
     public FileInfo getOneFileByHashStr(String id)
     {
+        PreparedStatement prep = null;
+        ResultSet res = null;
         try
         {
             lock.readLock().lock();
-            PreparedStatement prep = null;
-            ResultSet res = null;
-            try
-            {
-                prep = conn.prepareStatement("select * from uniqphotos1 where hashstr=?;");
-                prep.setString(1, id);
-                res = prep.executeQuery();
+            prep = conn.prepareStatement("select * from uniqphotos1 where hashstr=?;");
+            prep.setString(1, id);
+            res = prep.executeQuery();
 
-                if (res.next())
-                {
-                    FileInfo f = getFileInfoFromTable(res);
-                    return f;
-                }
-                res.close();
-                prep.close();
-            }
-            catch (Exception e)
+            if (res.next())
             {
-                logger.error("caught: ", e);
+                FileInfo f = getFileInfoFromTable(res);
+                return f;
             }
+        }
+        catch (Exception e)
+        {
+            logger.error("caught: ", e);
         }
         finally
         {
+            closeResource(prep, res);
             lock.readLock().unlock();
         }
 
@@ -72,15 +68,15 @@ public class UniqPhotosStore extends AbstractRecordsStore
 
     public Map<String, DateRecords> genAllDateRecords()
     {
-        lock.readLock().lock();
+
         PreparedStatement prep = null;
         ResultSet res = null;
 
         try
         {
+            lock.readLock().lock();
             prep = conn.prepareStatement("select * from uniqphotos1;");
             res = prep.executeQuery();
-            lock.readLock().unlock();
 
             Map<String, DateRecords> dst = new HashMap<String, DateRecords>();
             while (res.next())
@@ -107,13 +103,16 @@ public class UniqPhotosStore extends AbstractRecordsStore
                     dr.setPiccount(dr.getPiccount() + 1);
                 }
             }
-            prep.close();
-            res.close();
             return dst;
         }
         catch (SQLException e)
         {
             logger.error("caught: ", e);
+        }
+        finally
+        {
+            closeResource(prep, res);
+            lock.readLock().unlock();
         }
 
         return null;
@@ -122,101 +121,96 @@ public class UniqPhotosStore extends AbstractRecordsStore
     public List<FileInfo> getNextNineFileByHashStr(String id, int count, boolean isnext,
             boolean isvideo)
     {
+        PreparedStatement prep = null;
+        ResultSet res = null;
         try
         {
             lock.readLock().lock();
-            PreparedStatement prep = null;
-            ResultSet res = null;
-            try
+            String sqlstr = "select * from uniqphotos1";
+
+            FileInfo fi = null;
+            if (id != null)
             {
-                String sqlstr = "select * from uniqphotos1";
+                fi = getOneFileByHashStr(id);
+            }
 
-                FileInfo fi = null;
-                if (id != null)
+            if (fi != null)
+            {
+                sqlstr += " where phototime";
+                if (isnext)
                 {
-                    fi = getOneFileByHashStr(id);
-                }
-
-                if (fi != null)
-                {
-                    sqlstr += " where phototime";
-                    if (isnext)
-                    {
-                        sqlstr += "<?";
-                    }
-                    else
-                    {
-                        sqlstr += ">?";
-                    }
-
-                    if (isvideo)
-                    {
-                        sqlstr += " and ftype==?";
-                    }
-
-                    if (!isnext)
-                    {
-                        sqlstr += " order by phototime asc";
-                    }
+                    sqlstr += "<?";
                 }
                 else
                 {
-                    if (isvideo)
-                    {
-                        sqlstr += " where ftype==?";
-                    }
-
-                    if (!isnext)
-                    {
-                        sqlstr += " order by phototime asc";
-                    }
+                    sqlstr += ">?";
                 }
 
-                sqlstr += " limit " + count + ";";
-                prep = conn.prepareStatement(sqlstr);
-
-                if (fi != null)
+                if (isvideo)
                 {
-                    prep.setDate(1, fi.getPhotoTime());
-                    if (isvideo)
-                    {
-                        prep.setInt(2, FileType.VIDEO.ordinal());
-                    }
+                    sqlstr += " and ftype==?";
                 }
-                else
+
+                if (!isnext)
                 {
-                    if (isvideo)
-                    {
-                        prep.setInt(1, FileType.VIDEO.ordinal());
-                    }
+                    sqlstr += " order by phototime asc";
                 }
-
-                res = prep.executeQuery();
-
-                List<FileInfo> lst = new LinkedList<FileInfo>();
-                while (res.next())
-                {
-                    FileInfo f = getFileInfoFromTable(res);
-                    lst.add(f);
-                }
-
-                if (!isnext && !lst.isEmpty())
-                {
-                    Collections.reverse(lst);
-                }
-
-                res.close();
-                prep.close();
-
-                return lst;
             }
-            catch (Exception e)
+            else
             {
-                logger.error("caught: ", e);
+                if (isvideo)
+                {
+                    sqlstr += " where ftype==?";
+                }
+
+                if (!isnext)
+                {
+                    sqlstr += " order by phototime asc";
+                }
             }
+
+            sqlstr += " limit " + count + ";";
+            prep = conn.prepareStatement(sqlstr);
+
+            if (fi != null)
+            {
+                prep.setDate(1, fi.getPhotoTime());
+                if (isvideo)
+                {
+                    prep.setInt(2, FileType.VIDEO.ordinal());
+                }
+            }
+            else
+            {
+                if (isvideo)
+                {
+                    prep.setInt(1, FileType.VIDEO.ordinal());
+                }
+            }
+
+            res = prep.executeQuery();
+
+            List<FileInfo> lst = new LinkedList<FileInfo>();
+            while (res.next())
+            {
+                FileInfo f = getFileInfoFromTable(res);
+                lst.add(f);
+            }
+
+            if (!isnext && !lst.isEmpty())
+            {
+                Collections.reverse(lst);
+            }
+
+            return lst;
+        }
+        catch (Exception e)
+        {
+            logger.error("caught: ", e);
         }
         finally
         {
+            closeResource(prep, res);
             lock.readLock().unlock();
         }
 
@@ -269,7 +263,7 @@ public class UniqPhotosStore extends AbstractRecordsStore
                     + "sha256 in(select sha256 from files group by sha256) "
                     + "group by sha256 ORDER BY phototime DESC");
             prep.execute();
-            prep.close();
+            closeResource(prep, null);
             BaseSqliteStore.getInstance().lock.readLock().unlock();
             logger.info("insert new records to uniqphotos2.");
 
@@ -286,6 +280,7 @@ public class UniqPhotosStore extends AbstractRecordsStore
         {
             logger.error("caught: ", e);
         }
+
     }
 
     private FileInfo getFileInfoFromTable(ResultSet res) throws SQLException
@@ -312,38 +307,34 @@ public class UniqPhotosStore extends AbstractRecordsStore
             return new ArrayList<FileInfo>();
         }
 
+        PreparedStatement prep = null;
+        ResultSet res = null;
+        Date dstart = new Date(d.getTime());
+        Date dend = new Date(d.getTime() + 24 * 3600 * 1000);
         try
         {
             lock.readLock().lock();
-            PreparedStatement prep = null;
-            ResultSet res = null;
-            Date dstart = new Date(d.getTime());
-            Date dend = new Date(d.getTime() + 24 * 3600 * 1000);
-            try
-            {
-                prep = conn.prepareStatement(
-                        "select * from uniqphotos1 where phototime>=? and phototime<?;");
-                prep.setDate(1, dstart);
-                prep.setDate(2, dend);
-                res = prep.executeQuery();
+            prep = conn.prepareStatement(
+                    "select * from uniqphotos1 where phototime>=? and phototime<?;");
+            prep.setDate(1, dstart);
+            prep.setDate(2, dend);
+            res = prep.executeQuery();
 
-                List<FileInfo> flst = new LinkedList<FileInfo>();
-                while (res.next())
-                {
-                    FileInfo f = getFileInfoFromTable(res);
-                    flst.add(f);
-                }
-                res.close();
-                prep.close();
-                return flst;
-            }
-            catch (Exception e)
+            List<FileInfo> flst = new LinkedList<FileInfo>();
+            while (res.next())
             {
-                logger.error("caught: ", e);
+                FileInfo f = getFileInfoFromTable(res);
+                flst.add(f);
             }
+            return flst;
+        }
+        catch (Exception e)
+        {
+            logger.error("caught: ", e);
         }
         finally
         {
+            closeResource(prep, res);
             lock.readLock().unlock();
         }
         return null;
@@ -373,6 +364,7 @@ public class UniqPhotosStore extends AbstractRecordsStore
         }
         finally
         {
+            closeResource(prep, null);
             lock.writeLock().unlock();
         }
     }

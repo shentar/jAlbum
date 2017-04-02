@@ -38,6 +38,7 @@ public class BackupedFilesDao extends AbstractRecordsStore
         ResultSet res = null;
         try
         {
+            lock.readLock().lock();
             prep = conn.prepareStatement("select * from backuped where hashstr=?;");
             prep.setString(1, hashStr);
             res = prep.executeQuery();
@@ -47,17 +48,17 @@ public class BackupedFilesDao extends AbstractRecordsStore
                 logger.info("already exist: [{}:{}:{}]", hashStr, eTag, objkey);
                 return;
             }
+            lock.readLock().unlock();
+            closeResource(prep, res);
 
-            prep.close();
-            res.close();
-
+            lock.writeLock().lock();
             prep = conn.prepareStatement("insert into backuped values(?,?,?);");
             prep.setString(1, hashStr);
             prep.setString(2, eTag);
             prep.setString(3, objkey);
             prep.execute();
-            prep.close();
-            res.close();
+            lock.writeLock().unlock();
+            closeResource(prep, res);
         }
         catch (SQLException e)
         {
@@ -93,6 +94,7 @@ public class BackupedFilesDao extends AbstractRecordsStore
         ResultSet res = null;
         try
         {
+            lock.readLock().lock();
             prep = conn.prepareStatement("select * from backuped;");
             res = prep.executeQuery();
 
@@ -104,6 +106,11 @@ public class BackupedFilesDao extends AbstractRecordsStore
         catch (Exception e)
         {
             logger.error("caught: ", e);
+        }
+        finally
+        {
+            lock.readLock().unlock();
+            closeResource(prep, res);
         }
 
         return lst;

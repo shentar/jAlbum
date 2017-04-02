@@ -29,15 +29,15 @@ public class GlobalConfDao extends AbstractRecordsStore
         {
             return null;
         }
-
+        PreparedStatement prep = null;
+        ResultSet res = null;
         try
         {
             lock.readLock().lock();
-            PreparedStatement prep = conn
-                    .prepareStatement("select value from globalconf where key=?;");
+            prep = conn.prepareStatement("select value from globalconf where key=?;");
             prep.setString(1, key);
 
-            ResultSet res = prep.executeQuery();
+            res = prep.executeQuery();
             String value = null;
             if (res.next())
             {
@@ -55,6 +55,7 @@ public class GlobalConfDao extends AbstractRecordsStore
         }
         finally
         {
+            closeResource(prep, res);
             lock.readLock().unlock();
         }
 
@@ -81,10 +82,11 @@ public class GlobalConfDao extends AbstractRecordsStore
             logger.warn("add the conf: [{}:{}]", key, value);
         }
 
+        PreparedStatement prep = null;
         try
         {
             lock.writeLock().lock();
-            PreparedStatement prep = null;
+
             if (isupdate)
             {
                 prep = conn.prepareStatement("update globalconf set value=? where key=?;");
@@ -109,20 +111,21 @@ public class GlobalConfDao extends AbstractRecordsStore
         }
         finally
         {
+            closeResource(prep, null);
             lock.writeLock().unlock();
         }
     }
 
     public void delete(String key)
     {
+        PreparedStatement prep = null;
         try
         {
             lock.writeLock().lock();
-            PreparedStatement prep = conn.prepareStatement("delete from globalconf where key=?;");
+            prep = conn.prepareStatement("delete from globalconf where key=?;");
             prep.setString(1, key);
 
             prep.execute();
-            prep.close();
         }
         catch (Exception e)
         {
@@ -130,6 +133,7 @@ public class GlobalConfDao extends AbstractRecordsStore
         }
         finally
         {
+            closeResource(prep, null);
             lock.writeLock().unlock();
         }
     }

@@ -72,8 +72,6 @@ public class DateTableDao extends AbstractRecordsStore
                 mmonth.put(day, dr);
             }
 
-            prep.close();
-            res.close();
         }
         catch (Exception e)
         {
@@ -81,6 +79,7 @@ public class DateTableDao extends AbstractRecordsStore
         }
         finally
         {
+            closeResource(prep, res);
             lock.readLock().unlock();
         }
 
@@ -112,8 +111,6 @@ public class DateTableDao extends AbstractRecordsStore
                 return dr;
             }
 
-            prep.close();
-            res.close();
         }
         catch (Exception e)
         {
@@ -121,6 +118,7 @@ public class DateTableDao extends AbstractRecordsStore
         }
         finally
         {
+            closeResource(prep, res);
             lock.readLock().unlock();
         }
 
@@ -155,7 +153,6 @@ public class DateTableDao extends AbstractRecordsStore
                 prep.addBatch();
             }
             prep.executeBatch();
-            prep.close();
         }
         catch (SQLException e)
         {
@@ -164,6 +161,7 @@ public class DateTableDao extends AbstractRecordsStore
         }
         finally
         {
+            closeResource(prep, null);
             lock.writeLock().unlock();
         }
     }
