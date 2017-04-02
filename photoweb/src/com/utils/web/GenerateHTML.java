@@ -171,11 +171,26 @@ public class GenerateHTML
         String nextPage = getPhotoLink(getID(endP), true);
 
         String photoTime = "";
+        FileInfo f1 = null;
+        FileInfo f2 = null;
         if (firstP instanceof FileInfo && endP instanceof FileInfo)
+        {
+            f1 = ((FileInfo) firstP);
+            f2 = ((FileInfo) endP);
+
+        }
+        else if (firstP instanceof Face && endP instanceof Face)
+        {
+            f1 = ((Face) firstP).getFi();
+            f2 = ((Face) endP).getFi();
+        }
+
+        if (f1 != null && f2 != null)
         {
             photoTime = ((FileInfo) firstP).getPhotoTime() + " ~ "
                     + ((FileInfo) endP).getPhotoTime();
         }
+
         sb.append("<tr><td width=\"100%\" bordercolor=\"#000000\">");
         sb.append(prevPage + seprator);
         sb.append(photoTime + seprator);
