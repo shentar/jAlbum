@@ -24,6 +24,12 @@ public class ThumbnailManager
 
     private static String baseDir = null;
 
+    private static String faceDir = null;
+
+    private static String faceTmpDir = null;
+
+    private static String baseTmpDir = null;
+
     static
     {
         intiDirs();
@@ -46,30 +52,49 @@ public class ThumbnailManager
                 }
             }
 
-            if (f.isDirectory())
+            if (!f.exists() || !f.isDirectory())
             {
-                baseDir = f.getCanonicalPath();
-                isBaseDriValid = true;
-
-                f = new File(baseDir + File.separator + "faces");
-                if (!f.exists())
-                {
-                    f.mkdirs();
-                }
-                else
-                {
-                    if (f.isFile())
-                    {
-                        logger.warn("the input dir path is error: {}", baseDir);
-                    }
-                }
+                logger.warn("some error folder: " + AppConfig.getInstance().getThumbnailDir());
+                return;
             }
 
+            baseDir = f.getCanonicalPath();
+            baseTmpDir = baseDir + File.separator + "temp";
+            faceDir = baseDir + File.separator + "faces";
+            faceTmpDir = faceDir + File.separator + "temp";
+
+            if (!checkAndMkdirs(baseTmpDir) || !checkAndMkdirs(faceDir) || !checkAndMkdirs(faceTmpDir))
+            {
+                logger.warn("some error folder: {}, {}, {}", baseTmpDir, faceDir, faceTmpDir);
+                return;
+            }
+
+            isBaseDriValid = true;
         }
         catch (IOException e)
         {
             logger.warn("the input thumbnail dir path is invalid.");
         }
+    }
+
+    private static boolean checkAndMkdirs(String fpath)
+    {
+        File f = new File(fpath);
+
+        if (!f.exists())
+        {
+            f.mkdirs();
+        }
+        else
+        {
+            if (f.isFile())
+            {
+                logger.warn("the input dir path is error: {}", baseDir);
+                return false;
+            }
+        }
+
+        return true;
     }
 
     private static String getFaceThumbnailPath(String id)
@@ -86,8 +111,8 @@ public class ThumbnailManager
     {
         String dir2 = id.substring(id.length() - 2, id.length());
         String dir1 = id.substring(id.length() - 4, id.length() - 2);
-        return baseDir + File.separator + (isFace ? ("faces" + File.separator) : "") + dir1
-                + File.separator + dir2 + File.separator + id;
+        return (isFace ? faceDir : baseDir) + File.separator + dir1 + File.separator + dir2
+                + File.separator + id;
     }
 
     public static boolean checkTheThumbnailExist(String id)
@@ -139,7 +164,7 @@ public class ThumbnailManager
             parentDir.mkdirs();
         }
 
-        String tmpFile = "." + File.separator + fi.getHash256();
+        String tmpFile = baseTmpDir + File.separator + fi.getHash256();
         if (ThumbnailGenerator.createThumbnail(fi, tmpFile, 400, 400, false))
         {
             File tmpF = new File(tmpFile);
@@ -169,7 +194,8 @@ public class ThumbnailManager
             return;
         }
 
-        if (!GloableLockBaseOnString.getInstance().tryToDo(f.getFacetoken()))
+        if (!GloableLockBaseOnString.getInstance(GloableLockBaseOnString.FACE_THUMBNAIL_LOCK)
+                .tryToDo(f.getFacetoken()))
         {
             logger.warn("already gen the file: {}", f);
             return;
@@ -211,7 +237,7 @@ public class ThumbnailManager
                 return;
             }
 
-            String tmpFile = "." + File.separator + id;
+            String tmpFile = faceTmpDir + File.separator + id;
             File tmpF = new File(tmpFile);
             if (ThumbnailGenerator.createFaceThumbnail(FacerUtils.getFileForDetectFaces(f.getFi()),
                     HeadUtils.getFileType(f.getFi().getPath()).name(), f.getPos(), tmpFile))
@@ -224,7 +250,8 @@ public class ThumbnailManager
         }
         finally
         {
-            GloableLockBaseOnString.getInstance().done(f.getFacetoken());
+            GloableLockBaseOnString.getInstance(GloableLockBaseOnString.FACE_THUMBNAIL_LOCK)
+                    .done(f.getFacetoken());
         }
     }
 

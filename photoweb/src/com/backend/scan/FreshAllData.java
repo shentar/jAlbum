@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.backend.dao.DateTableDao;
+import com.backend.dao.FaceTableDao;
 import com.backend.dao.UniqPhotosStore;
 import com.backend.dirwathch.DirWatchService;
 import com.utils.conf.AppConfig;
@@ -12,15 +13,13 @@ public class FreshAllData
 {
     private static final Logger logger = LoggerFactory.getLogger(FreshAllData.class);
 
-    private static final long IDLE_REFRESH_INTEVAL = AppConfig.getInstance().getIdleRefreshInteval();
+    private static final long IDLE_REFRESH_INTEVAL = AppConfig.getInstance()
+            .getIdleRefreshInteval();
 
-    private static final long BUSY_REFRESH_INTERVAL = AppConfig.getInstance().getBusyRefreshInteval();
+    private static final long BUSY_REFRESH_INTERVAL = AppConfig.getInstance()
+            .getBusyRefreshInteval();
 
     private static final FreshAllData instance = new FreshAllData();
-
-    private static UniqPhotosStore photostore = UniqPhotosStore.getInstance();
-
-    private static DateTableDao datestore = DateTableDao.getInstance();
 
     private boolean firstTime = true;
 
@@ -60,8 +59,9 @@ public class FreshAllData
     private void doRefresh()
     {
         logger.info("start to refresh all tables: {}", this);
-        photostore.getDupFiles();
-        datestore.refreshDate();
+        UniqPhotosStore.getInstance().getDupFiles();
+        DateTableDao.getInstance().refreshDate();
+        FaceTableDao.getInstance().deleteInvalidFaces();
         logger.info("end to refresh all tables: {}", this);
         logger.info("the count of dir which is monitered is "
                 + DirWatchService.getInstance().getTheWatchDirCount() + ".");

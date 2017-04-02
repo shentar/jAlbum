@@ -1,5 +1,6 @@
 package com.backend.dao;
 
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -39,11 +40,11 @@ public class FaceTableDao extends AbstractRecordsStore
             return;
         }
 
+        PreparedStatement prep = null;
         lock.writeLock().lock();
         try
         {
-            PreparedStatement prep = conn
-                    .prepareStatement("insert into faces values(?,?,?,?,?,?,?);");
+            prep = conn.prepareStatement("insert into faces values(?,?,?,?,?,?,?,?);");
             prep.setString(1, face.getFacetoken());
             prep.setString(2, face.getEtag());
             prep.setString(3, face.getPos());
@@ -51,8 +52,16 @@ public class FaceTableDao extends AbstractRecordsStore
             prep.setString(5, face.getQuality());
             prep.setString(6, face.getGender());
             prep.setString(7, face.getAge());
+            if (face.getFi() != null)
+            {
+                prep.setDate(8, face.getFi().getPhotoTime());
+            }
+            else
+            {
+                prep.setDate(8, new Date(face.getPtime()));
+            }
+
             prep.execute();
-            prep.close();
             logger.info("add one face to the faces: {}", face);
         }
         catch (SQLException e)
@@ -61,6 +70,7 @@ public class FaceTableDao extends AbstractRecordsStore
         }
         finally
         {
+            closeResource(prep, null);
             lock.writeLock().unlock();
         }
     }
@@ -90,12 +100,12 @@ public class FaceTableDao extends AbstractRecordsStore
 
             prep = conn
                     .prepareStatement("CREATE TABLE faces (facetoken STRING, etag STRING (32, 32), "
-                            + "pos STRING, faceid BIGINT, quality STRING, gender STRING, age STRING);");
+                            + "pos STRING, faceid BIGINT, quality STRING, gender STRING, age STRING, ptime DATE);");
             prep.execute();
             prep.close();
 
-            prep = conn
-                    .prepareStatement("CREATE INDEX faceindex ON faces (facetoken, etag, faceid);");
+            prep = conn.prepareStatement(
+                    "CREATE INDEX faceindex ON faces (facetoken, etag, faceid, ptime);");
             prep.execute();
             prep.close();
         }
@@ -133,29 +143,7 @@ public class FaceTableDao extends AbstractRecordsStore
         }
         finally
         {
-            if (prep != null)
-            {
-                try
-                {
-                    prep.close();
-                }
-                catch (SQLException e)
-                {
-                    logger.warn("caused by: ", e);
-                }
-            }
-
-            if (res != null)
-            {
-                try
-                {
-                    res.close();
-                }
-                catch (SQLException e)
-                {
-                    logger.warn("caused by: ", e);
-                }
-            }
+            closeResource(prep, res);
             lock.readLock().unlock();
         }
         return false;
@@ -171,6 +159,7 @@ public class FaceTableDao extends AbstractRecordsStore
         f.setAge("null");
         f.setGender("null");
         f.setQuality("0");
+        f.setFi(fi);
         insertOneRecord(f);
     }
 
@@ -193,9 +182,6 @@ public class FaceTableDao extends AbstractRecordsStore
                 flst.add(getFaceFromTableRecord(res));
             }
 
-            prep.close();
-            res.close();
-
             return flst;
         }
         catch (Exception e)
@@ -204,6 +190,7 @@ public class FaceTableDao extends AbstractRecordsStore
         }
         finally
         {
+            closeResource(prep, res);
             lock.readLock().unlock();
         }
 
@@ -232,9 +219,6 @@ public class FaceTableDao extends AbstractRecordsStore
                 f = getFaceFromTableRecord(res);
             }
 
-            prep.close();
-            res.close();
-
             return f;
         }
         catch (Exception e)
@@ -243,6 +227,7 @@ public class FaceTableDao extends AbstractRecordsStore
         }
         finally
         {
+            closeResource(prep, res);
             lock.readLock().unlock();
         }
 
@@ -253,7 +238,8 @@ public class FaceTableDao extends AbstractRecordsStore
     {
         /*
          * CREATE TABLE faces (facetoken STRING, etag STRING (32, 32), pos
-         * STRING, faceid BIGINT, quality STRING, gender STRING, age STRING);
+         * STRING, faceid BIGINT, quality STRING, gender STRING, age STRING,
+         * ptime DATE);
          * 
          */
         Face f = new Face();
@@ -264,6 +250,8 @@ public class FaceTableDao extends AbstractRecordsStore
         f.setGender(res.getString("gender"));
         f.setAge(res.getString("age"));
         f.setQuality(res.getString("quality"));
+        Date pt = res.getDate("ptime");
+        f.setPtime(pt == null ? 0l : pt.getTime());
         logger.debug("get a face record: {}", f);
         return f;
     }
@@ -290,6 +278,7 @@ public class FaceTableDao extends AbstractRecordsStore
         }
         finally
         {
+            closeResource(prep, null);
             lock.writeLock().unlock();
         }
     }
@@ -315,6 +304,7 @@ public class FaceTableDao extends AbstractRecordsStore
         }
         finally
         {
+            closeResource(prep, null);
             lock.writeLock().unlock();
         }
     }
@@ -351,9 +341,6 @@ public class FaceTableDao extends AbstractRecordsStore
                 lst.add(res.getLong(1));
             }
 
-            prep.close();
-            res.close();
-
             return lst;
         }
         catch (Exception e)
@@ -362,12 +349,43 @@ public class FaceTableDao extends AbstractRecordsStore
         }
         finally
         {
+            closeResource(prep, res);
             lock.readLock().unlock();
         }
         return lst;
     }
 
-    public List<Face> getFacesByID(long id)
+    public Face getNewestFaceByID(long id, boolean needFileInfo)
+    {
+        PreparedStatement prep = null;
+        ResultSet res = null;
+        lock.readLock().lock();
+        try
+        {
+            prep = conn.prepareStatement(
+                    "select * from faces where faceid=? order by ptime desc limit 1;");
+            prep.setLong(1, id);
+            res = prep.executeQuery();
+
+            if (res.next())
+            {
+                return getFaceFromTableRecord(res);
+            }
+        }
+        catch (Exception e)
+        {
+            logger.warn("caused by: ", e);
+        }
+        finally
+        {
+            closeResource(prep, res);
+            lock.readLock().unlock();
+        }
+
+        return null;
+    }
+
+    public List<Face> getFacesByID(long id, boolean needFileInfo)
     {
         if (id < 0)
         {
@@ -386,11 +404,18 @@ public class FaceTableDao extends AbstractRecordsStore
 
             while (res.next())
             {
-                lst.add(getFaceFromTableRecord(res));
-            }
+                Face f = getFaceFromTableRecord(res);
 
-            prep.close();
-            res.close();
+                if (needFileInfo)
+                {
+                    FileInfo fi = UniqPhotosStore.getInstance().getOneFileByHashStr(f.getEtag());
+                    if (fi != null)
+                    {
+                        f.setFi(fi);
+                    }
+                }
+                lst.add(f);
+            }
 
             return lst;
         }
@@ -400,6 +425,7 @@ public class FaceTableDao extends AbstractRecordsStore
         }
         finally
         {
+            closeResource(prep, res);
             lock.readLock().unlock();
         }
 
@@ -428,6 +454,7 @@ public class FaceTableDao extends AbstractRecordsStore
         }
         finally
         {
+            closeResource(prep, null);
             lock.writeLock().unlock();
         }
     }
@@ -468,8 +495,8 @@ public class FaceTableDao extends AbstractRecordsStore
              * flst.add(getFaceFromTableRecord(res)); }
              */
 
-            List<Face> allf = getFacesByID(faceID);
-            FacerUtils.sortByQuality(allf);
+            List<Face> allf = getFacesByID(faceID, false);
+            FacerUtils.sortByTime(allf);
             if (!isnext)
             {
                 Collections.reverse(allf);
@@ -499,6 +526,11 @@ public class FaceTableDao extends AbstractRecordsStore
                 }
             }
 
+            if (!isnext)
+            {
+                Collections.reverse(flst);
+            }
+            
             return flst;
         }
         catch (Exception e)
@@ -507,32 +539,33 @@ public class FaceTableDao extends AbstractRecordsStore
         }
         finally
         {
-            try
-            {
-                if (prep != null)
-                {
-                    prep.close();
-                }
-            }
-            catch (SQLException e)
-            {
-                logger.warn("caused by: ", e);
-            }
-            try
-            {
-                if (res != null)
-                {
-                    res.close();
-                }
-            }
-            catch (SQLException e)
-            {
-                logger.warn("caused by: ", e);
-            }
+            closeResource(prep, res);
             lock.readLock().unlock();
         }
 
         return null;
     }
 
+    public void deleteInvalidFaces()
+    {
+        PreparedStatement prep = null;
+        lock.writeLock().lock();
+        UniqPhotosStore.getInstance().lock.readLock().lock();
+        try
+        {
+            prep = conn.prepareStatement("delete from faces where etag not in"
+                    + " (select hashstr from uniqphotos1 group by hashstr);");
+            prep.execute();
+        }
+        catch (Exception e)
+        {
+            logger.warn("caused by: ", e);
+        }
+        finally
+        {
+            closeResource(prep, null);
+            lock.writeLock().unlock();
+            UniqPhotosStore.getInstance().lock.readLock().unlock();
+        }
+    }
 }

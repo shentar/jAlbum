@@ -65,6 +65,7 @@ public class FaceDetectClient
             if (StringUtils.isNotBlank(token))
             {
                 Face face = new Face();
+                face.setFi(fi);
                 face.setEtag(fi.getHash256());
                 face.setFacetoken(token);
 

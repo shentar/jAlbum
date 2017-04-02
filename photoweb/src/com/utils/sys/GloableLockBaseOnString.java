@@ -1,38 +1,62 @@
 package com.utils.sys;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public class GloableLockBaseOnString
 {
+    public static final String PIC_THUMBNAIL_LOCK = "locktype1";
+
+    public static final String FACE_THUMBNAIL_LOCK = "locktype1";
+
+    public static final String FACE_DETECT_LOCK = "locktype1";
+
     private HashMap<String, Object> lmap = new HashMap<String, Object>();
 
-    public static GloableLockBaseOnString instance = new GloableLockBaseOnString();
+    private Object lock = new Object();
+
+    private static Map<String, GloableLockBaseOnString> instances = new HashMap<String, GloableLockBaseOnString>();
 
     private GloableLockBaseOnString()
     {
 
     }
 
-    public static GloableLockBaseOnString getInstance()
+    static
     {
-        return instance;
+        instances.put(PIC_THUMBNAIL_LOCK, new GloableLockBaseOnString());
+        instances.put(FACE_THUMBNAIL_LOCK, new GloableLockBaseOnString());
+        instances.put(FACE_DETECT_LOCK, new GloableLockBaseOnString());
+
     }
 
-    public synchronized boolean tryToDo(String id)
+    public static GloableLockBaseOnString getInstance(String lockType)
     {
-        if (lmap.containsKey(id))
+        return instances.get(lockType);
+    }
+
+    public boolean tryToDo(String id)
+    {
+        synchronized (lock)
         {
-            return false;
-        }
-        else
-        {
-            lmap.put(id, new Object());
-            return true;
+            if (lmap.containsKey(id))
+            {
+                return false;
+            }
+            else
+            {
+                lmap.put(id, new Object());
+                return true;
+            }
+
         }
     }
 
-    public synchronized void done(String id)
+    public void done(String id)
     {
-        lmap.remove(id);
+        synchronized (lock)
+        {
+            lmap.remove(id);
+        }
     }
 }

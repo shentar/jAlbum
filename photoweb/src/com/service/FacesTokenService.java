@@ -49,7 +49,7 @@ public class FacesTokenService
         {
             File faceThumbnail = ThumbnailManager.getFaceThumbnail(id);
             InputStream is = null;
-            if (faceThumbnail.exists() && faceThumbnail.isFile())
+            if (faceThumbnail != null && faceThumbnail.exists() && faceThumbnail.isFile())
             {
                 is = new BufferedInputStream(new FileInputStream(faceThumbnail));
                 builder.header("Content-type",

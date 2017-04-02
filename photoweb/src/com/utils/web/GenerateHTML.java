@@ -925,7 +925,7 @@ public class GenerateHTML
     {
         if (isThumbnail)
         {
-            return "<img style=\"border-radius: 50%;\" width=\"200px\" src=\"/facetoken/"
+            return "<img style=\"border-radius: 50%;\" width=\"200px\" height=\"200px\" src=\"/facetoken/"
                     + f.getFacetoken() + "?facethumbnail=true\"/>";
         }
         else

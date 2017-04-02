@@ -335,7 +335,8 @@ public class FileTools
 
     public static void submitAnThumbnailTask(final FileInfo fi)
     {
-        if (!GloableLockBaseOnString.getInstance().tryToDo(fi.getHash256()))
+        if (!GloableLockBaseOnString.getInstance(GloableLockBaseOnString.PIC_THUMBNAIL_LOCK)
+                .tryToDo(fi.getHash256()))
         {
             logger.warn("the task of pic id [{}] is already being done.", fi);
             return;
@@ -352,7 +353,8 @@ public class FileTools
                 }
                 finally
                 {
-                    GloableLockBaseOnString.getInstance().done(fi.getHash256());
+                    GloableLockBaseOnString.getInstance(GloableLockBaseOnString.PIC_THUMBNAIL_LOCK)
+                            .done(fi.getHash256());
                 }
             }
         });

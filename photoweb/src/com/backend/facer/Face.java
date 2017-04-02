@@ -18,6 +18,8 @@ public class Face
 
     private String age;
 
+    private long ptime;
+
     private FileInfo fi;
 
     public Face()
@@ -116,5 +118,15 @@ public class Face
         return "Face [etag=" + etag + ", facetoken=" + facetoken + ", faceid=" + faceid + ", pos="
                 + pos + ", quality=" + quality + ", gender=" + gender + ", age=" + age + ", fi="
                 + fi + "]";
+    }
+
+    public long getPtime()
+    {
+        return ptime;
+    }
+
+    public void setPtime(long ptime)
+    {
+        this.ptime = ptime;
     }
 }

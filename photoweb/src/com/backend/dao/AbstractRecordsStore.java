@@ -126,4 +126,31 @@ public class AbstractRecordsStore
         }
 
     }
+
+    protected void closeResource(PreparedStatement prep, ResultSet res)
+    {
+        if (prep != null)
+        {
+            try
+            {
+                prep.close();
+            }
+            catch (Exception e)
+            {
+                logger.warn("caused by ", e);
+            }
+        }
+
+        if (res != null)
+        {
+            try
+            {
+                res.close();
+            }
+            catch (Exception e)
+            {
+                logger.warn("caused by ", e);
+            }
+        }
+    }
 }

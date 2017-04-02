@@ -9,7 +9,7 @@ This is a local photo management system written with the Java language. Using B/
 ## install
 >### For ARM platform, such as Raspberry3 ubuntu-mate system, compile jdbcsqlite native so first. Other platform may not need this.
 ```shell
-cd jAlbum<br/>
+cd jAlbum
 ant -f build_for_Raspberry3.xml
 ```
 For other platforms, such as Windows, X86 Linux etc. just run the command like:
@@ -77,8 +77,8 @@ edit the jalbum.xml
 ***hashalog*** specify the file HASH fingerprint Algorithm. The common algorithms are: SHA-256, MD5, SHA-1. You can find the stand algorithm names in [MessageDigest Algorithms](https://docs.oracle.com/javase/8/docs/technotes/guides/security/StandardNames.html#MessageDigest).<br/>
 ***excludedir*** specify the folder which you do not like the tool scan and display the content of it.<br/>
 ***thumbnaildir*** specify the folder which to store the thumbnail to.<br/>
-***s3*** specify the Amazon S3 backup info such as bucketname, ak, sk and useHttps.
-***Facer** specify the face++ service API info, such as ak, sk and custom facesetprefix.
+***s3*** specify the Amazon S3 backup info such as bucketname, ak, sk and useHttps.<br/>
+***Facer*** specify the face++ service API info, such as ak, sk and custom facesetprefix.
 <br/>
 
 >### 1. Start the tool

@@ -11,10 +11,10 @@ import org.slf4j.LoggerFactory;
 
 import com.backend.FileInfo;
 import com.backend.dao.FaceTableDao;
-import com.backend.dao.UniqPhotosStore;
 import com.utils.conf.AppConfig;
 import com.utils.media.MediaTool;
 import com.utils.media.ThumbnailManager;
+import com.utils.sys.GloableLockBaseOnString;
 
 public class FaceRecService
 {
@@ -49,6 +49,13 @@ public class FaceRecService
     {
         if (MediaTool.isVideo(fi.getPath()))
         {
+            return;
+        }
+
+        if (!GloableLockBaseOnString.getInstance(GloableLockBaseOnString.FACE_DETECT_LOCK)
+                .tryToDo(fi.getHash256()))
+        {
+            logger.warn("a task already asigned {}", fi);
             return;
         }
 
@@ -89,6 +96,12 @@ public class FaceRecService
                     catch (Exception e)
                     {
                         logger.warn("caused by: ", e);
+                    }
+                    finally
+                    {
+                        GloableLockBaseOnString
+                                .getInstance(GloableLockBaseOnString.FACE_DETECT_LOCK)
+                                .done(fi.getHash256());
                     }
                 }
             });
@@ -193,15 +206,28 @@ public class FaceRecService
         }
     }
 
-    public List<Face> getSortedFaces(long fid)
+    public List<Face> getSortedFaces(long fid, int count, boolean needFileInfo)
     {
         if (fid > 0)
         {
-            List<Face> flst = FaceTableDao.getInstance().getFacesByID(fid);
+            List<Face> flst = FaceTableDao.getInstance().getFacesByID(fid, needFileInfo);
             if (flst != null && !flst.isEmpty())
             {
-                FacerUtils.sortByQuality(flst);
+                FacerUtils.sortByTime(flst);
             }
+
+            if (count > 0)
+            {
+                List<Face> truncateList = new LinkedList<Face>();
+                int needCount = count > flst.size() ? flst.size() : count;
+                for (int i = 0; i != needCount; i++)
+                {
+                    truncateList.add(flst.get(i));
+                }
+
+                return truncateList;
+            }
+
             return flst;
         }
 
@@ -221,17 +247,9 @@ public class FaceRecService
         List<Face> fflist = new LinkedList<Face>();
         for (long fid : faceids)
         {
-            List<Face> flst = getSortedFaces(fid);
-            if (flst == null)
+            Face f = FaceTableDao.getInstance().getNewestFaceByID(fid, true);
+            if (f != null)
             {
-                continue;
-            }
-
-            Face f = flst.get(0);
-            FileInfo fi = UniqPhotosStore.getInstance().getOneFileByHashStr(f.getEtag());
-            if (fi != null)
-            {
-                f.setFi(fi);
                 fflist.add(f);
                 ThumbnailManager.checkAndGenFaceThumbnail(f);
             }

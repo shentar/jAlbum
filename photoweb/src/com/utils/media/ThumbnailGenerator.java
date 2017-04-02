@@ -260,6 +260,7 @@ public class ThumbnailGenerator
             String[] ss = pos.split(",");
             if (ss.length != 4)
             {
+                logger.warn("the file info is: {}, {}", origFile, pos);
                 return false;
             }
 
@@ -267,10 +268,30 @@ public class ThumbnailGenerator
             int h = Integer.parseInt(ss[1]);
             int x = Integer.parseInt(ss[2]);
             int y = Integer.parseInt(ss[3]);
+
+            if (x < 0)
+            {
+                logger.warn("the file info is: {}, {}", origFile, pos);
+                w += x;
+                x = 0;
+            }
+
+            if (y < 0)
+            {
+                logger.warn("the file info is: {}, {}", origFile, pos);
+                h += y;
+                y = 0;
+            }
+
+            if (w < 0 || h < 0)
+            {
+                logger.warn("the file info is: {}, {}", origFile, pos);
+                return false;
+            }
+
             Rectangle rect = new Rectangle(x, y, w, h);
             Rectangle newRect = getNewRectangle(rect);
-            if (!(genFaceThumbnail(suffix, tmpFile, iis, newRect)
-                    || genFaceThumbnail(suffix, tmpFile, iis, rect)))
+            if (!genFaceThumbnail(suffix, tmpFile, iis, newRect == null ? rect : newRect))
             {
                 logger.warn("generate the face thumbnail failed: {}", origFile);
                 return false;

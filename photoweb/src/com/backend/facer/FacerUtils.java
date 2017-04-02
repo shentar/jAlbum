@@ -345,6 +345,50 @@ public class FacerUtils
         return null;
     }
 
+    public static void sortByTime(List<Face> flst)
+    {
+        if (flst == null || flst.isEmpty())
+        {
+            return;
+        }
+
+        Collections.sort(flst, new Comparator<Face>()
+        {
+            @Override
+            public int compare(Face o1, Face o2)
+            {
+                if (o1 == null && o2 == null)
+                {
+                    return 0;
+                }
+
+                if (o1 == null)
+                {
+                    return 1;
+                }
+
+                if (o2 == null)
+                {
+                    return -1;
+                }
+
+                long res = o1.getPtime() - o2.getPtime();
+                if (res == 0)
+                {
+                    return 0;
+                }
+                else if (res > 0)
+                {
+                    return -1;
+                }
+                else
+                {
+                    return 1;
+                }
+            }
+        });
+    }
+
     public static void sortByQuality(List<Face> flst)
     {
         if (flst == null || flst.isEmpty())
