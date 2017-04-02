@@ -187,7 +187,7 @@ public class GenerateHTML
 
         if (f1 != null && f2 != null)
         {
-            photoTime = f1.getPhotoTime() + " ~ " + f1.getPhotoTime();
+            photoTime = f1.getPhotoTime() + " ~ " + f2.getPhotoTime();
         }
 
         sb.append("<tr><td width=\"100%\" bordercolor=\"#000000\">");
