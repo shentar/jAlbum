@@ -535,6 +535,21 @@ public class FaceTableDao extends AbstractRecordsStore
                 }
             }
 
+            // 当翻页到最后一页时，会出现找不到有效照片的情况，此时可能已经翻转到第一页。
+            if (flst.isEmpty() && !allf.isEmpty())
+            {
+                c = 0;
+                for (Face face : allf)
+                {
+                    flst.add(face);
+                    c++;
+                    if (c >= maxCount)
+                    {
+                        break;
+                    }
+                }
+            }
+
             if (!isnext)
             {
                 Collections.reverse(flst);

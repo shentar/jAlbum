@@ -7,6 +7,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response.ResponseBuilder;
 
 import org.apache.commons.lang.StringUtils;
@@ -35,7 +36,7 @@ public class HeadUtils
         Boolean isFaces = (Boolean) SystemProperties.get(SystemConstant.IS_FACES_KEY);
         return isFaces != null && isFaces.booleanValue();
     }
-    
+
     public static boolean isIOS()
     {
         Boolean ismobile = (Boolean) SystemProperties.get(SystemConstant.IS_IOS);
@@ -174,7 +175,7 @@ public class HeadUtils
 
         return contentType;
     }
-    
+
     public static String getContentType(String pathToFile) throws IOException
     {
         String mime = Files.probeContentType(Paths.get(pathToFile));
@@ -222,4 +223,45 @@ public class HeadUtils
         Boolean isvideo = (Boolean) SystemProperties.get(SystemConstant.IS_VIDEO);
         return isvideo != null && isvideo.booleanValue();
     }
+
+    public static int judgeCountPerOnePage(HttpServletRequest req)
+    {
+        int count = 0;
+        int maxCount = AppConfig.getInstance().getMaxCountOfPicInOnePage(25);
+        if (req == null)
+        {
+            return maxCount;
+        }
+
+        String countStr = req.getParameter("count");
+        if (StringUtils.isNotBlank(countStr))
+        {
+            count = Integer.parseInt(countStr);
+        }
+
+        if (count == 0 || count > maxCount)
+        {
+            count = maxCount;
+        }
+
+        if (count > 9)
+        {
+            if (HeadUtils.isMobile())
+            {
+                count = 9;
+            }
+        }
+
+        boolean isvideo = HeadUtils.isVideo();
+        if (isvideo)
+        {
+            if (count > 6)
+            {
+                count = 6;
+            }
+        }
+
+        return count;
+    }
+
 }

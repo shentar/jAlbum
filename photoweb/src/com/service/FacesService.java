@@ -61,7 +61,7 @@ public class FacesService
             else
             {
                 flst = FaceRecService.getInstance().getSortedFaces(id,
-                        AppConfig.getInstance().getMaxCountOfPicInOnePage(25), true);
+                        HeadUtils.judgeCountPerOnePage(req), true);
             }
 
             return b.entity(GenerateHTML.genIndexPage(flst, getRowCount(), true)).build();

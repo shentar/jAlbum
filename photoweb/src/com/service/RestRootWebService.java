@@ -26,7 +26,6 @@ import org.slf4j.LoggerFactory;
 import com.backend.dao.FaceTableDao;
 import com.backend.dao.UniqPhotosStore;
 import com.backend.facer.Face;
-import com.utils.conf.AppConfig;
 import com.utils.web.GenerateHTML;
 import com.utils.web.HeadUtils;
 
@@ -125,36 +124,7 @@ public class RestRootWebService extends HttpServlet
     {
         List<?> lst = null;
 
-        int count = 0;
-        int maxCount = AppConfig.getInstance().getMaxCountOfPicInOnePage(25);
-        String countStr = req.getParameter("count");
-        if (StringUtils.isNotBlank(countStr))
-        {
-            count = Integer.parseInt(countStr);
-        }
-
-        if (count == 0 || count > maxCount)
-        {
-            count = maxCount;
-        }
-
-        if (count > 9)
-        {
-            if (HeadUtils.isMobile())
-            {
-                count = 9;
-            }
-        }
-
-        boolean isvideo = HeadUtils.isVideo();
-        if (isvideo)
-        {
-            if (count > 6)
-            {
-                count = 6;
-            }
-        }
-
+        int count = HeadUtils.judgeCountPerOnePage(req);
         String next = req.getParameter("next");
         String prev = req.getParameter("prev");
         String id = null;
@@ -172,11 +142,6 @@ public class RestRootWebService extends HttpServlet
         if (HeadUtils.isFaces())
         {
             lst = FaceTableDao.getInstance().getNextNineFileByHashStr(id, count, isnext);
-            if ((lst == null || lst.isEmpty()) && id != null)
-            {
-                lst = FaceTableDao.getInstance().getNextNineFileByHashStr(null, count, isnext);
-            }
-
             if (lst != null)
             {
                 for (Object f : lst)
@@ -189,11 +154,11 @@ public class RestRootWebService extends HttpServlet
         else
         {
             lst = UniqPhotosStore.getInstance().getNextNineFileByHashStr(id, count, isnext,
-                    isvideo);
+                    HeadUtils.isVideo());
             if ((lst == null || lst.isEmpty()) && id != null)
             {
                 lst = UniqPhotosStore.getInstance().getNextNineFileByHashStr(null, count, isnext,
-                        isvideo);
+                        HeadUtils.isVideo());
             }
         }
         return lst;
