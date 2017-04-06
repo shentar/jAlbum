@@ -372,7 +372,7 @@ public class FaceTableDao extends AbstractRecordsStore
         try
         {
             prep = conn.prepareStatement(
-                    "select * from faces where faceid=? order by ptime desc limit 1;");
+                    "select * from faces where faceid=? order by quality desc limit 1;");
             prep.setLong(1, id);
             res = prep.executeQuery();
 
@@ -470,6 +470,11 @@ public class FaceTableDao extends AbstractRecordsStore
 
     public List<Face> getNextNineFileByHashStr(String id, int count, boolean isnext)
     {
+        if (count <= 0)
+        {
+            return null;
+        }
+
         PreparedStatement prep = null;
         ResultSet res = null;
 
@@ -477,7 +482,7 @@ public class FaceTableDao extends AbstractRecordsStore
         {
             lock.readLock().lock();
             Face f = null;
-            if (id != null)
+            if (StringUtils.isNotBlank(id))
             {
                 f = getFace(id);
             }

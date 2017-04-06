@@ -20,7 +20,6 @@ import com.backend.facer.Face;
 // import org.slf4j.LoggerFactory;
 
 import com.backend.facer.FaceRecService;
-import com.utils.conf.AppConfig;
 import com.utils.sys.SystemConstant;
 import com.utils.sys.SystemProperties;
 import com.utils.web.GenerateHTML;
@@ -56,7 +55,7 @@ public class FacesService
             List<Face> flst = null;
             if (StringUtils.isNotBlank(faceToken))
             {
-                flst = getFaceThumbnailList(faceToken);
+                flst = getFaceThumbnailList(faceToken, HeadUtils.judgeCountPerOnePage(req));
             }
             else
             {
@@ -68,14 +67,13 @@ public class FacesService
         }
     }
 
-    private List<Face> getFaceThumbnailList(String faceToken)
+    private List<Face> getFaceThumbnailList(String faceToken, int count)
     {
         List<Face> flst = null;
         Face f = FaceTableDao.getInstance().getFace(faceToken);
         if (f != null)
         {
-            flst = FaceTableDao.getInstance().getNextNineFileByHashStr(faceToken,
-                    AppConfig.getInstance().getMaxCountOfPicInOnePage(25) - 1, true);
+            flst = FaceTableDao.getInstance().getNextNineFileByHashStr(faceToken, count - 1, true);
 
             if (flst != null && !flst.isEmpty())
             {
