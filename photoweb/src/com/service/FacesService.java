@@ -10,8 +10,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 
-import org.apache.commons.lang.StringUtils;
-
 import com.backend.dao.FaceTableDao;
 import com.backend.dao.UniqPhotosStore;
 import com.backend.facer.Face;
@@ -51,22 +49,29 @@ public class FacesService
         }
         else
         {
-            String faceToken = req.getParameter("facetoken");
-            List<Face> flst = null;
-            if (StringUtils.isNotBlank(faceToken))
-            {
-                flst = getFaceThumbnailList(faceToken, HeadUtils.judgeCountPerOnePage(req));
-            }
-            else
-            {
-                flst = FaceRecService.getInstance().getSortedFaces(id,
-                        HeadUtils.judgeCountPerOnePage(req), true);
-            }
+            // String faceToken = req.getParameter("facetoken");
+            // List<Face> flst = null;
+            // if (StringUtils.isNotBlank(faceToken))
+            // {
+            // flst = getFaceThumbnailList(faceToken,
+            // HeadUtils.judgeCountPerOnePage(req));
+            // }
+            // else
+            // {
+            // flst = FaceRecService.getInstance().getSortedFaces(id,
+            // HeadUtils.judgeCountPerOnePage(req), true);
+            // }
 
-            return b.entity(GenerateHTML.genIndexPage(flst, getRowCount(), true)).build();
+            return b.entity(
+                    GenerateHTML.genIndexPage(
+                            FaceRecService.getInstance().getSortedFaces(id,
+                                    HeadUtils.judgeCountPerOnePage(req), true),
+                            getRowCount(), true))
+                    .build();
         }
     }
 
+    @SuppressWarnings("unused")
     private List<Face> getFaceThumbnailList(String faceToken, int count)
     {
         List<Face> flst = null;
