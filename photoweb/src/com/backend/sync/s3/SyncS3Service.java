@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.commons.lang.StringUtils;
@@ -40,6 +41,8 @@ public class SyncS3Service
     private Jets3tProperties jets3tproperties = null;
 
     private S3Service s3service = null;
+
+    private AtomicInteger failedTimes = new AtomicInteger(0);
 
     private static class ServiceHolder
     {
@@ -96,7 +99,11 @@ public class SyncS3Service
     {
         try
         {
-            Thread.sleep(AppConfig.getInstance().getRetryInitS3());
+            int ft = failedTimes.incrementAndGet();
+
+            ft = ft > 8 ? 8 : ft;
+
+            Thread.sleep((long) (AppConfig.getInstance().getRetryInitS3() * Math.pow(2, ft)));
         }
         catch (Exception e)
         {
@@ -134,6 +141,7 @@ public class SyncS3Service
             logger.warn("the size of all object in s3 is: space size: {}, object count: [{}]",
                     String.format("%4.3fGB", ((float) backedUpSize.get()) / (1024 * 1024 * 1024)),
                     allobjs.size());
+            failedTimes.set(0);
             if (StringUtils.equalsIgnoreCase(o.getETag(), fi.getHash256())
                     || MediaTool.isVideo(fi.getPath()))
             {
@@ -209,6 +217,7 @@ public class SyncS3Service
             {
                 sc = s3service.listObjectsChunked(AppConfig.getInstance().getBucketName(),
                         "homenas/", null, 1000, priorLastKey, false);
+                failedTimes.set(0);
                 StorageObject[] obs = sc.getObjects();
 
                 if (obs == null)

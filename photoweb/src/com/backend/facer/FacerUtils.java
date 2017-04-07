@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.net.ssl.SSLException;
 import javax.net.ssl.SSLHandshakeException;
@@ -84,6 +85,8 @@ public class FacerUtils
     private static CloseableHttpClient httpClient = null;
 
     private static final int MAX_CONNECTION = 4;
+
+    private static AtomicInteger failedTimes = new AtomicInteger(0);
 
     static
     {
@@ -312,7 +315,7 @@ public class FacerUtils
             {
                 logger.error("caused by: ", e);
                 logger.error("the file is: " + params.get(IMG_FILE));
-                needRetry = false;
+                needRetry = true;
             }
             finally
             {
@@ -328,21 +331,33 @@ public class FacerUtils
                     logger.warn("caused: ", e);
                 }
 
-                if (needRetry)
-                {
-                    try
-                    {
-                        Thread.sleep(1000);
-                    }
-                    catch (InterruptedException e)
-                    {
-                        logger.warn("caused by: ", e);
-                    }
-                }
+                delayBeforeRetry(needRetry);
             }
         }
 
         return null;
+    }
+
+    private static void delayBeforeRetry(boolean needRetry)
+    {
+        if (needRetry)
+        {
+            int ft = failedTimes.incrementAndGet();
+            ft = (ft > 8 ? 8 : ft);
+
+            try
+            {
+                Thread.sleep((long) (15000 * Math.pow(2, ft)));
+            }
+            catch (InterruptedException e)
+            {
+                logger.warn("caused by: ", e);
+            }
+        }
+        else
+        {
+            failedTimes.set(0);
+        }
     }
 
     public static void sortByTime(List<Face> flst)
