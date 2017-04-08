@@ -134,15 +134,19 @@ public class DateTableDao extends AbstractRecordsStore
         boolean tmpready = false;
         try
         {
+            logger.info("start to prepare new date records.");
             prepareNewRecords();
+
             tmpready = true;
+
+            logger.info("start to drop the date records");
             lock.writeLock().lock();
             if (checkTableExist(DATE_TABLE_NAME))
             {
-                dropTable(DATE_TABLE_NAME);
+                dropTheTableWithRetry();
             }
             renameTable(DATE_TMP_TABLE_NAME, DATE_TABLE_NAME);
-            logger.warn("refresh all date record.");
+            logger.info("refresh all date record.");
         }
         catch (Exception e)
         {
@@ -157,14 +161,31 @@ public class DateTableDao extends AbstractRecordsStore
         }
     }
 
+    private void dropTheTableWithRetry() throws InterruptedException
+    {
+        int retryTimes = 3;
+        while (retryTimes-- > 0)
+        {
+            try
+            {
+                dropTable(DATE_TABLE_NAME);
+                break;
+            }
+            catch (Exception e)
+            {
+                logger.warn("caught by ", e);
+                Thread.sleep(3000);
+            }
+        }
+    }
+
     private void prepareNewRecords() throws SQLException
     {
-        boolean dtmp = checkTableExist(DATE_TMP_TABLE_NAME);
         /**
          * CREATE TABLE daterecords ( datestr STRING NOT NULL UNIQUE, piccoount
          * BIGINT NOT NULL, firstpichashstr STRING );
          */
-        if (dtmp)
+        if (checkTableExist(DATE_TMP_TABLE_NAME))
         {
             cleanTable(DATE_TMP_TABLE_NAME);
         }
