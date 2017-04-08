@@ -168,28 +168,6 @@ public class DateTableDao extends AbstractRecordsStore
         }
     }
 
-    private void dropTheTableWithRetry() throws Exception
-    {
-        int retryTimes = 3;
-        while (retryTimes-- > 0)
-        {
-            try
-            {
-                cleanTable(DATE_TABLE_NAME);
-                break;
-            }
-            catch (Exception e)
-            {
-                logger.warn("caught by ", e);
-                if (retryTimes == 0)
-                {
-                    throw e;
-                }
-                Thread.sleep(3000);
-            }
-        }
-    }
-
     private void prepareNewRecords() throws SQLException
     {
         /**
