@@ -19,6 +19,8 @@ public class DateTableDao extends AbstractRecordsStore
 
     private static final String DATE_TABLE_NAME = "daterecords";
 
+    private static final String DATE_BACK_TABLE_NAME = "daterecords2";
+
     private static final String DATE_TMP_TABLE_NAME = "daterecordstmp";
 
     private DateTableDao()
@@ -143,9 +145,14 @@ public class DateTableDao extends AbstractRecordsStore
             lock.writeLock().lock();
             if (checkTableExist(DATE_TABLE_NAME))
             {
-                dropTheTableWithRetry();
+                renameTable(DATE_TABLE_NAME, DATE_BACK_TABLE_NAME);
             }
             renameTable(DATE_TMP_TABLE_NAME, DATE_TABLE_NAME);
+
+            if (checkTableExist(DATE_BACK_TABLE_NAME))
+            {
+                renameTable(DATE_BACK_TABLE_NAME, DATE_TMP_TABLE_NAME);
+            }
             logger.info("refresh all date record.");
         }
         catch (Exception e)
@@ -161,19 +168,23 @@ public class DateTableDao extends AbstractRecordsStore
         }
     }
 
-    private void dropTheTableWithRetry() throws InterruptedException
+    private void dropTheTableWithRetry() throws Exception
     {
         int retryTimes = 3;
         while (retryTimes-- > 0)
         {
             try
             {
-                dropTable(DATE_TABLE_NAME);
+                cleanTable(DATE_TABLE_NAME);
                 break;
             }
             catch (Exception e)
             {
                 logger.warn("caught by ", e);
+                if (retryTimes == 0)
+                {
+                    throw e;
+                }
                 Thread.sleep(3000);
             }
         }
@@ -194,6 +205,11 @@ public class DateTableDao extends AbstractRecordsStore
             // create the temp table.
             execute("CREATE TABLE " + DATE_TMP_TABLE_NAME + " ( datestr STRING NOT NULL UNIQUE,"
                     + " piccoount BIGINT NOT NULL, firstpichashstr STRING );");
+        }
+
+        if (checkTableExist(DATE_BACK_TABLE_NAME))
+        {
+            dropTable(DATE_BACK_TABLE_NAME);
         }
 
         Map<String, DateRecords> dst = UniqPhotosStore.getInstance().genAllDateRecords();
