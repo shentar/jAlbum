@@ -17,6 +17,10 @@ public class DateTableDao extends AbstractRecordsStore
 
     private static DateTableDao instance = new DateTableDao();
 
+    private static final String DATE_TABLE_NAME = "daterecords";
+
+    private static final String DATE_TMP_TABLE_NAME = "daterecordstmp";
+
     private DateTableDao()
     {
 
@@ -127,7 +131,49 @@ public class DateTableDao extends AbstractRecordsStore
 
     public void refreshDate()
     {
-        logger.warn("refresh all date record.");
+        boolean tmpready = false;
+        try
+        {
+            prepareNewRecords();
+            tmpready = true;
+            lock.writeLock().lock();
+            if (checkTableExist(DATE_TABLE_NAME))
+            {
+                dropTable(DATE_TABLE_NAME);
+            }
+            renameTable(DATE_TMP_TABLE_NAME, DATE_TABLE_NAME);
+            logger.warn("refresh all date record.");
+        }
+        catch (Exception e)
+        {
+            logger.warn("caused by ", e);
+        }
+        finally
+        {
+            if (tmpready)
+            {
+                lock.writeLock().unlock();
+            }
+        }
+    }
+
+    private void prepareNewRecords() throws SQLException
+    {
+        boolean dtmp = checkTableExist(DATE_TMP_TABLE_NAME);
+        /**
+         * CREATE TABLE daterecords ( datestr STRING NOT NULL UNIQUE, piccoount
+         * BIGINT NOT NULL, firstpichashstr STRING );
+         */
+        if (dtmp)
+        {
+            cleanTable(DATE_TMP_TABLE_NAME);
+        }
+        else
+        {
+            // create the temp table.
+            execute("CREATE TABLE " + DATE_TMP_TABLE_NAME + " ( datestr STRING NOT NULL UNIQUE,"
+                    + " piccoount BIGINT NOT NULL, firstpichashstr STRING );");
+        }
 
         Map<String, DateRecords> dst = UniqPhotosStore.getInstance().genAllDateRecords();
         if (dst == null || dst.isEmpty())
@@ -136,15 +182,10 @@ public class DateTableDao extends AbstractRecordsStore
             return;
         }
 
-        lock.writeLock().lock();
         PreparedStatement prep = null;
         try
         {
-            prep = conn.prepareStatement("delete from daterecords");
-            prep.execute();
-            prep.close();
-
-            prep = conn.prepareStatement("insert into daterecords values(?,?,?);");
+            prep = conn.prepareStatement("insert into " + DATE_TMP_TABLE_NAME + " values(?,?,?);");
             for (Entry<String, DateRecords> dr : dst.entrySet())
             {
                 prep.setString(1, dr.getKey());
@@ -154,16 +195,9 @@ public class DateTableDao extends AbstractRecordsStore
             }
             prep.executeBatch();
         }
-        catch (SQLException e)
-        {
-            e.printStackTrace();
-            logger.warn("caught: ", e);
-        }
         finally
         {
             closeResource(prep, null);
-            lock.writeLock().unlock();
         }
     }
-
 }

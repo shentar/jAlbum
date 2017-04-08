@@ -108,6 +108,22 @@ public class AbstractRecordsStore
 
     }
 
+    protected void execute(String sql) throws SQLException
+    {
+        PreparedStatement prep = null;
+        try
+        {
+            prep = conn.prepareStatement(sql);
+            prep.execute();
+
+            logger.info("execute the sql {} successfully.", sql);
+        }
+        finally
+        {
+            closeResource(prep, null);
+        }
+    }
+
     protected void closeResource(PreparedStatement prep, ResultSet res)
     {
         if (prep != null)
