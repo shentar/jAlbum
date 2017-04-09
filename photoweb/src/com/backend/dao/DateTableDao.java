@@ -206,11 +206,9 @@ public class DateTableDao extends AbstractRecordsStore
             {
                 prep = conn
                         .prepareStatement("insert into " + DATE_TMP_TABLE_NAME + " values(?,?,?);");
-
                 prep.setString(1, dr.getKey());
                 prep.setLong(2, dr.getValue().getPiccount());
                 prep.setString(3, dr.getValue().getFirstpic());
-                prep.addBatch();
 
                 prep.execute();
             }
