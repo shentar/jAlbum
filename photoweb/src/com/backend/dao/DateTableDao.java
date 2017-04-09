@@ -200,6 +200,7 @@ public class DateTableDao extends AbstractRecordsStore
         PreparedStatement prep = null;
         try
         {
+            logger.info("start to insert the records to the tmp table.");
             prep = conn.prepareStatement("insert into " + DATE_TMP_TABLE_NAME + " values(?,?,?);");
             for (Entry<String, DateRecords> dr : dst.entrySet())
             {
@@ -213,6 +214,7 @@ public class DateTableDao extends AbstractRecordsStore
         finally
         {
             closeResource(prep, null);
+            logger.info("end to insert the records to the tmp table.");
         }
     }
 }
