@@ -1,6 +1,7 @@
 package com.shentar.frontend;
 
 import java.io.File;
+import java.io.IOException;
 
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
@@ -43,7 +44,27 @@ public class FrontMain
         WebAppContext context = new WebAppContext();
         context.setContextPath("/");
         context.setWar("root.war");
-        context.setExtraClasspath("lib" + File.separator + "extra");
+
+        String epath = "lib" + File.separator + "extra";
+        File[] fs = new File(epath).listFiles();
+        if (fs.length > 0)
+        {
+            StringBuffer extraPath = new StringBuffer();
+            for (File f : fs)
+            {
+                String filename = f.getName();
+                if (filename.toLowerCase().endsWith(".jar"))
+                {
+                    extraPath.append(epath + File.separator + filename).append(",");
+                }
+            }
+            context.setExtraClasspath(extraPath.toString());
+        }
+        else
+        {
+            throw new IOException("there is no extra lib files.");
+        }
+
         ServerConnector connector = new ServerConnector(server);
         connector.setIdleTimeout(5000);
         connector.setPort(port);
