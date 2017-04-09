@@ -1,5 +1,7 @@
 package com.shentar.frontend;
 
+import java.io.File;
+
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
@@ -41,8 +43,7 @@ public class FrontMain
         WebAppContext context = new WebAppContext();
         context.setContextPath("/");
         context.setWar("root.war");
-        context.setExtractWAR(false);
-        context.setExtraClasspath("lib");
+        context.setExtraClasspath("lib" + File.separator + "extra");
         ServerConnector connector = new ServerConnector(server);
         connector.setIdleTimeout(5000);
         connector.setPort(port);
