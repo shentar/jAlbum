@@ -41,6 +41,8 @@ public class FrontMain
         WebAppContext context = new WebAppContext();
         context.setContextPath("/");
         context.setWar("root.war");
+        context.setExtractWAR(false);
+        context.setExtraClasspath("lib");
         ServerConnector connector = new ServerConnector(server);
         connector.setIdleTimeout(5000);
         connector.setPort(port);

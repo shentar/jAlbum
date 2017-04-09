@@ -33,10 +33,10 @@
 
 	<target name="war" depends="jar">
 		<war warfile="${dist.dir}/root.war" webxml="WEB-INF/web.xml">
-			<lib dir="${lib.dir}">
+			<!--lib dir="${lib.dir}">
 				<exclude name="jetty-io-8.0.0.M2.jar" />
 				<exclude name="jetty-server-8.0.0.M2.jar" />
-			</lib>
+			</lib-->
             <lib dir="${dist.dir}">
 				<include name="jAlbum.jar" />
 			</lib>
