@@ -74,6 +74,7 @@ public class UniqPhotosStore extends AbstractRecordsStore
 
         try
         {
+            logger.debug("start to get all date records");
             lock.readLock().lock();
             prep = conn.prepareStatement("select * from uniqphotos1;");
             res = prep.executeQuery();
@@ -113,6 +114,7 @@ public class UniqPhotosStore extends AbstractRecordsStore
         {
             closeResource(prep, res);
             lock.readLock().unlock();
+            logger.debug("end to get all date records.");
         }
 
         return null;
@@ -121,6 +123,7 @@ public class UniqPhotosStore extends AbstractRecordsStore
     public List<FileInfo> getNextNineFileByHashStr(String id, int count, boolean isnext,
             boolean isvideo)
     {
+        logger.debug("start to get file list: {}, {}, {}, {}", id, count, isnext, isvideo);
         PreparedStatement prep = null;
         ResultSet res = null;
         try
@@ -212,6 +215,7 @@ public class UniqPhotosStore extends AbstractRecordsStore
         {
             closeResource(prep, res);
             lock.readLock().unlock();
+            logger.debug("end to get file list: {}, {}, {}, {}", id, count, isnext, isvideo);
         }
 
         return null;
