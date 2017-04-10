@@ -6,7 +6,6 @@
     <property name="photoweb.dir" location="photoweb" />
     <property name="distribute.dir" location="distribute" />
     <property name="scripts.dir" location="scripts" />
-    <target name="test" depends="all" />
     
     <target name="all" >
         <ant antfile="build.xml" dir="${dedup.dir}" target="jar"/>  
@@ -14,6 +13,7 @@
         
         <mkdir dir="${distribute.dir}" />
         <mkdir dir="${distribute.dir}/lib" />
+        <mkdir dir="${distribute.dir}/lib/extra" />
         <mkdir dir="${distribute.dir}/log" />
         
         <move todir="${distribute.dir}" overwrite="true">
@@ -42,6 +42,13 @@
         <copy todir="${distribute.dir}/lib" overwrite="true">
             <fileset dir="${dedup.dir}/lib" />
         </copy>
+        
+        <copy todir="${distribute.dir}/lib/extra" overwrite="true">
+            <fileset dir="${photoweb.dir}/lib" >
+                <exclude name="jetty-io-8.0.0.M2.jar" />
+		<exclude name="jetty-server-8.0.0.M2.jar" />
+            </fileset>    
+        </copy>        
 
         <copy todir="${distribute.dir}/js" overwrite="true">
             <fileset dir="${dedup.dir}/js" />

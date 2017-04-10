@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="utf-8"?> 
 
 <project name="jAlbum" basedir="." default="all">
 	<property name="dedup.dir" location="dedup" />
@@ -14,9 +14,10 @@
         
         <mkdir dir="${distribute.dir}" />
         <mkdir dir="${distribute.dir}/lib" />
+        <mkdir dir="${distribute.dir}/lib/extra" />
         <mkdir dir="${distribute.dir}/log" />
         
-        <move todir="${distribute.dir}">
+        <move todir="${distribute.dir}" overwrite="true">
             <fileset dir="${dedup.dir}">
                 <include name="start.jar" />
             </fileset>
@@ -44,6 +45,13 @@
         <copy todir="${distribute.dir}/lib" overwrite="true">
             <fileset dir="${dedup.dir}/lib" />
         </copy>
+        
+        <copy todir="${distribute.dir}/lib/extra" overwrite="true">
+            <fileset dir="${photoweb.dir}/lib" >
+                <exclude name="jetty-io-8.0.0.M2.jar" />
+		<exclude name="jetty-server-8.0.0.M2.jar" />
+            </fileset>    
+        </copy>        
 
         <copy todir="${distribute.dir}/js" overwrite="true">
             <fileset dir="${dedup.dir}/js" />
