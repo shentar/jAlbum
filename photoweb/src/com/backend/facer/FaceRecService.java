@@ -52,6 +52,11 @@ public class FaceRecService
             return;
         }
 
+        if (AppConfig.getInstance().isFacerConfigured() && new File(fi.getPath()).exists())
+        {
+            return;
+        }
+
         if (!GloableLockBaseOnString.getInstance(GloableLockBaseOnString.FACE_DETECT_LOCK)
                 .tryToDo(fi.getHash256()))
         {
@@ -59,53 +64,49 @@ public class FaceRecService
             return;
         }
 
-        if (AppConfig.getInstance().isFacerConfigured() && new File(fi.getPath()).exists())
+        threadPool.submit(new Runnable()
         {
-            threadPool.submit(new Runnable()
+            @Override
+            public void run()
             {
-                @Override
-                public void run()
+                try
                 {
-                    try
+                    if (FaceTableDao.getInstance().checkAlreadyDetect(fi.getHash256()))
                     {
-                        if (FaceTableDao.getInstance().checkAlreadyDetect(fi.getHash256()))
-                        {
-                            return;
-                        }
-
-                        List<Face> ls = FaceDetectClient.detectFace(fi);
-                        if (ls == null || ls.isEmpty())
-                        {
-                            FaceTableDao.getInstance().addEmptyRecords(fi);
-                            return;
-                        }
-
-                        boolean isSucc = true;
-                        for (Face f : ls)
-                        {
-                            isSucc = isSucc && (FaceSetManager.getInstance()
-                                    .addFaceToSet(f.getFacetoken()));
-                        }
-
-                        if (isSucc)
-                        {
-                            FaceTableDao.getInstance().addRecords(ls);
-                            checkFaces(ls);
-                        }
+                        return;
                     }
-                    catch (Exception e)
+
+                    List<Face> ls = FaceDetectClient.detectFace(fi);
+                    if (ls == null || ls.isEmpty())
                     {
-                        logger.warn("caused by: ", e);
+                        FaceTableDao.getInstance().addEmptyRecords(fi);
+                        return;
                     }
-                    finally
+
+                    boolean isSucc = true;
+                    for (Face f : ls)
                     {
-                        GloableLockBaseOnString
-                                .getInstance(GloableLockBaseOnString.FACE_DETECT_LOCK)
-                                .done(fi.getHash256());
+                        isSucc = isSucc
+                                && (FaceSetManager.getInstance().addFaceToSet(f.getFacetoken()));
+                    }
+
+                    if (isSucc)
+                    {
+                        FaceTableDao.getInstance().addRecords(ls);
+                        checkFaces(ls);
                     }
                 }
-            });
-        }
+                catch (Exception e)
+                {
+                    logger.warn("caused by: ", e);
+                }
+                finally
+                {
+                    GloableLockBaseOnString.getInstance(GloableLockBaseOnString.FACE_DETECT_LOCK)
+                            .done(fi.getHash256());
+                }
+            }
+        });
     }
 
     public void checkAllFacesID()

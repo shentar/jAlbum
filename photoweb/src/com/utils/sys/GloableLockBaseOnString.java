@@ -5,11 +5,11 @@ import java.util.Map;
 
 public class GloableLockBaseOnString
 {
-    public static final String PIC_THUMBNAIL_LOCK = "locktype1";
+    public static final String PIC_THUMBNAIL_LOCK = "PIC_THUMBNAIL_LOCK";
 
-    public static final String FACE_THUMBNAIL_LOCK = "locktype1";
+    public static final String FACE_THUMBNAIL_LOCK = "PIC_THUMBNAIL_LOCK";
 
-    public static final String FACE_DETECT_LOCK = "locktype1";
+    public static final String FACE_DETECT_LOCK = "FACE_DETECT_LOCK";
 
     private HashMap<String, Object> lmap = new HashMap<String, Object>();
 
