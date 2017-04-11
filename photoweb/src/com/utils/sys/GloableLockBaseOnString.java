@@ -7,7 +7,7 @@ public class GloableLockBaseOnString
 {
     public static final String PIC_THUMBNAIL_LOCK = "PIC_THUMBNAIL_LOCK";
 
-    public static final String FACE_THUMBNAIL_LOCK = "PIC_THUMBNAIL_LOCK";
+    public static final String FACE_THUMBNAIL_LOCK = "FACE_THUMBNAIL_LOCK";
 
     public static final String FACE_DETECT_LOCK = "FACE_DETECT_LOCK";
 
