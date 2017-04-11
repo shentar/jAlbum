@@ -46,6 +46,7 @@ public class BackupedFilesDao extends AbstractRecordsStore
             while (res.next())
             {
                 logger.info("already exist: [{}:{}:{}]", hashStr, eTag, objkey);
+                closeResource(prep, res);
                 return;
             }
             lock.readLock().unlock();

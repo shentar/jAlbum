@@ -52,7 +52,7 @@ public class FaceRecService
             return;
         }
 
-        if (AppConfig.getInstance().isFacerConfigured() && new File(fi.getPath()).exists())
+        if (!AppConfig.getInstance().isFacerConfigured() || !new File(fi.getPath()).exists())
         {
             return;
         }
