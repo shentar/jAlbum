@@ -6,7 +6,7 @@
     <property name="photoweb.dir" location="photoweb" />
     <property name="distribute.dir" location="distribute" />
     <property name="scripts.dir" location="scripts" />
-    
+    <target name="test" depends="release"/>
     <target name="all" >
         <ant antfile="build.xml" dir="${dedup.dir}" target="jar"/>  
         <ant antfile="build.xml" dir="${photoweb.dir}" target="war"/>  
