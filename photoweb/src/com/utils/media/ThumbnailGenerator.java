@@ -187,11 +187,13 @@ public class ThumbnailGenerator
             logger.warn("error occured.", e);
         }
 
-        if (!FileTools.copyFile(SystemConstant.DEFAULT_VIDEO_PIC_PATH, thumbnailPath))
+        if (FileTools.copyFile(SystemConstant.DEFAULT_VIDEO_PIC_PATH, thumbnailPath))
         {
+            logger.warn("the file cannot gen thumbnail copy the src file instead. {}", fi);
             return true;
         }
 
+        logger.warn("gen the thumbnail failed, {}", fi);
         return false;
     }
 
@@ -202,24 +204,24 @@ public class ThumbnailGenerator
         {
             String suffix = checkPicType(new File(fpath));
             BufferedImage bi = generateThumbnail(fpath, w, h, force);
-            if (bi == null)
+            if (bi != null)
             {
-                throw new IOException();
+                ImageIO.write(bi, suffix, new File(thumbnailPath));
+                return true;
             }
-
-            ImageIO.write(bi, suffix, new File(thumbnailPath));
-            return true;
         }
         catch (Exception e)
         {
             logger.warn("caused by: ", e);
         }
 
-        if (!FileTools.copyFile(fpath, thumbnailPath))
+        if (FileTools.copyFile(fpath, thumbnailPath))
         {
+            logger.warn("the file cannot gen thumbnail copy the src file instead. {}", fpath);
             return true;
         }
 
+        logger.warn("gen the thumbnail failed, {}", fpath);
         return false;
     }
 

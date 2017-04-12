@@ -6,8 +6,7 @@
     <property name="photoweb.dir" location="photoweb" />
     <property name="distribute.dir" location="distribute" />
     <property name="scripts.dir" location="scripts" />
-    <target name="test" depends="all" />
-    
+    <target name="test" depends="release"/>
     <target name="all" >
         <ant antfile="build.xml" dir="${dedup.dir}" target="jar"/>  
         <ant antfile="build.xml" dir="${photoweb.dir}" target="war"/>  
@@ -47,7 +46,7 @@
         <copy todir="${distribute.dir}/lib/extra" overwrite="true">
             <fileset dir="${photoweb.dir}/lib" >
                 <exclude name="jetty-io-8.0.0.M2.jar" />
-				<exclude name="jetty-server-8.0.0.M2.jar" />
+		<exclude name="jetty-server-8.0.0.M2.jar" />
             </fileset>    
         </copy>        
 
