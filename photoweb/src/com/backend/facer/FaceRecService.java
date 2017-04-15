@@ -21,7 +21,7 @@ public class FaceRecService
     private static final Logger logger = LoggerFactory.getLogger(FaceRecService.class);
 
     private static final ExecutorService threadPool = Executors
-            .newFixedThreadPool(AppConfig.getInstance().getConcurrentThreads());
+            .newFixedThreadPool(AppConfig.getInstance().getFacerConcurrentThreads());
 
     private boolean isInit = false;
 

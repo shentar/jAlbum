@@ -46,6 +46,11 @@ public class AppConfig
         }
     }
 
+    public String getVersion(String defaultver)
+    {
+        return config.getString("version", defaultver);
+    }
+
     public List<String> getInputDir()
     {
         List<String> dirlst = new LinkedList<String>();
@@ -113,6 +118,16 @@ public class AppConfig
         return config.getLong("maxfilesize", 1024 * 1024 * 500);
     }
 
+    public long getIdleRefreshInteval()
+    {
+        return config.getLong("idlerefreshinterval", 5 * 60 * 1000);
+    }
+
+    public long getBusyRefreshInteval()
+    {
+        return config.getLong("busyrefreshinterval", 10 * 1000);
+    }
+
     public List<String> getExcludedir()
     {
         List<String> dirlst = new LinkedList<String>();
@@ -175,7 +190,7 @@ public class AppConfig
         return config.getString("s3.bucketname", "");
     }
 
-    public int getConcurrentThreads()
+    public int getS3ConcurrentThreads()
     {
         return config.getInt("s3.threadperbucket", 20);
     }
@@ -187,19 +202,19 @@ public class AppConfig
                 && StringUtils.isNotBlank(AppConfig.getInstance().getBucketName());
     }
 
-    public long getIdleRefreshInteval()
-    {
-        return config.getLong("s3.idlerefreshinterval", 5 * 60 * 1000);
-    }
-
-    public long getBusyRefreshInteval()
-    {
-        return config.getLong("s3.busyrefreshinterval", 10 * 1000);
-    }
-
     public long getRetryInitS3()
     {
         return config.getLong("s3.retryinits3", 15000);
+    }
+
+    public boolean isS3ProxyConfiged()
+    {
+        if (StringUtils.isNotBlank(getS3ProxyHost()) && getS3ProxyPort() != -1)
+        {
+            return true;
+        }
+
+        return false;
     }
 
     public String getS3ProxyHost()
@@ -220,7 +235,7 @@ public class AppConfig
         return config.getString("s3.Proxy.user", defaultUser);
     }
 
-    public String getFacerProxyPWD()
+    public String getS3ProxyPWD()
     {
         String defaultPass = config.getString("Proxy.password", "");
         return config.getString("s3.Proxy.password", defaultPass);
@@ -244,25 +259,10 @@ public class AppConfig
         return config.getString("Facer.Proxy.user", defaultUser);
     }
 
-    public String getS3ProxyPWD()
+    public String getFacerProxyPWD()
     {
         String defaultPass = config.getString("Proxy.password", "");
         return config.getString("Facer.Proxy.password", defaultPass);
-    }
-
-    public boolean isS3ProxyConfiged()
-    {
-        if (StringUtils.isNotBlank(getS3ProxyHost()) && getS3ProxyPort() != -1)
-        {
-            return true;
-        }
-
-        return false;
-    }
-
-    public String getVersion(String defaultver)
-    {
-        return config.getString("version", defaultver);
     }
 
     public String getApiKey()
@@ -298,5 +298,10 @@ public class AppConfig
     public int getMaxFacesCount()
     {
         return config.getInt("Facer.maxfacescount", 25);
+    }
+
+    public int getFacerConcurrentThreads()
+    {
+        return config.getInt("Facer.threadperbucket", 20);
     }
 }

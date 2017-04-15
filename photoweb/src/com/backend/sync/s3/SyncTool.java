@@ -10,7 +10,7 @@ import com.utils.conf.AppConfig;
 public class SyncTool
 {
     private static final ExecutorService threadPool = Executors
-            .newFixedThreadPool(AppConfig.getInstance().getConcurrentThreads());
+            .newFixedThreadPool(AppConfig.getInstance().getS3ConcurrentThreads());
 
     public static void submitSyncTask(FileInfo fi)
     {
