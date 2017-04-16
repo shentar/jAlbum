@@ -105,7 +105,7 @@ public class FaceSetManager
         return null;
     }
 
-    public void checkFaceSet()
+    public synchronized void checkFaceSet()
     {
         String maxID = FaceSetToken.getInstance().getCurrentSN();
         if (StringUtils.isBlank(maxID))
