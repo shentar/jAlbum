@@ -72,6 +72,8 @@ public class FacerUtils
 
     public static final String FACESET_CREATE_URL = "/facepp/v3/faceset/create";
 
+    public static final String FACESET_TOKEN_REMOVE_URL = "/facepp/v3/faceset/removeface";
+
     private static final Logger logger = LoggerFactory.getLogger(FacerUtils.class);
 
     private static final String API_ENDPOINT = "api-cn.faceplusplus.com";

@@ -1,6 +1,8 @@
 package com.backend.facer;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
@@ -144,25 +146,45 @@ public class FaceSetToken
 
     private int getFaceCount()
     {
-        Map<String, Object> mp = new HashMap<String, Object>();
-        mp.put(FacerUtils.OUTER_ID, getCurrentFaceSetID());
-        String result = FacerUtils.post(FacerUtils.FACESET_DETAIL_URL, mp);
-        if (StringUtils.isBlank(result))
+        List<String> flst = getFaceTokens(getCurrentFaceSetID());
+        if (flst == null)
         {
             createFaceSet();
         }
-        else
+
+        return flst.size();
+    }
+
+    public List<String> getFaceTokens(String faceSetID)
+    {
+        if (StringUtils.isBlank(faceSetID))
         {
-            JsonParser parser = new JsonParser();
-            JsonObject jr = (JsonObject) parser.parse(result);
-            JsonArray ja = jr.getAsJsonArray("face_tokens");
-            if (ja != null)
+            return null;
+        }
+
+        Map<String, Object> mp = new HashMap<String, Object>();
+        mp.put(FacerUtils.OUTER_ID, faceSetID);
+        String result = FacerUtils.post(FacerUtils.FACESET_DETAIL_URL, mp);
+
+        if (StringUtils.isBlank(result))
+        {
+            return null;
+        }
+
+        List<String> flst = new LinkedList<String>();
+
+        JsonParser parser = new JsonParser();
+        JsonObject jr = (JsonObject) parser.parse(result);
+        JsonArray ja = jr.getAsJsonArray("face_tokens");
+        if (ja != null)
+        {
+            for (int i = 0; i != ja.size(); i++)
             {
-                return ja.size();
+                flst.add(ja.get(i).getAsString());
             }
         }
 
-        return 0;
+        return flst;
     }
 
     private String getLastSNFromConfTable()
@@ -183,7 +205,11 @@ public class FaceSetToken
 
     private String getCurrentFaceSetID()
     {
-        return FACESET_ID_PREFIX + currentFaceSetID;
+        return getFaceSetIDBySn(currentFaceSetID);
     }
 
+    public String getFaceSetIDBySn(int sn)
+    {
+        return FACESET_ID_PREFIX + sn;
+    }
 }

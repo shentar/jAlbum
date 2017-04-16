@@ -48,7 +48,7 @@ public class FaceSearchClient
         {
             Map<String, Object> mp = new HashMap<String, Object>();
             mp.put(FacerUtils.FACE_TOKEN, facetoken);
-            mp.put(FacerUtils.OUTER_ID, FaceSetToken.FACESET_ID_PREFIX + i);
+            mp.put(FacerUtils.OUTER_ID, FaceSetToken.getInstance().getFaceSetIDBySn(i));
             mp.put(RETURN_RESULT_COUNT, MAX_RETURN_COUNT + "");
             String result = FacerUtils.post(FacerUtils.SEARCH_URL, mp);
 

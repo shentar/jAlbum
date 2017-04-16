@@ -7,6 +7,7 @@ import com.backend.dao.DateTableDao;
 import com.backend.dao.FaceTableDao;
 import com.backend.dao.UniqPhotosStore;
 import com.backend.dirwathch.DirWatchService;
+import com.backend.facer.FaceSetManager;
 import com.utils.conf.AppConfig;
 
 public class FreshAllData
@@ -59,9 +60,19 @@ public class FreshAllData
     private void doRefresh()
     {
         logger.info("start to refresh all tables: {}", this);
+
+        // 剔除重复照片。
         UniqPhotosStore.getInstance().getDupFiles();
+
+        // 刷新日期目录
         DateTableDao.getInstance().refreshDate();
+
+        // 删除表中失效的照片。
         FaceTableDao.getInstance().deleteInvalidFaces();
+
+        // 删除远端的失效facetokens
+        FaceSetManager.getInstance().checkFaceSet();
+
         logger.info("end to refresh all tables: {}", this);
         logger.info("the count of dir which is monitered is "
                 + DirWatchService.getInstance().getTheWatchDirCount() + ".");
