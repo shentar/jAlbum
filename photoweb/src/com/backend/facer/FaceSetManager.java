@@ -79,7 +79,7 @@ public class FaceSetManager
             }
             else
             {
-                logger.warn("delete the faceTokens [{}] from faceset [{}] successfully: ", fts,
+                logger.warn("delete the faceTokens [{}] from faceset [{}] successfully.", fts,
                         faceSetID);
                 return true;
             }
