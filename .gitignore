@@ -1,1 +1,4 @@
 distribute
+/.idea
+/dedup/dedup.iml
+/photoweb/photomweb.iml
