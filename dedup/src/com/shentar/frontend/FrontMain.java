@@ -11,6 +11,7 @@ import org.eclipse.jetty.server.ConnectionFactory;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.SslConnectionFactory;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.webapp.WebAppContext;
 
@@ -83,7 +84,7 @@ public class FrontMain
         connector.setAcceptQueueSize(4);
         connector.setPort(21483);
         List<ConnectionFactory> cflst = new ArrayList<ConnectionFactory>();
-        cflst.add(new SslConnectionFactory());
+        cflst.add(new SslConnectionFactory(new SslContextFactory(), "TLS 1.1"));
         connector.setConnectionFactories(cflst);
         server.addConnector(connector);
 
