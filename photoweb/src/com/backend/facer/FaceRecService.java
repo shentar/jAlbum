@@ -209,7 +209,7 @@ public class FaceRecService
 
     public List<Face> getSortedFaces(long fid, int count, boolean needFileInfo)
     {
-        if (fid >= 0)
+        if (fid > 0)
         {
             List<Face> flst = FaceTableDao.getInstance().getFacesByID(fid, needFileInfo);
             if (flst != null && !flst.isEmpty())
