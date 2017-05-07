@@ -62,6 +62,8 @@ public class FrontMain
             throw new IOException("there is no extra lib files.");
         }
 
+        server.setHandler(context);
+
         ServerConnector connector = new ServerConnector(server);
         connector.setIdleTimeout(5000);
         connector.setPort(port);
@@ -70,29 +72,15 @@ public class FrontMain
         server.addConnector(connector);
 
         /**
-        SignalHandler sig = new SignalHandler()
-        {
-            @Override
-            public void handle(Signal signum)
-            {
-                System.out.println("caught signal " + signum);
-                if (signum.getNumber() == 15)
-                {
-                    System.out.println("caught KILL signal, exit now.");
-                    try
-                    {
-                        server.stop();
-                        Runtime.getRuntime().halt(0);
-                    }
-                    catch (Exception e)
-                    {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        };
-        Signal.handle(new Signal("TERM"), sig);
-        */
+         * SignalHandler sig = new SignalHandler() {
+         * 
+         * @Override public void handle(Signal signum) { System.out.println(
+         *           "caught signal " + signum); if (signum.getNumber() == 15) {
+         *           System.out.println("caught KILL signal, exit now."); try {
+         *           server.stop(); Runtime.getRuntime().halt(0); } catch
+         *           (Exception e) { e.printStackTrace(); } } } };
+         *           Signal.handle(new Signal("TERM"), sig);
+         */
 
         System.out.println("start now.");
         server.start();
