@@ -76,17 +76,6 @@ public class FrontMain
         // connector.setSoLingerTime(5000);
         server.addConnector(connector);
 
-        connector = new ServerConnector(server);
-        connector.setIdleTimeout(5000);
-        connector.setAcceptQueueSize(4);
-        connector.setPort(21483);
-        List<ConnectionFactory> cflst = new ArrayList<ConnectionFactory>();
-        cflst.add(new SslConnectionFactory(new SslContextFactory(), "TLS 1.1"));
-        connector.setConnectionFactories(cflst);
-        server.addConnector(connector);
-
-        server.setHandler(context);
-
         /**
         SignalHandler sig = new SignalHandler()
         {
