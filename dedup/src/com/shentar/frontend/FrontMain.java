@@ -15,9 +15,6 @@ import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.webapp.WebAppContext;
 
-import sun.misc.Signal;
-import sun.misc.SignalHandler;
-
 public class FrontMain
 {
     public static final int DEFAULT_PORT = 2148;
@@ -90,6 +87,7 @@ public class FrontMain
 
         server.setHandler(context);
 
+        /**
         SignalHandler sig = new SignalHandler()
         {
             @Override
@@ -112,6 +110,7 @@ public class FrontMain
             }
         };
         Signal.handle(new Signal("TERM"), sig);
+        */
 
         System.out.println("start now.");
         server.start();
