@@ -75,7 +75,7 @@
 	<classpathentry kind="lib" path="lib/commons-lang-2.6.jar"/>
 	<classpathentry kind="lib" path="lib/ffmpeg-0.6.1.jar"/>
 	<classpathentry kind="lib" path="lib/guava-20.0.jar"/>
-	<classpathentry kind="lib" path="lib/jets3t-0.9.4.jar"/>
+	<classpathentry kind="lib" path="lib/jets3t-0.9.4.jar" sourcepath="C:/Users/Yanqun/Desktop/src.zip"/>
 	<classpathentry kind="lib" path="lib/httpclient-4.5.3.jar"/>
 	<classpathentry kind="lib" path="lib/httpcore-4.4.6.jar"/>
 	<classpathentry kind="lib" path="lib/commons-codec-1.9.jar"/>

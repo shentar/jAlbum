@@ -3,32 +3,21 @@ package com.backend.facer;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InterruptedIOException;
-import java.net.UnknownHostException;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import javax.net.ssl.SSLException;
-import javax.net.ssl.SSLHandshakeException;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpEntity;
-import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.HttpHost;
-import org.apache.http.HttpRequest;
-import org.apache.http.NoHttpResponseException;
-import org.apache.http.client.HttpRequestRetryHandler;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.config.Registry;
 import org.apache.http.config.RegistryBuilder;
-import org.apache.http.conn.ConnectTimeoutException;
 import org.apache.http.conn.routing.HttpRoute;
 import org.apache.http.conn.socket.ConnectionSocketFactory;
 import org.apache.http.conn.socket.LayeredConnectionSocketFactory;
@@ -39,7 +28,6 @@ import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
-import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -127,52 +115,7 @@ public class FacerUtils
         HttpHost httpHost = new HttpHost(hostname, port);
         cm.setMaxPerRoute(new HttpRoute(httpHost), maxRoute);
 
-        HttpRequestRetryHandler httpRequestRetryHandler = new HttpRequestRetryHandler()
-        {
-            public boolean retryRequest(IOException exception, int executionCount,
-                    HttpContext context)
-            {
-                if (executionCount >= 5)
-                {
-                    return false;
-                }
-                if (exception instanceof NoHttpResponseException)
-                {
-                    return true;
-                }
-                if (exception instanceof SSLHandshakeException)
-                {
-                    return false;
-                }
-                if (exception instanceof InterruptedIOException)
-                {
-                    return false;
-                }
-                if (exception instanceof UnknownHostException)
-                {
-                    return false;
-                }
-                if (exception instanceof ConnectTimeoutException)
-                {
-                    return false;
-                }
-                if (exception instanceof SSLException)
-                {
-                    return false;
-                }
-
-                HttpClientContext clientContext = HttpClientContext.adapt(context);
-                HttpRequest request = clientContext.getRequest();
-                if (!(request instanceof HttpEntityEnclosingRequest))
-                {
-                    return true;
-                }
-                return false;
-            }
-        };
-
-        CloseableHttpClient httpClient = HttpClients.custom().setConnectionManager(cm)
-                .setRetryHandler(httpRequestRetryHandler).build();
+        CloseableHttpClient httpClient = HttpClients.custom().setConnectionManager(cm).build();
 
         return httpClient;
     }
@@ -281,6 +224,7 @@ public class FacerUtils
             try
             {
                 HttpPost httppost = new HttpPost(fullurl);
+                httppost.addHeader("Connection", "Keep-Alive");
                 setPostParams(httppost, params);
 
                 response = httpClient.execute(httppost);
