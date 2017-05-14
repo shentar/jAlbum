@@ -15,6 +15,8 @@ public class SystemConstant
     public static final String REQEUSTIDKEY = "requestid";
 
     public static final String USER_AGENT = "user-agent";
+    
+    public static final String USER_LOGIN_STATUS = "user_login_status";
 
     public static final String CONSUMED_TIME = "consumed-time";
 

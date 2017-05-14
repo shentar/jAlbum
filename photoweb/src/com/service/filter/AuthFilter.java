@@ -18,6 +18,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.backend.dao.GlobalConfDao;
+import com.utils.sys.SystemConstant;
+import com.utils.sys.SystemProperties;
 import com.utils.web.StringTools;
 
 public class AuthFilter implements Filter
@@ -51,6 +53,8 @@ public class AuthFilter implements Filter
                 && StringUtils.equalsIgnoreCase(httpreq.getMethod(), "GET")
                 && StringUtils.equalsIgnoreCase(uri, "/getToken"))
         {
+            logger.warn("get all tokens.");
+            SystemProperties.add(SystemConstant.USER_LOGIN_STATUS, LoginStatus.AdminLogin);
             httpres.setStatus(200);
             checkAndGenToken(httpres);
         }
@@ -58,9 +62,11 @@ public class AuthFilter implements Filter
                 && StringUtils.equalsIgnoreCase(httpreq.getMethod(), "GET")
                 && StringUtils.equalsIgnoreCase(uri, "/removeToken"))
         {
+            SystemProperties.add(SystemConstant.USER_LOGIN_STATUS, LoginStatus.AdminLogin);
             String token = httpreq.getParameter("token");
             if (StringUtils.isBlank(token) || token.length() != 64)
             {
+                logger.warn("error input token " + token);
                 httpres.getWriter().write("error tokens.");
             }
             else
@@ -69,12 +75,13 @@ public class AuthFilter implements Filter
                 {
                     if (StringUtils.equals(token, getOneUserToken(i)))
                     {
+                        logger.warn("the token is removed!");
                         GlobalConfDao.getInstance().delete(getOneUserKey(i));
                         tokenset.remove(token);
                         break;
                     }
                 }
-
+                logger.warn("removed token and add new token.");
                 // 重新生成tokens
                 checkAndGenToken(httpres);
             }
@@ -83,16 +90,18 @@ public class AuthFilter implements Filter
                 && StringUtils.equalsIgnoreCase(httpreq.getMethod(), "GET")
                 && StringUtils.equalsIgnoreCase(uri, "/clearToken"))
         {
+            logger.warn("admin: clear all tokens");
+            SystemProperties.add(SystemConstant.USER_LOGIN_STATUS, LoginStatus.AdminLogin);
             for (int i = 0; i != 5; i++)
             {
                 GlobalConfDao.getInstance().delete(getOneUserKey(i));
-                tokenset.clear();
             }
+            tokenset.clear();
             checkAndGenToken(httpres);
         }
-
-        else
+        else if (!StringUtils.equals(httpreq.getRemoteAddr(), "127.0.0.1"))
         {
+            // 非本地登录
             if (StringUtils.equalsIgnoreCase("/logon", uri))
             {
                 // 登录成功，则设置cookies，并返回主页。
@@ -102,22 +111,26 @@ public class AuthFilter implements Filter
                     // 登录成功跳转到主页
                     Cookie c = new Cookie("sessionid", token);
                     httpres.addCookie(c);
+                    SystemProperties.add(SystemConstant.USER_LOGIN_STATUS, LoginStatus.TokenLoin);
                     goToUrl(httpres, "/");
                 }
                 else
                 {
+                    SystemProperties.add(SystemConstant.USER_LOGIN_STATUS, LoginStatus.TokenError);
                     // 登录失败，则继续返回登录页面。
                     goToUrl(httpres, "/login");
                 }
             }
             else if (StringUtils.equalsIgnoreCase("/login", uri))
             {
+                SystemProperties.add(SystemConstant.USER_LOGIN_STATUS, LoginStatus.Unlogin);
                 displayLogin(httpres);
             }
             else
             {
                 if (cookies == null || cookies.length == 0)
                 {
+                    SystemProperties.add(SystemConstant.USER_LOGIN_STATUS, LoginStatus.Unlogin);
                     // 跳转到登录页面。
                     goToUrl(httpres, "/login");
                 }
@@ -131,6 +144,8 @@ public class AuthFilter implements Filter
                                 && (tokenset.contains(c.getValue())
                                         || checkTokenExist(c.getValue())))
                         {
+                            SystemProperties.add(SystemConstant.USER_LOGIN_STATUS,
+                                    LoginStatus.CookiesLoin);
                             needNextStep = true;
                             // 从新设置cookie的时间为30天。
                             c.setMaxAge(3600 * 24 * 30);
@@ -146,11 +161,16 @@ public class AuthFilter implements Filter
                             c.setMaxAge(0);
                             httpres.addCookie(c);
                         }
-
+                        SystemProperties.add(SystemConstant.USER_LOGIN_STATUS,
+                                LoginStatus.CookiesError);
                         goToUrl(httpres, "/login");
                     }
                 }
             }
+        }
+        else
+        {
+            needNextStep = true;
         }
 
         if (needNextStep)

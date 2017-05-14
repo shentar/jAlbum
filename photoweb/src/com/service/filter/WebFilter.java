@@ -91,6 +91,8 @@ public class WebFilter implements Filter
             chains.doFilter(newreq, newres);
 
             MDC.put(SystemConstant.HTTP_STATUS, "" + newres.getStatus());
+            MDC.put(SystemConstant.USER_LOGIN_STATUS,
+                    SystemProperties.get(SystemConstant.USER_LOGIN_STATUS));
         }
         finally
         {
@@ -114,6 +116,7 @@ public class WebFilter implements Filter
         MDC.put(SystemConstant.FILE_NAME, SystemConstant.DEFAULT_LOG_VALUE);
         MDC.put(SystemConstant.HTTP_URI, SystemConstant.DEFAULT_LOG_VALUE);
         MDC.put(SystemConstant.RANGE_HEADER_KEY, SystemConstant.DEFAULT_LOG_VALUE);
+        MDC.put(SystemConstant.USER_LOGIN_STATUS, SystemConstant.DEFAULT_LOG_VALUE);
     }
 
     @Override
