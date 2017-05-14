@@ -170,6 +170,7 @@ public class AuthFilter implements Filter
         }
         else
         {
+            SystemProperties.add(SystemConstant.USER_LOGIN_STATUS, LoginStatus.LocalLoin);
             needNextStep = true;
         }
 

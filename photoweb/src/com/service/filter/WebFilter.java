@@ -92,7 +92,7 @@ public class WebFilter implements Filter
 
             MDC.put(SystemConstant.HTTP_STATUS, "" + newres.getStatus());
             MDC.put(SystemConstant.USER_LOGIN_STATUS,
-                    SystemProperties.get(SystemConstant.USER_LOGIN_STATUS));
+                    "" + SystemProperties.get(SystemConstant.USER_LOGIN_STATUS));
         }
         finally
         {
