@@ -121,7 +121,7 @@ public class AuthFilter extends AbstractFilter
                     + "value=\"Login\"/></a><script>function chref(){var content = "
                     + "document.getElementById(\"txt\").value;"
                     + "window.location.replace('logon?token='+content"
-                    + (StringUtils.isBlank(origUri) ? "" : "+'origuri=" + origUri + "'")
+                    + (StringUtils.isBlank(origUri) ? "" : "+'&origuri=" + origUri + "'")
                     + ");}</script>" + "</body></html>";
             httpres.setHeader("Content-type", "text/html;charset=UTF-8");
             httpres.getWriter().write(hh);
