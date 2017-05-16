@@ -59,7 +59,6 @@ public class AuthFilter extends AbstractFilter
 
         case "/login":
             loginStatus = LoginStatus.WaitLogin;
-
             break;
 
         default:
@@ -80,14 +79,12 @@ public class AuthFilter extends AbstractFilter
                         if (TokenCache.getInstance().isSupper(token))
                         {
                             loginStatus = LoginStatus.SuperLogin;
-                            redirectLocation = (origUri == null ? "/" : origUri);
                             break;
                         }
 
                         if (TokenCache.getInstance().contains(token))
                         {
                             loginStatus = LoginStatus.CookiesLoin;
-                            redirectLocation = (origUri == null ? "/" : origUri);
                             break;
                         }
                     }
