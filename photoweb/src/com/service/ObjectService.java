@@ -332,21 +332,31 @@ public class ObjectService
     public Response deletePhotoData(@Context HttpServletRequest req,
             @Context HttpServletResponse response) throws IOException
     {
+
         logger.warn("try to delete the photo: " + id);
         ResponseBuilder builder = Response.status(204);
 
-        BaseSqliteStore.getInstance().setPhotoToBeHiden(id, false);
-        UniqPhotosStore.getInstance().deleteRecordByID(id);
-        FaceTableDao.getInstance().deleteOneFile(id);
+        if (!(HeadUtils.isSuperLogin() || HeadUtils.isLocalLogin()))
+        {
+            builder.status(403);
+            logger.warn("not be permitted to delete data for common token logon");
+        }
+        else
+        {
+            BaseSqliteStore.getInstance().setPhotoToBeHiden(id, false);
+            UniqPhotosStore.getInstance().deleteRecordByID(id);
+            FaceTableDao.getInstance().deleteOneFile(id);
 
-        /*
-         * if (fnext!= null && !fnext.isEmpty()) { // 刷新整个页面。 String bodyContent
-         * = GenerateHTML.generateSinglePhoto(fnext.get(0));
-         * builder.header("Content-type", "text/html");
-         * builder.entity(bodyContent); logger.info("the page is {}",
-         * bodyContent); }
-         */
-        logger.warn("deleted the photo: " + id);
+            /*
+             * if (fnext!= null && !fnext.isEmpty()) { // 刷新整个页面。 String
+             * bodyContent = GenerateHTML.generateSinglePhoto(fnext.get(0));
+             * builder.header("Content-type", "text/html");
+             * builder.entity(bodyContent); logger.info("the page is {}",
+             * bodyContent); }
+             */
+            logger.warn("deleted the photo: " + id);
+        }
+
         return builder.build();
     }
 

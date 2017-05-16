@@ -15,7 +15,7 @@ public class SystemConstant
     public static final String REQEUSTIDKEY = "requestid";
 
     public static final String USER_AGENT = "user-agent";
-    
+
     public static final String USER_LOGIN_STATUS = "user_login_status";
 
     public static final String CONSUMED_TIME = "consumed-time";
@@ -39,5 +39,7 @@ public class SystemConstant
     public static final String DEFAULT_VIDEO_PIC_PATH = "js/default.png";
 
     public static final String FACE_TOKEN_KEY = "face-token";
+
+    public static final String SUPER_TOKEN_KEY = "super_token";
 
 }

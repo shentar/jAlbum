@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 
 import com.backend.FileInfo;
 import com.backend.FileType;
+import com.service.filter.LoginStatus;
 import com.utils.conf.AppConfig;
 import com.utils.media.MediaTool;
 import com.utils.sys.SystemConstant;
@@ -264,4 +265,25 @@ public class HeadUtils
         return count;
     }
 
+    public static boolean isSuperLogin()
+    {
+        Object o = SystemProperties.get(SystemConstant.USER_LOGIN_STATUS);
+        if (o != null && o instanceof LoginStatus)
+        {
+            return o.equals(LoginStatus.SuperLogin);
+        }
+
+        return false;
+    }
+
+    public static boolean isLocalLogin()
+    {
+        Object o = SystemProperties.get(SystemConstant.USER_LOGIN_STATUS);
+        if (o != null && o instanceof LoginStatus)
+        {
+            return o.equals(LoginStatus.LocalLoin);
+        }
+
+        return false;
+    }
 }

@@ -11,11 +11,8 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.backend.dao.GlobalConfDao;
 
 public abstract class AbstractFilter implements Filter
 {
@@ -54,27 +51,5 @@ public abstract class AbstractFilter implements Filter
 
     }
 
-    protected String getOneUserToken(int i)
-    {
-        return GlobalConfDao.getInstance().getConf(getOneUserKey(i));
-    }
 
-    protected String getOneUserKey(int i)
-    {
-        return "usertoken" + i;
-    }
-
-    protected boolean checkTokenExist(String token)
-    {
-        for (int i = 0; i != 5; i++)
-        {
-            if (StringUtils.equals(token, getOneUserToken(i)))
-            {
-                TokenCache.getInstance().addOneToken(token);
-                return true;
-            }
-        }
-
-        return false;
-    }
 }

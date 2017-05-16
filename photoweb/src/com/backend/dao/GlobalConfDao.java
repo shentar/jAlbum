@@ -137,4 +137,14 @@ public class GlobalConfDao extends AbstractRecordsStore
             lock.writeLock().unlock();
         }
     }
+
+    public String getOneUserToken(int i)
+    {
+        return getConf(getOneUserKey(i));
+    }
+
+    public String getOneUserKey(int i)
+    {
+        return "usertoken" + i;
+    }
 }

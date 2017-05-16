@@ -30,47 +30,43 @@ public class AuthFilter extends AbstractFilter
 
         Cookie[] cookies = httpreq.getCookies();
         String uri = httpreq.getRequestURI();
+        LoginStatus loginStatus = LoginStatus.Unlogin;
+        String origUri = httpreq.getParameter(ORIGNAL_URI_KEY);
+        String redirectLocation = "";
+        String token = httpreq.getParameter("token");
 
         switch (uri)
         {
         case "/logon":
-            // 登录成功，则设置cookies，并返回主页。
-            String token = httpreq.getParameter("token");
-            String origUri = httpreq.getParameter(ORIGNAL_URI_KEY);
-            String redirectLocation = "";
-            if (TokenCache.getInstance().contains(token) || checkTokenExist(token))
+            // 登录成功，则设置cookies，并返回原入口页。
+            if (TokenCache.getInstance().isSupper(token))
             {
-                // 登录成功跳转到主页
-                Cookie c = new Cookie("sessionid", token);
-                c.setMaxAge(3600 * 24 * 30);
-                httpres.addCookie(c);
-
-                SystemProperties.add(SystemConstant.USER_LOGIN_STATUS, LoginStatus.TokenLoin);
+                loginStatus = LoginStatus.SuperLogin;
+                redirectLocation = (origUri == null ? "/" : origUri);
+            }
+            else if (TokenCache.getInstance().contains(token))
+            {
+                loginStatus = LoginStatus.TokenLoin;
                 redirectLocation = (origUri == null ? "/" : origUri);
             }
             else
             {
-                SystemProperties.add(SystemConstant.USER_LOGIN_STATUS, LoginStatus.TokenError);
-                // 登录失败，则继续返回登录页面。
+                loginStatus = LoginStatus.TokenError;
                 redirectLocation = "/login" + (StringUtils.isBlank(origUri) ? ""
                         : "?" + ORIGNAL_URI_KEY + "=" + origUri);
             }
-
-            goToUrl(httpres, redirectLocation);
-            return false;
+            break;
 
         case "/login":
-            SystemProperties.add(SystemConstant.USER_LOGIN_STATUS, LoginStatus.Unlogin);
-            displayLogin(httpres, httpreq);
-            return false;
+            loginStatus = LoginStatus.WaitLogin;
+
+            break;
 
         default:
             if (cookies == null || cookies.length == 0)
             {
-                SystemProperties.add(SystemConstant.USER_LOGIN_STATUS, LoginStatus.Unlogin);
-                // 跳转到登录页面。
-                goToUrl(httpres, "/login" + "?" + ORIGNAL_URI_KEY + "=" + httpreq.getRequestURI());
-                return false;
+                loginStatus = LoginStatus.Unlogin;
+                redirectLocation = "/login" + "?" + ORIGNAL_URI_KEY + "=" + httpreq.getRequestURI();
             }
             else
             {
@@ -78,30 +74,75 @@ public class AuthFilter extends AbstractFilter
                 // 登录信息过期，或者cookies不对，则删除cookies，并跳转到登录页面。
                 for (Cookie c : cookies)
                 {
-                    if (StringUtils.equalsIgnoreCase("sessionid", c.getName())
-                            && (TokenCache.getInstance().contains(c.getValue())
-                                    || checkTokenExist(c.getValue())))
+                    if (StringUtils.equalsIgnoreCase("sessionid", c.getName()))
                     {
-                        SystemProperties.add(SystemConstant.USER_LOGIN_STATUS,
-                                LoginStatus.CookiesLoin);
-                        // 从新设置cookie的时间为30天。
-                        c.setMaxAge(3600 * 24 * 30);
-                        httpres.addCookie(c);
-                        return true;
+                        token = c.getValue();
+                        if (TokenCache.getInstance().isSupper(token))
+                        {
+                            loginStatus = LoginStatus.SuperLogin;
+                            redirectLocation = (origUri == null ? "/" : origUri);
+                            break;
+                        }
+
+                        if (TokenCache.getInstance().contains(token))
+                        {
+                            loginStatus = LoginStatus.CookiesLoin;
+                            redirectLocation = (origUri == null ? "/" : origUri);
+                            break;
+                        }
                     }
                 }
 
-                for (Cookie c : cookies)
+                if (loginStatus.equals(LoginStatus.Unlogin))
                 {
-                    c.setMaxAge(0);
-                    httpres.addCookie(c);
+                    loginStatus = LoginStatus.CookiesError;
+                    redirectLocation = "/login" + "?" + ORIGNAL_URI_KEY + "="
+                            + httpreq.getRequestURI();
                 }
-                SystemProperties.add(SystemConstant.USER_LOGIN_STATUS, LoginStatus.CookiesError);
-                goToUrl(httpres, "/login" + "?" + ORIGNAL_URI_KEY + "=" + httpreq.getRequestURI());
-                return false;
             }
         }
 
+        SystemProperties.add(SystemConstant.USER_LOGIN_STATUS, loginStatus);
+        switch (loginStatus)
+        {
+        case WaitLogin:
+            displayLogin(httpres, httpreq);
+            break;
+        case SuperLogin:
+        case CookiesLoin:
+        case TokenLoin:
+            // 登录成功跳转到主页
+            Cookie c = new Cookie("sessionid", token);
+            c.setMaxAge(3600 * 24 * 30);
+            httpres.addCookie(c);
+            break;
+
+        case CookiesError:
+            if (cookies != null)
+            {
+                for (Cookie ctmp : cookies)
+                {
+                    ctmp.setMaxAge(0);
+                    httpres.addCookie(ctmp);
+                }
+            }
+        case TokenError:
+        case Unlogin:
+            break;
+
+        default:
+            break;
+        }
+
+        if (StringUtils.isNotBlank(redirectLocation))
+        {
+            goToUrl(httpres, redirectLocation);
+            return false;
+        }
+        else
+        {
+            return true;
+        }
     }
 
     private void displayLogin(HttpServletResponse httpres, HttpServletRequest httpreq)

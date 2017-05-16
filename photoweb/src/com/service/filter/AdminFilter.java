@@ -49,12 +49,17 @@ public class AdminFilter extends AbstractFilter
             }
             else
             {
+                if (TokenCache.getInstance().isSupper(token))
+                {
+                    GlobalConfDao.getInstance().delete(SystemConstant.SUPER_TOKEN_KEY);
+                }
                 for (int i = 1; i != 5; i++)
                 {
-                    if (StringUtils.equals(token, getOneUserToken(i)))
+                    if (StringUtils.equals(token, GlobalConfDao.getInstance().getOneUserToken(i)))
                     {
                         logger.warn("the token is removed!");
-                        GlobalConfDao.getInstance().delete(getOneUserKey(i));
+                        GlobalConfDao.getInstance()
+                                .delete(GlobalConfDao.getInstance().getOneUserKey(i));
                         TokenCache.getInstance().removeToken(token);
                         break;
                     }
@@ -71,9 +76,8 @@ public class AdminFilter extends AbstractFilter
             SystemProperties.add(SystemConstant.USER_LOGIN_STATUS, LoginStatus.AdminLogin);
             for (int i = 0; i != 5; i++)
             {
-                GlobalConfDao.getInstance().delete(getOneUserKey(i));
+                GlobalConfDao.getInstance().delete(GlobalConfDao.getInstance().getOneUserKey(i));
             }
-            TokenCache.getInstance().clear();
             checkAndGenToken(httpres);
             return false;
 
@@ -89,16 +93,28 @@ public class AdminFilter extends AbstractFilter
 
         for (int i = 0; i != 5; i++)
         {
-            String token = getOneUserToken(i);
-            if (StringUtils.isBlank(getOneUserToken(i)))
+            String token = GlobalConfDao.getInstance().getOneUserToken(i);
+            if (StringUtils.isBlank(token))
             {
                 token = StringTools.getRandomString(64);
-                GlobalConfDao.getInstance().setConf(getOneUserKey(i), token);
+                GlobalConfDao.getInstance().setConf(GlobalConfDao.getInstance().getOneUserKey(i),
+                        token);
             }
 
-            sb.append(getOneUserKey(i)).append(":").append(token).append("\r\n");
+            sb.append(GlobalConfDao.getInstance().getOneUserKey(i)).append(":").append(token)
+                    .append("\r\n");
         }
 
+        String superToken = GlobalConfDao.getInstance().getConf(SystemConstant.SUPER_TOKEN_KEY);
+        if (StringUtils.isBlank(superToken))
+        {
+            superToken = StringTools.getRandomString(64);
+            GlobalConfDao.getInstance().setConf(SystemConstant.SUPER_TOKEN_KEY, superToken);
+        }
+
+        sb.append("superToken: ").append(superToken);
+
+        TokenCache.getInstance().refreshToken();
         try
         {
             httpres.setStatus(200);
