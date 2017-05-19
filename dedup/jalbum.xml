@@ -23,6 +23,7 @@ thumbnaildir specify the folder which to store the thumbnail to.
     <threadcount>20</threadcount>
     <maxpicsperonepage>25</maxpicsperonepage>
     <hashalog>MD5</hashalog>
+    <accessAuth>true</accessAuth>
     
     <inputdir>
         <dir>D:\\</dir>

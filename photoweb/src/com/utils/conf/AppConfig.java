@@ -165,6 +165,11 @@ public class AppConfig
         return config.getString("thumbnaildir", "./thumbnail");
     }
 
+    public boolean needAccessAuth()
+    {
+        return config.getBoolean("accessAuth", true);
+    }
+
     public int getMaxCountOfPicInOnePage(int defaultValue)
     {
         return config.getInt("maxpicsperonepage", defaultValue);

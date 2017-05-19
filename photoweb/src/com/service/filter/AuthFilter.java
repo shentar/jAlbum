@@ -10,6 +10,7 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.utils.conf.AppConfig;
 import com.utils.sys.SystemConstant;
 import com.utils.sys.SystemProperties;
 
@@ -22,8 +23,15 @@ public class AuthFilter extends AbstractFilter
     @Override
     protected boolean doFilterInner(HttpServletRequest httpreq, HttpServletResponse httpres)
     {
+        if (!AppConfig.getInstance().needAccessAuth())
+        {
+            logger.info("no need to auth access!");
+            return true;
+        }
+
         if (StringUtils.equals(httpreq.getRemoteAddr(), "127.0.0.1"))
         {
+            logger.info("login from local host.");
             SystemProperties.add(SystemConstant.USER_LOGIN_STATUS, LoginStatus.LocalLoin);
             return true;
         }
@@ -51,6 +59,7 @@ public class AuthFilter extends AbstractFilter
             }
             else
             {
+                logger.warn("token error: " + token);
                 loginStatus = LoginStatus.TokenError;
                 redirectLocation = "/login" + (StringUtils.isBlank(origUri) ? ""
                         : "?" + ORIGNAL_URI_KEY + "=" + origUri);
@@ -92,6 +101,7 @@ public class AuthFilter extends AbstractFilter
 
                 if (loginStatus.equals(LoginStatus.Unlogin))
                 {
+                    logger.warn("cookies login error: " + token);
                     loginStatus = LoginStatus.CookiesError;
                     redirectLocation = "/login" + "?" + ORIGNAL_URI_KEY + "="
                             + httpreq.getRequestURI();
