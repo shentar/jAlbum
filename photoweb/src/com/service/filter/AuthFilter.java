@@ -36,8 +36,14 @@ public class AuthFilter extends AbstractFilter
             return true;
         }
 
-        Cookie[] cookies = httpreq.getCookies();
         String uri = httpreq.getRequestURI();
+
+        if (StringUtils.equals("/favicon.ico", uri))
+        {
+            return true;
+        }
+
+        Cookie[] cookies = httpreq.getCookies();
         LoginStatus loginStatus = LoginStatus.Unlogin;
         String origUri = httpreq.getParameter(ORIGNAL_URI_KEY);
         String redirectLocation = "";
