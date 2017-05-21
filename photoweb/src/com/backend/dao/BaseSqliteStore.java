@@ -555,9 +555,10 @@ public class BaseSqliteStore extends AbstractRecordsStore
                 // 同步已经存在的文件的时间和隐藏状态。
                 FileInfo fexist = getFileInfoFromTable(res);
 
-                if (fexist.getStatus() == PicStatus.HIDDEN)
+                if (fexist.getStatus() != null && fexist.getStatus() != PicStatus.EXIST)
                 {
                     fi.setStatus(fexist.getStatus());
+                    logger.warn("the file is already hidden: {}, orig: {}", fi, fexist);
                 }
                 fi.setPhotoTime(fexist.getPhotoTime());
             }
