@@ -311,8 +311,8 @@ public class BaseSqliteStore extends AbstractRecordsStore
         try
         {
             lock.writeLock().lock();
-            prep = conn.prepareStatement(
-                    "update files set phototime=?,width=?,height=?,deleted=?,ftype=? where path=?;");
+            prep = conn.prepareStatement("update files set phototime=?,width=?,height=?,"
+                    + "deleted=?,ftype=? where path=? and status!='';");
             prep.setDate(1, fi.getPhotoTime());
             prep.setLong(2, fi.getWidth());
             prep.setLong(3, fi.getHeight());
@@ -555,7 +555,7 @@ public class BaseSqliteStore extends AbstractRecordsStore
                 // 同步已经存在的文件的时间和隐藏状态。
                 FileInfo fexist = getFileInfoFromTable(res);
 
-                if (fexist.getStatus() != null && fexist.getStatus() != PicStatus.EXIST)
+                if (fexist.getStatus() == PicStatus.HIDDEN)
                 {
                     fi.setStatus(fexist.getStatus());
                     logger.warn("the file is already hidden: {}, orig: {}", fi, fexist);
