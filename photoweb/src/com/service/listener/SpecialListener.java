@@ -92,9 +92,12 @@ public class SpecialListener implements ServletContextListener
             {
                 try
                 {
-                    FaceSetManager.getInstance().checkFaceSet();
-                    FaceRecService.getInstance().checkAllFacesID();
-                    FaceRecService.getInstance().checkAndGetFaceidList();
+                    if (AppConfig.getInstance().isFacerConfigured())
+                    {
+                        FaceSetManager.getInstance().checkFaceSet();
+                        FaceRecService.getInstance().checkAllFacesID();
+                        FaceRecService.getInstance().checkAndGetFaceidList();
+                    }
                 }
                 catch (Throwable e)
                 {
