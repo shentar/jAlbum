@@ -18,7 +18,7 @@ public class BackendScaner
 
     private static final BackendScaner instance = new BackendScaner();
 
-    private boolean isRunning = false;
+    private boolean isFirstTime = true;
 
     private final ExecutorService threadPool = Executors.newFixedThreadPool(2);
 
@@ -75,15 +75,21 @@ public class BackendScaner
         boolean isDone = scanallTaskFuture != null && scanallTaskFuture.isDone()
                 && facerScanTaskFuture != null && facerScanTaskFuture.isDone();
 
-        if (isRunning && !isDone)
+        if (isFirstTime || isDone)
         {
-            return false;
+            logger.warn("start a new Scan Task: isFirstTime {}, isDone {}.", isFirstTime, isDone);
+            isFirstTime = false;
+            scanallTaskFuture = threadPool.submit(scanallTask);
+            facerScanTaskFuture = threadPool.submit(facerScanTask);
+            DirWatchService.getInstance().restartScanAllFolders();
+            logger.warn("scheduled a new Scan Task: isFirstTime {}, isDone {}.", isFirstTime,
+                    isDone);
+            return true;
         }
 
-        scanallTaskFuture = threadPool.submit(scanallTask);
-        facerScanTaskFuture = threadPool.submit(facerScanTask);
-        DirWatchService.getInstance().restartScanAllFolders();
+        logger.warn("the task is already scheduled: isFirstTime {}, isDone {}.", isFirstTime,
+                isDone);
 
-        return true;
+        return false;
     }
 }

@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.backend.dao.FaceTableDao;
+import com.utils.conf.AppConfig;
 
 public class FaceSetManager
 {
@@ -29,6 +30,11 @@ public class FaceSetManager
 
     public boolean addFaceToSet(String faceToken)
     {
+        if (!AppConfig.getInstance().isFacerConfigured())
+        {
+            return true;
+        }
+
         if (StringUtils.isBlank(faceToken))
         {
             return true;
@@ -59,6 +65,11 @@ public class FaceSetManager
 
     public boolean deleteFaceFromSet(List<String> flst, String faceSetID)
     {
+        if (!AppConfig.getInstance().isFacerConfigured())
+        {
+            return true;
+        }
+
         if (flst == null || flst.isEmpty() || StringUtils.isBlank(faceSetID))
         {
             return true;
@@ -107,6 +118,11 @@ public class FaceSetManager
 
     public synchronized void checkFaceSet()
     {
+        if (!AppConfig.getInstance().isFacerConfigured())
+        {
+            return;
+        }
+
         String maxID = FaceSetToken.getInstance().getCurrentSN();
         if (StringUtils.isBlank(maxID))
         {

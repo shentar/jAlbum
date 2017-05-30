@@ -2,6 +2,7 @@ package com.backend.dirwathch;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.ClosedWatchServiceException;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -48,9 +49,11 @@ public class DirWatchService
     {
         try
         {
+            logger.warn("restaret a new watch filesystem service now: {}", status);
             switch (status)
             {
             case IS_RUNNING:
+                logger.warn("stop the old watch filesystem service now: {}", status);
                 status = IS_STOPPING;
                 break;
 
@@ -68,7 +71,11 @@ public class DirWatchService
                 delayLoop(1000);
             }
 
+            logger.warn("the old watch filesystem service stoped: {}", status);
+
             status = IS_RUNNING;
+
+            logger.warn("the new watch filesystem service started: {}", status);
             new Thread()
             {
                 public void run()
@@ -120,7 +127,18 @@ public class DirWatchService
 
         for (File file : files)
         {
-            mapDirs(file, excludeDirs);
+            try
+            {
+                mapDirs(file, excludeDirs);
+            }
+            catch (Throwable th)
+            {
+                logger.warn("some error occured when scan all the folders: {}", file);
+                if (th instanceof ClosedWatchServiceException)
+                {
+                    return;
+                }
+            }
         }
     }
 
@@ -274,6 +292,7 @@ public class DirWatchService
         finally
         {
             status = IS_STOPPED;
+            logger.warn("stop the old watch service now: {}", status);
         }
     }
 
