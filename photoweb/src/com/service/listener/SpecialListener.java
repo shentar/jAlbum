@@ -12,13 +12,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.backend.dao.SqliteConnManger;
-import com.backend.dirwathch.DirWatchService;
-import com.backend.facer.FaceRecService;
-import com.backend.facer.FaceSetManager;
+import com.backend.scan.BackendScaner;
 import com.backend.scan.FileTools;
 import com.backend.scan.FreshAllData;
-import com.backend.scan.ToolMain;
-import com.utils.conf.AppConfig;
 
 public class SpecialListener implements ServletContextListener
 {
@@ -51,26 +47,9 @@ public class SpecialListener implements ServletContextListener
 
     private void startBackGroundTask()
     {
-        DirWatchService.getInstance().init(AppConfig.getInstance().getInputDir(),
-                AppConfig.getInstance().getExcludedir());
+        BackendScaner.getInstance().scheduleOneTask();
 
-        // 全盘扫描，每次启动时执行一次。
-        new Thread()
-        {
-            public void run()
-            {
-                try
-                {
-                    ToolMain.scanfiles();
-                }
-                catch (Throwable e)
-                {
-                    logger.error("caught: ", e);
-                }
-            }
-        }.start();
-
-        // 300秒定期刷新新数据表。
+        // 5秒检查是否需要刷新数据表。
         f = new ScheduledThreadPoolExecutor(1).scheduleWithFixedDelay(new Runnable()
         {
             public void run()
@@ -85,25 +64,5 @@ public class SpecialListener implements ServletContextListener
                 }
             }
         }, 10, 5, TimeUnit.SECONDS);
-
-        new Thread()
-        {
-            public void run()
-            {
-                try
-                {
-                    if (AppConfig.getInstance().isFacerConfigured())
-                    {
-                        FaceSetManager.getInstance().checkFaceSet();
-                        FaceRecService.getInstance().checkAllFacesID();
-                        FaceRecService.getInstance().checkAndGetFaceidList();
-                    }
-                }
-                catch (Throwable e)
-                {
-                    logger.error("caught: ", e);
-                }
-            }
-        }.start();
     }
 }

@@ -25,13 +25,18 @@ import com.utils.conf.AppConfig;
 public class DirWatchService
 {
     private static final Logger logger = LoggerFactory.getLogger(DirWatchService.class);
+
     private ConcurrentHashMap<WatchKey, String> keyMap = new ConcurrentHashMap<WatchKey, String>();
     private WatchService ws = null;
     private static DirWatchService instance = new DirWatchService();
 
+    private static final int IS_RUNNING = 1;
+    private static final int IS_STOPPING = 2;
+    private static final int IS_STOPPED = 3;
+    private volatile int status = IS_STOPPED;
+
     private DirWatchService()
     {
-
     }
 
     public static DirWatchService getInstance()
@@ -39,76 +44,87 @@ public class DirWatchService
         return instance;
     }
 
-    public void init(final List<String> inputDirs, final List<String> excludeDirs)
+    public synchronized void restartScanAllFolders()
     {
         try
         {
-            if (inputDirs.isEmpty())
+            switch (status)
             {
-                logger.warn("input dirs is empty!");
-                return;
+            case IS_RUNNING:
+                status = IS_STOPPING;
+                break;
+
+            default:
+                break;
             }
 
-            ws = FileSystems.getDefault().newWatchService();
+            if (ws != null)
+            {
+                ws.close();
+            }
+
+            while (status != IS_STOPPED)
+            {
+                delayLoop(1000);
+            }
+
+            status = IS_RUNNING;
             new Thread()
             {
                 public void run()
                 {
-                    for (String ip : inputDirs)
+                    try
                     {
-                        mapDirs(new File(ip), excludeDirs);
+                        watch();
                     }
-                    watch();
+                    catch (Exception e)
+                    {
+                        logger.warn("caught: ", e);
+                    }
                 }
             }.start();
         }
-        catch (IOException e)
+        catch (Throwable th)
         {
-            logger.warn("init the ws failed!", e);
+            logger.warn("caught: ", th);
+            status = IS_STOPPED;
         }
     }
 
-    private void mapDirs(File f, List<String> excludeDirs)
+    private void mapDirs(File f, List<String> excludeDirs) throws IOException
     {
         if (f == null || !f.exists() || f.isFile())
         {
             return;
         }
 
-        try
+        String filepath = f.getCanonicalPath();
+        if (excludeDirs != null)
         {
-            String filepath = f.getCanonicalPath();
-            if (excludeDirs != null)
+            for (String exd : excludeDirs)
             {
-                for (String exd : excludeDirs)
+                if (filepath.startsWith(exd))
                 {
-                    if (filepath.startsWith(exd))
-                    {
-                        return;
-                    }
+                    return;
                 }
             }
-
-            addListener(filepath);
-
-            File[] files = f.listFiles();
-            if (files == null)
-            {
-                return;
-            }
-
-            for (File file : files)
-            {
-                mapDirs(file, excludeDirs);
-            }
         }
-        catch (IOException e)
+
+        addListener(filepath);
+
+        File[] files = f.listFiles();
+        if (files == null)
         {
-            logger.warn("caught exception when add listener: " + f);
+            return;
+        }
+
+        for (File file : files)
+        {
+            mapDirs(file, excludeDirs);
         }
     }
 
-    public void addListener(String path)
+    private void addListener(String path) throws IOException
     {
         if (StringUtils.isBlank(path))
         {
@@ -121,121 +137,160 @@ public class DirWatchService
         Path p = Paths.get(path);
         if (ws != null && p.toFile().isDirectory())
         {
-            try
+            WatchKey k = p.register(ws, StandardWatchEventKinds.ENTRY_MODIFY,
+                    StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_DELETE);
+            if (StringUtils.isNotBlank(path))
             {
-                WatchKey k = p.register(ws, StandardWatchEventKinds.ENTRY_MODIFY,
-                        StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_DELETE);
-                if (StringUtils.isNotBlank(path))
-                {
-                    keyMap.put(k, path);
-                }
-            }
-            catch (Exception e)
-            {
-                logger.warn("add a dir to the listener failed: " + path, e);
+                keyMap.put(k, path);
             }
         }
     }
 
-    private void watch()
+    private void watch() throws IOException
     {
-        while (true)
+        try
         {
-            WatchKey watchKey;
-            try
+            keyMap.clear();
+            ws = FileSystems.getDefault().newWatchService();
+
+            List<String> inputDirs = AppConfig.getInstance().getInputDir();
+            List<String> excludeDirs = AppConfig.getInstance().getExcludedir();
+            if (inputDirs.isEmpty())
             {
-                watchKey = ws.take();
-                String rootPath = keyMap.get(watchKey) + File.separator;
-                if (StringUtils.isBlank(rootPath))
+                logger.warn("input dirs is empty!");
+                return;
+            }
+
+            for (String ip : inputDirs)
+            {
+                mapDirs(new File(ip), excludeDirs);
+            }
+
+            while (status == IS_RUNNING)
+            {
+                WatchKey watchKey;
+                try
                 {
-                    continue;
-                }
-
-                List<WatchEvent<?>> watchEvents = watchKey.pollEvents();
-                for (WatchEvent<?> event : watchEvents)
-                {
-                    final String fullPath = rootPath + event.context();
-                    @SuppressWarnings("unchecked")
-                    Kind<Path> kd = (Kind<Path>) event.kind();
-
-                    if (kd.equals(StandardWatchEventKinds.ENTRY_CREATE))
+                    watchKey = ws.take();
+                    String rootPath = keyMap.get(watchKey) + File.separator;
+                    if (StringUtils.isBlank(rootPath))
                     {
-                        final File cf = new File(fullPath);
-                        logger.info("add one warn: " + cf);
-                        if (cf.isDirectory())
-                        {
-                            this.addListener(fullPath);
-                        }
-
-                        FileTools.threadPool.submit(new Runnable()
-                        {
-                            @Override
-                            public void run()
-                            {
-                                try
-                                {
-                                    ToolMain.mapAllfiles(cf,
-                                            AppConfig.getInstance().getExcludedir());
-                                }
-                                catch (Exception e)
-                                {
-                                    logger.warn("map all files of: " + fullPath + " failed, ", e);
-                                }
-                            }
-                        });
+                        continue;
                     }
-                    else if (kd.equals(StandardWatchEventKinds.ENTRY_DELETE))
-                    {
-                        FileTools.threadPool.submit(new Runnable()
-                        {
 
-                            @Override
-                            public void run()
-                            {
-                                logger.info("try to delete the records in path: " + fullPath);
-                                BaseSqliteStore.getInstance().deleteRecordsInDirs(fullPath);
-                                logger.info("deleteed the records in path: " + fullPath);
-                            }
-                        });
-                    }
-                    else if (kd.equals(StandardWatchEventKinds.ENTRY_MODIFY))
+                    List<WatchEvent<?>> watchEvents = watchKey.pollEvents();
+                    for (WatchEvent<?> event : watchEvents)
                     {
-                        final File cf = new File(fullPath);
-                        // 只需要处理文件变化，文件夹变化不予处理。
-                        if (cf.isFile())
+                        final String fullPath = rootPath + event.context();
+                        @SuppressWarnings("unchecked")
+                        Kind<Path> kd = (Kind<Path>) event.kind();
+
+                        if (kd.equals(StandardWatchEventKinds.ENTRY_CREATE))
                         {
-                            logger.info("the entry is modified: " + cf);
+                            final File cf = new File(fullPath);
+                            logger.info("add one warn: " + cf);
+                            if (cf.isDirectory())
+                            {
+                                this.addListener(fullPath);
+                            }
+
                             FileTools.threadPool.submit(new Runnable()
                             {
                                 @Override
                                 public void run()
                                 {
-                                    BaseSqliteStore.getInstance().checkIfAlreadyExist(cf);
+                                    try
+                                    {
+                                        ToolMain.mapAllfiles(cf,
+                                                AppConfig.getInstance().getExcludedir());
+                                    }
+                                    catch (Exception e)
+                                    {
+                                        logger.warn("map all files of: " + fullPath + " failed, ",
+                                                e);
+                                    }
                                 }
                             });
                         }
+                        else if (kd.equals(StandardWatchEventKinds.ENTRY_DELETE))
+                        {
+                            FileTools.threadPool.submit(new Runnable()
+                            {
+
+                                @Override
+                                public void run()
+                                {
+                                    logger.info("try to delete the records in path: " + fullPath);
+                                    BaseSqliteStore.getInstance().deleteRecordsInDirs(fullPath);
+                                    logger.info("deleteed the records in path: " + fullPath);
+                                }
+                            });
+                        }
+                        else if (kd.equals(StandardWatchEventKinds.ENTRY_MODIFY))
+                        {
+                            final File cf = new File(fullPath);
+                            // 只需要处理文件变化，文件夹变化不予处理。
+                            if (cf.isFile())
+                            {
+                                logger.info("the entry is modified: " + cf);
+                                FileTools.threadPool.submit(new Runnable()
+                                {
+                                    @Override
+                                    public void run()
+                                    {
+                                        BaseSqliteStore.getInstance().checkIfAlreadyExist(cf);
+                                    }
+                                });
+                            }
+                        }
+                        else
+                        {
+                            logger.info("unknown event: " + event);
+                        }
                     }
-                    else
+
+                    boolean valid = watchKey.reset();
                     {
-                        logger.info("unknown event: " + event);
+                        if (!valid)
+                        {
+                            logger.warn("the key is invalid: " + rootPath);
+                            // 删除失效的KEY。
+                            keyMap.remove(watchKey);
+                        }
                     }
                 }
-
-                boolean valid = watchKey.reset();
+                catch (InterruptedException e)
                 {
-                    if (!valid)
-                    {
-                        logger.warn("the key is invalid: " + rootPath);
-                        // 删除失效的KEY。
-                        keyMap.remove(watchKey);
-                    }
+                    logger.warn("caused: ", e);
                 }
-            }
-            catch (InterruptedException e)
-            {
-                logger.warn("caused: ", e);
-            }
+                catch (Throwable th)
+                {
+                    logger.warn("throwable :", th);
+                    delayLoop(3000);
+                }
 
+            }
+        }
+        finally
+        {
+            status = IS_STOPPED;
+        }
+    }
+
+    private void delayLoop(long timemills)
+    {
+        if (timemills <= 0)
+        {
+            timemills = 3000;
+        }
+
+        try
+        {
+            Thread.sleep(timemills);
+        }
+        catch (InterruptedException e)
+        {
+            logger.warn("caused: ", e);
         }
     }
 

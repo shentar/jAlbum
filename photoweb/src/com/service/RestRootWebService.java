@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import com.backend.dao.FaceTableDao;
 import com.backend.dao.UniqPhotosStore;
 import com.backend.facer.Face;
+import com.backend.scan.BackendScaner;
 import com.utils.web.GenerateHTML;
 import com.utils.web.HeadUtils;
 
@@ -37,15 +38,31 @@ public class RestRootWebService extends HttpServlet
     private static final long serialVersionUID = -7748065720779404006L;
 
     @GET
+    @Path("/flushnow")
+    public Response flushNow(@Context HttpServletRequest req, @Context HttpServletResponse res)
+    {
+        String message = "";
+        if (BackendScaner.getInstance().scheduleOneTask())
+        {
+            message = "The refresh task was submitted successfully.";
+        }
+        else
+        {
+            message = "The refresh task is in progress.!";
+        }
+        ResponseBuilder builder = Response.ok(message);
+        return builder.build();
+    }
+
+    @GET
     @Path("/favicon.ico")
     public Response getFavicon(@Context HttpServletRequest req,
             @Context HttpServletResponse response)
     {
         logger.debug("getFavicon in!");
-        ResponseBuilder builder = null;
+        ResponseBuilder builder = Response.ok();
         try
         {
-            builder = Response.ok();
             FileInputStream fp = new FileInputStream(new File("favicon.ico"));
             builder.entity(fp);
             builder.header("Content-type", "image/x-icon");
