@@ -136,7 +136,7 @@ public class DirWatchService
                 logger.warn("some error occured when scan all the folders: {}", file);
                 if (th instanceof ClosedWatchServiceException)
                 {
-                    return;
+                    throw th;
                 }
             }
         }
@@ -288,6 +288,11 @@ public class DirWatchService
                 }
 
             }
+        }
+        catch (ClosedWatchServiceException e1)
+        {
+            // need restart.
+            logger.warn("caused: ", e1);
         }
         finally
         {
