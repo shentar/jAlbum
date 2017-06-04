@@ -62,7 +62,7 @@ public class FaceTableDao extends AbstractRecordsStore
             }
 
             prep.execute();
-            logger.info("add one face to the faces: {}", face);
+            logger.warn("add one face to the faces: {}", face);
         }
         catch (SQLException e)
         {
@@ -160,6 +160,7 @@ public class FaceTableDao extends AbstractRecordsStore
         f.setGender("null");
         f.setQuality("0");
         f.setFi(fi);
+        logger.warn("add one empty record: [{}]", f);
         insertOneRecord(f);
     }
 

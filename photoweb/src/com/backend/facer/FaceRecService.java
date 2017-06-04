@@ -71,6 +71,7 @@ public class FaceRecService
             {
                 try
                 {
+                    logger.warn("start to detect one file {}", fi);
                     if (FaceTableDao.getInstance().checkAlreadyDetect(fi.getHash256()))
                     {
                         return;
