@@ -84,6 +84,8 @@ public class FaceSetToken
                 refreshFaceCount();
             }
 
+            logger.warn("init successfully, the current faceset is " + getCurrentFaceSetID());
+
             isInit = true;
         }
         catch (Exception e)
