@@ -71,12 +71,12 @@ public class FaceRecService
             {
                 try
                 {
-                    logger.warn("start to detect one file {}", fi);
                     if (FaceTableDao.getInstance().checkAlreadyDetect(fi.getHash256()))
                     {
                         return;
                     }
 
+                    logger.warn("start to detect one file {}", fi);
                     List<Face> ls = FaceDetectClient.detectFace(fi);
                     if (ls == null || ls.isEmpty())
                     {
