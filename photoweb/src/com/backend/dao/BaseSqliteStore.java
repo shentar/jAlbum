@@ -312,7 +312,7 @@ public class BaseSqliteStore extends AbstractRecordsStore
         {
             lock.writeLock().lock();
             prep = conn.prepareStatement("update files set phototime=?,width=?,height=?,"
-                    + "deleted=?,ftype=? where path=? and status!='';");
+                    + "deleted=?,ftype=? where path=?;");
             prep.setDate(1, fi.getPhotoTime());
             prep.setLong(2, fi.getWidth());
             prep.setLong(3, fi.getHeight());
