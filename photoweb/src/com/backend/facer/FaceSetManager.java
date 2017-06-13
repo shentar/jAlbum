@@ -158,6 +158,7 @@ public class FaceSetManager
                 }
             }
 
+            // clear the face that not found in the local face table.
             deleteFaceFromSet(dlst, faceSetID);
         }
     }
