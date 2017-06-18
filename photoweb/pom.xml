@@ -261,8 +261,7 @@
       <plugin> 
         <groupId>org.apache.maven.plugins</groupId>  
         <artifactId>maven-compiler-plugin</artifactId>  
-        <version>3.6.1</version>  
-        <configuration> 
+         <configuration> 
           <source>1.7</source>  
           <target>1.7</target> 
         </configuration> 
@@ -276,7 +275,6 @@
  <plugin> 
     <groupId>org.apache.maven.plugins</groupId>  
     <artifactId>maven-dependency-plugin</artifactId>  
-    <version>2.3</version>  
     <executions> 
       <execution> 
         <id>copy-dependencies</id>  
@@ -297,7 +295,6 @@
       <plugin> 
         <groupId>org.apache.maven.plugins</groupId>  
         <artifactId>maven-war-plugin</artifactId>  
-        <version>3.1.0</version>  
         <configuration> 
           <warName>root</warName>  
           <archiveClasses>true</archiveClasses>  
