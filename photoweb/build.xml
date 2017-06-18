@@ -4,7 +4,7 @@
     <property name="dist.dir" location="dist"/>
     <property name="lib.dir" location="lib"/>
     <property name="bin.dir" location="classes"/>
-    <property name="src.dir" location="src"/>
+    <property name="src.dir" location="src/main/java"/>
 
     <path id="master-classpath">
         <fileset dir="${lib.dir}">
