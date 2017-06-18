@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">  
+  <modelVersion>4.0.0</modelVersion>  
+  <groupId>com</groupId>
+  <artifactId>jAlbum</artifactId>
+  <version>2.6</version>
+  <name>jAlbum</name>
+  <url>http://codefine.co</url>
+  <packaging>pom</packaging>
+  
+  <properties> 
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding> 
+  </properties>  
+
+   <modules>
+    <module>dedup</module>
+    <module>photoweb</module>
+   </modules> 
+   
+  <build> 
+    <plugins>   
+  <plugin> 
+    <artifactId>maven-antrun-plugin</artifactId>  
+    <executions> 
+      <execution> 
+        <phase>install</phase>  
+        <goals> 
+          <goal>run</goal> 
+        </goals>  
+        <configuration> 
+          <tasks> 
+            <echo>antrun is started</echo>  
+            <ant antfile="asmblefiles.xml"> 
+              <target name="release"/> 
+            </ant> 
+          </tasks> 
+        </configuration> 
+      </execution> 
+    </executions> 
+  </plugin>       
+    </plugins> 
+  </build> 
+</project>
