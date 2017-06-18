@@ -15,7 +15,7 @@ ant -f build_for_Raspberry3.xml
 For other platforms, such as Windows, X86 Linux etc. just run the command like:
 ```shell
 cd jAlbum
-ant 
+mvn clean compile package install 
 ```
 The build target files are store in the jAlbum/distribute folder.
 
