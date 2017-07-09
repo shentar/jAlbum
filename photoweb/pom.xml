@@ -241,6 +241,12 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>21.0</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
 			<groupId>mediautil</groupId>
 			<artifactId>mediautil</artifactId>
 			<version>1.0</version>
