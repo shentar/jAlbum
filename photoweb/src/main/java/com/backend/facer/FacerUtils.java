@@ -72,6 +72,8 @@ public class FacerUtils
 
     private static final int MAX_FILE_SIZE = 1000 * 2000;
 
+    private static final int MAX_HEIGHT_WIDTH = 4096;
+
     private static CloseableHttpClient httpClient = null;
 
     private static final int MAX_CONNECTION = 4;
@@ -123,7 +125,8 @@ public class FacerUtils
     public static Object getFileForDetectFaces(FileInfo fi)
     {
         Object file = null;
-        if (fi.getSize() > MAX_FILE_SIZE)
+        if (fi.getSize() > MAX_FILE_SIZE || fi.getHeight() > MAX_HEIGHT_WIDTH
+                || fi.getWidth() > MAX_HEIGHT_WIDTH)
         {
             byte[] buffers = ThumbnailGenerator.generateThumbnailBuffer(fi.getPath(), 1680, 1680,
                     false);
@@ -136,8 +139,16 @@ public class FacerUtils
                 logger.warn("the size {} is too large to detect face.",
                         buffers == null ? 0 : buffers.length);
                 File f = ThumbnailManager.getThumbnail(fi.getHash256());
+
                 if (f != null)
                 {
+                    // 如果缩略图也大于最大限制大小，则返回空。
+                    if (f.length() > MAX_FILE_SIZE)
+                    {
+                        logger.warn("the size of thumbnal is large than 2M. fileinf[{}]", fi);
+                        return null;
+                    }
+
                     try
                     {
                         file = f.getCanonicalPath();
