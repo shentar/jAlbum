@@ -42,4 +42,6 @@ public class SystemConstant
 
     public static final String SUPER_TOKEN_KEY = "super_token";
 
+    public static final String INSTANCE_ID = "instance_id";
+
 }

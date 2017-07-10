@@ -2,6 +2,8 @@ package com.service.filter;
 
 import java.io.IOException;
 
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -10,15 +12,33 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.backend.dao.GlobalConfDao;
 import com.utils.conf.AppConfig;
 import com.utils.sys.SystemConstant;
 import com.utils.sys.SystemProperties;
+import com.utils.sys.UUIDGenerator;
 
 public class AuthFilter extends AbstractFilter
 {
     private static final Logger logger = LoggerFactory.getLogger(AuthFilter.class);
 
     private static final String ORIGNAL_URI_KEY = "origuri";
+
+    private static final String cookieNamePrefix = "SESSION";
+
+    private static String cookieName = cookieNamePrefix;
+
+    @Override
+    public void init(FilterConfig arg0) throws ServletException
+    {
+        String id = GlobalConfDao.getInstance().getConf(SystemConstant.INSTANCE_ID);
+        if (StringUtils.isBlank(id))
+        {
+            id = UUIDGenerator.getUUID();
+            GlobalConfDao.getInstance().setConf(SystemConstant.INSTANCE_ID, id);
+        }
+        cookieName = cookieNamePrefix + "_" + id;
+    }
 
     @Override
     protected boolean doFilterInner(HttpServletRequest httpreq, HttpServletResponse httpres)
@@ -88,7 +108,7 @@ public class AuthFilter extends AbstractFilter
                 // 登录信息过期，或者cookies不对，则删除cookies，并跳转到登录页面。
                 for (Cookie c : cookies)
                 {
-                    if (StringUtils.equalsIgnoreCase("sessionid", c.getName()))
+                    if (StringUtils.equalsIgnoreCase(cookieName, c.getName()))
                     {
                         token = c.getValue();
                         if (TokenCache.getInstance().isSupper(token))
@@ -125,7 +145,7 @@ public class AuthFilter extends AbstractFilter
         case CookiesLoin:
         case TokenLoin:
             // 登录成功跳转到主页
-            Cookie c = new Cookie("sessionid", token);
+            Cookie c = new Cookie(cookieName, token);
             c.setMaxAge(3600 * 24 * 30);
             httpres.addCookie(c);
             break;
@@ -135,8 +155,11 @@ public class AuthFilter extends AbstractFilter
             {
                 for (Cookie ctmp : cookies)
                 {
-                    ctmp.setMaxAge(0);
-                    httpres.addCookie(ctmp);
+                    if (StringUtils.equalsIgnoreCase(ctmp.getName(), cookieName))
+                    {
+                        ctmp.setMaxAge(0);
+                        httpres.addCookie(ctmp);
+                    }
                 }
             }
         case TokenError:
