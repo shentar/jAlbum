@@ -43,10 +43,11 @@ public class BackupedFilesDao extends AbstractRecordsStore
             prep.setString(1, hashStr);
             res = prep.executeQuery();
 
-            while (res.next())
+            if (res.next())
             {
-                logger.info("already exist: [{}:{}:{}]", hashStr, eTag, objkey);
+                logger.warn("the file is already backuped: [{}:{}:{}]", hashStr, eTag, objkey);
                 closeResource(prep, res);
+                lock.readLock().unlock();
                 return;
             }
             lock.readLock().unlock();

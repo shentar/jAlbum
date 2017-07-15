@@ -75,6 +75,7 @@
   <classpathentry kind="var" path="M2_REPO/commons-cli/commons-cli/1.4/commons-cli-1.4.jar" sourcepath="M2_REPO/commons-cli/commons-cli/1.4/commons-cli-1.4-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/commons-configuration/commons-configuration/1.10/commons-configuration-1.10.jar" sourcepath="M2_REPO/commons-configuration/commons-configuration/1.10/commons-configuration-1.10-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/commons-collections/commons-collections/3.2.2/commons-collections-3.2.2.jar" sourcepath="M2_REPO/commons-collections/commons-collections/3.2.2/commons-collections-3.2.2-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/com/google/guava/guava/21.0/guava-21.0.jar" sourcepath="M2_REPO/com/google/guava/guava/21.0/guava-21.0-sources.jar"/>
   <classpathentry kind="lib" path="lib/mediautil.jar"/>
   <classpathentry kind="lib" path="lib/MediaChest.jar"/>
   <classpathentry kind="lib" path="lib/ffmpeg-0.6.1.jar"/>

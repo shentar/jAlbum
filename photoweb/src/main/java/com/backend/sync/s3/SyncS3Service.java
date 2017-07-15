@@ -247,10 +247,12 @@ public class SyncS3Service
                     {
                         continue;
                     }
-                    allobjs.put(hashStr, o);
 
+                    logger.warn("the file is in s3 but not in the local table: {}", o);
                     BackupedFilesDao.getInstance().checkAndaddOneRecords(hashStr, o.getETag(),
                             o.getKey());
+                    allobjs.put(hashStr, o);
+
                 }
 
                 if (sc.isListingComplete())
