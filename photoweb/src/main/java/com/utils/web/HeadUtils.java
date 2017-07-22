@@ -56,16 +56,16 @@ public class HeadUtils
 
     public static void checkMobile(String ua)
     {
-        boolean isMobile = true;
+        boolean isMobile = false;
         boolean isIOS = false;
         if (StringUtils.isNotBlank(ua))
         {
             ua = ua.toLowerCase();
-            if ((ua.contains("windows") && !ua.contains("windows phone"))
-                    || ua.contains("macintosh") || (ua.contains("linux") && !ua.contains("android"))
-                    || ua.contains("ipad"))
+
+            if ((ua.contains("android") && !ua.contains("linux"))
+                    || (ua.contains("ios") && ua.contains("ios")) || ua.contains("windows phone"))
             {
-                isMobile = false;
+                isMobile = true;
             }
 
             if (ua.contains("ios"))
