@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8" ?>  
-
+<?xml version="1.0" encoding="utf-8"?>
 <!--
 picfilesuffix the file type with the suffix that can be scaned by the tool. It is ignorecase. 
 inputdir specify the folder which nedd to scan.
@@ -10,52 +9,44 @@ hashalog specify the file HASH fingerprint Algorithm. The common algorithms are:
 excludedir specify the folder which you do not like the tool scan and display the content of it.
 thumbnaildir specify the folder which to store the thumbnail to. 
 -->
-
 <config>
-    <picfilesuffix>
-        <suffix>jpg</suffix>
-        <suffix>jpeg</suffix>
-        <suffix>png</suffix>
-    </picfilesuffix>   
-    
-    <minfilesize>51200</minfilesize>
-    <maxfilesize>512000000</maxfilesize>
-    <threadcount>20</threadcount>
-    <maxpicsperonepage>25</maxpicsperonepage>
-    <hashalog>MD5</hashalog>
-    <accessAuth>true</accessAuth>
-    
-    <inputdir>
-        <dir>D:\\</dir>
-        <dir>C:\\</dir>
-    </inputdir>
-    
-    <excludedir>
-        <dir>C:\\windows\\</dir>
-        <dir>C:\\Program Files\\</dir>
-        <dir>./</dir>        
-    </excludedir>
-    
-    <thumbnaildir>
+  <picfilesuffix>
+    <suffix>jpg</suffix>
+    <suffix>jpeg</suffix>
+    <suffix>png</suffix>
+  </picfilesuffix>
+  <minfilesize>51200</minfilesize>
+  <maxfilesize>512000000</maxfilesize>
+  <threadcount>20</threadcount>
+  <maxpicsperonepage>25</maxpicsperonepage>
+  <hashalog>MD5</hashalog>
+  <accessAuth>true</accessAuth>
+  <inputdir>
+    <dir>D:\\</dir>
+    <dir>C:\\</dir>
+  </inputdir>
+  <excludedir>
+    <dir>C:\\windows\\</dir>
+    <dir>C:\\Program Files\\</dir>
+    <dir>./</dir>
+  </excludedir>
+  <thumbnaildir>
         ./thumbnail
     </thumbnaildir>
-
-    <Proxy>
+  <Proxy>
         <host></host>
         <port></port>
         <user></user>
         <password></password>
-    </Proxy>
-
-    <s3>
+  </Proxy>
+  <s3>
         <bucketname></bucketname>
         <ak></ak>
         <sk></sk>
-        <useHttps>false</useHttps>
-    </s3>
-
-    <Facer>
+    <useHttps>false</useHttps>
+  </s3>
+  <Facer>
         <ak></ak>
         <sk></sk>
-    </Facer>
+  </Facer>
 </config>

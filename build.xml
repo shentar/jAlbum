@@ -1,82 +1,67 @@
-<?xml version="1.0" encoding="utf-8"?> 
-
+<?xml version="1.0" encoding="utf-8"?>
 <project name="jAlbum" basedir="." default="all">
-
-    <property name="dedup.dir" location="dedup" />
-    <property name="photoweb.dir" location="photoweb" />
-    <property name="distribute.dir" location="distribute" />
-    <property name="scripts.dir" location="scripts" />
-    <target name="test" depends="release"/>
-    <target name="all" >
-        <ant antfile="build.xml" dir="${dedup.dir}" target="jar"/>  
-        <ant antfile="build.xml" dir="${photoweb.dir}" target="war"/>  
-        
-        <mkdir dir="${distribute.dir}" />
-        <mkdir dir="${distribute.dir}/lib" />
-        <mkdir dir="${distribute.dir}/lib/extra" />
-        <mkdir dir="${distribute.dir}/log" />
-        
-        <move todir="${distribute.dir}" overwrite="true">
-            <fileset dir="${dedup.dir}">
-                <include name="start.jar" />
-            </fileset>
-            <fileset dir="${photoweb.dir}/dist">
-                <include name="root.war" />
-            </fileset>          
-        </move>
-        
-        <copy todir="${distribute.dir}" overwrite="false">
-            <fileset dir="${dedup.dir}">
-                <include name="dedup.db" />
-                <include name="favicon.ico" />
-                <include name="jalbum.xml" />
-                <include name="log4j.xml" /> 
-            </fileset> 
-            <fileset dir="${scripts.dir}">
-                <include name="start.sh" />
-                <include name="start.bat" />
-                <include name="readme.txt" />
-            </fileset> 
-        </copy>
-        
-        <copy todir="${distribute.dir}/lib" overwrite="true">
-            <fileset dir="${dedup.dir}/lib" />
-        </copy>
-        
-        <copy todir="${distribute.dir}/lib/extra" overwrite="true">
-            <fileset dir="${photoweb.dir}/lib" >
-                <exclude name="jetty-io-8.0.0.M2.jar" />
-		<exclude name="jetty-server-8.0.0.M2.jar" />
-            </fileset>    
-        </copy>        
-
-        <copy todir="${distribute.dir}/js" overwrite="true">
-            <fileset dir="${dedup.dir}/js" />
-        </copy>
-
-        <ant antfile="build.xml" dir="${dedup.dir}" target="clean"/>  
-        <ant antfile="build.xml" dir="${photoweb.dir}" target="clean"/>  
-    
-    </target>
-    
-    <target name="release" depends="all">
-        <mkdir dir="${distribute.dir}/relase_tmp" />
-        <copy todir="${distribute.dir}/relase_tmp" overwrite="true">
-            <fileset dir="${dedup.dir}" >
-                <include name="jalbum.xml" />
-                <include name="log4j.xml" /> 
-            </fileset> 
-        </copy> 
-        
-        <fixcrlf srcdir="${distribute.dir}/relase_tmp" includes="**/*.xml" eol="crlf" />
-        
-        <zip destfile="jAlbum_release.zip" >
-            <zipfileset dir="${distribute.dir}" excludes=".svn/**, thumbnail/**, log/**, relase_tmp/**, dedup.db, log4j.xml, jalbum.xml"/>
-            <zipfileset dir="${dedup.dir}" includes="dedup.db"/>
-            <zipfileset dir="${distribute.dir}/relase_tmp" includes="log4j.xml, jalbum.xml" />
-        </zip>
-
-        <delete dir="${distribute.dir}/relase_tmp" />        
-    </target>
-    
+  <property name="dedup.dir" location="dedup"/>
+  <property name="photoweb.dir" location="photoweb"/>
+  <property name="distribute.dir" location="distribute"/>
+  <property name="scripts.dir" location="scripts"/>
+  <target name="test" depends="release"/>
+  <target name="all">
+    <ant antfile="build.xml" dir="${dedup.dir}" target="jar"/>
+    <ant antfile="build.xml" dir="${photoweb.dir}" target="war"/>
+    <mkdir dir="${distribute.dir}"/>
+    <mkdir dir="${distribute.dir}/lib"/>
+    <mkdir dir="${distribute.dir}/lib/extra"/>
+    <mkdir dir="${distribute.dir}/log"/>
+    <move todir="${distribute.dir}" overwrite="true">
+      <fileset dir="${dedup.dir}">
+        <include name="start.jar"/>
+      </fileset>
+      <fileset dir="${photoweb.dir}/dist">
+        <include name="root.war"/>
+      </fileset>
+    </move>
+    <copy todir="${distribute.dir}" overwrite="false">
+      <fileset dir="${dedup.dir}">
+        <include name="dedup.db"/>
+        <include name="favicon.ico"/>
+        <include name="jalbum.xml"/>
+        <include name="log4j.xml"/>
+      </fileset>
+      <fileset dir="${scripts.dir}">
+        <include name="start.sh"/>
+        <include name="start.bat"/>
+        <include name="readme.txt"/>
+      </fileset>
+    </copy>
+    <copy todir="${distribute.dir}/lib" overwrite="true">
+      <fileset dir="${dedup.dir}/lib"/>
+    </copy>
+    <copy todir="${distribute.dir}/lib/extra" overwrite="true">
+      <fileset dir="${photoweb.dir}/lib">
+        <exclude name="jetty-io-8.0.0.M2.jar"/>
+        <exclude name="jetty-server-8.0.0.M2.jar"/>
+      </fileset>
+    </copy>
+    <copy todir="${distribute.dir}/js" overwrite="true">
+      <fileset dir="${dedup.dir}/js"/>
+    </copy>
+    <ant antfile="build.xml" dir="${dedup.dir}" target="clean"/>
+    <ant antfile="build.xml" dir="${photoweb.dir}" target="clean"/>
+  </target>
+  <target name="release" depends="all">
+    <mkdir dir="${distribute.dir}/relase_tmp"/>
+    <copy todir="${distribute.dir}/relase_tmp" overwrite="true">
+      <fileset dir="${dedup.dir}">
+        <include name="jalbum.xml"/>
+        <include name="log4j.xml"/>
+      </fileset>
+    </copy>
+    <fixcrlf srcdir="${distribute.dir}/relase_tmp" includes="**/*.xml" eol="crlf"/>
+    <zip destfile="jAlbum_release.zip">
+      <zipfileset dir="${distribute.dir}" excludes=".svn/**, thumbnail/**, log/**, relase_tmp/**, dedup.db, log4j.xml, jalbum.xml"/>
+      <zipfileset dir="${dedup.dir}" includes="dedup.db"/>
+      <zipfileset dir="${distribute.dir}/relase_tmp" includes="log4j.xml, jalbum.xml"/>
+    </zip>
+    <delete dir="${distribute.dir}/relase_tmp"/>
+  </target>
 </project>

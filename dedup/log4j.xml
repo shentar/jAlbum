@@ -1,44 +1,34 @@
-<?xml version="1.0" encoding="UTF-8"?>     
-<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">    
-        
-<log4j:configuration xmlns:log4j='http://jakarta.apache.org/log4j/' >     
-        
-    <appender name="activexAppender" class="org.apache.log4j.DailyRollingFileAppender">     
-        <param name="File" value="./log/dedup.log" />       
-        <param name="DatePattern" value="'.'yyyy-MM-dd'.log'" />       
-        <layout class="org.apache.log4j.PatternLayout">     
-         <param name="ConversionPattern"       
-            value="[%d{yyyy-MM-dd HH:mm:ss.SSS\} %-5p] [%t %X{requestid} %c{3\}:%L] - %m%n" />     
-        </layout>       
-    </appender>     
-        
-    <appender name="accesslog" class="org.apache.log4j.DailyRollingFileAppender">     
-        <param name="File" value="./log/jAlbum_access.log" />       
-        <param name="DatePattern" value="'.'yyyy-MM-dd'.log'" />       
-        <layout class="org.apache.log4j.PatternLayout">     
-         <param name="ConversionPattern"       
-            value="[%d{yyyy-MM-dd HH:mm:ss.SSS\}] [%t %X{requestid} %X{http-status} %X{is_mobile} %X{user_login_status} %X{consumed-time} %X{remote-addr} %X{http-uri} %X{filename} %X{range} %X{user-agent}]%n" />     
-        </layout>       
-    </appender>   
-    
-    <logger name="com.utils.web.AccessLogger" additivity="false">     
-        <level value ="warn"/>       
-        <appender-ref ref="accesslog" />       
-    </logger>
-    
-    <logger name="com" additivity="false">     
-        <level value ="warn"/>       
-        <appender-ref ref="activexAppender" />       
-    </logger>
-     
-    <logger name="org" additivity="false">     
-        <level value ="warn"/>       
-        <appender-ref ref="activexAppender" />       
-    </logger>
-     
-    <root>     
-        <level value ="warn"/>     
-        <appender-ref ref="activexAppender"/>        
-    </root>     
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+  <appender name="activexAppender" class="org.apache.log4j.DailyRollingFileAppender">
+    <param name="File" value="./log/dedup.log"/>
+    <param name="DatePattern" value="'.'yyyy-MM-dd'.log'"/>
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="[%d{yyyy-MM-dd HH:mm:ss.SSS\} %-5p] [%t %X{requestid} %c{3\}:%L] - %m%n"/>
+    </layout>
+  </appender>
+  <appender name="accesslog" class="org.apache.log4j.DailyRollingFileAppender">
+    <param name="File" value="./log/jAlbum_access.log"/>
+    <param name="DatePattern" value="'.'yyyy-MM-dd'.log'"/>
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="[%d{yyyy-MM-dd HH:mm:ss.SSS\}] [%t %X{requestid} %X{http-status} %X{is_mobile} %X{user_login_status} %X{consumed-time} %X{remote-addr} %X{http-uri} %X{filename} %X{range} %X{user-agent}]%n"/>
+    </layout>
+  </appender>
+  <logger name="com.utils.web.AccessLogger" additivity="false">
+    <level value="warn"/>
+    <appender-ref ref="accesslog"/>
+  </logger>
+  <logger name="com" additivity="false">
+    <level value="warn"/>
+    <appender-ref ref="activexAppender"/>
+  </logger>
+  <logger name="org" additivity="false">
+    <level value="warn"/>
+    <appender-ref ref="activexAppender"/>
+  </logger>
+  <root>
+    <level value="warn"/>
+    <appender-ref ref="activexAppender"/>
+  </root>
 </log4j:configuration>
-   

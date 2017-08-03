@@ -20,6 +20,22 @@
         <artifactId>maven-antrun-plugin</artifactId>
         <executions>
           <execution>
+            <id>anttask1</id>
+            <phase>compile</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <tasks>
+                <echo>antrun is started</echo>
+                <ant antfile="build_for_Raspberry3.xml">
+                  <target name="jdbc"/>
+                </ant>
+              </tasks>
+            </configuration>
+          </execution>
+          <execution>
+            <id>anttask2</id>
             <phase>install</phase>
             <goals>
               <goal>run</goal>
@@ -27,8 +43,8 @@
             <configuration>
               <tasks>
                 <echo>antrun is started</echo>
-                <ant antfile="asmblefiles.xml">
-                  <target name="release"/>
+                <ant antfile="build_for_Raspberry3.xml">
+                  <target name="cpfiles"/>
                 </ant>
               </tasks>
             </configuration>

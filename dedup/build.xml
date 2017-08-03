@@ -1,45 +1,35 @@
-<?xml version="1.0" encoding="utf-8"?> 
-
+<?xml version="1.0" encoding="utf-8"?>
 <project name="resttest" basedir="." default="jar">
-	<property name="dist.dir" location="dist" />
-	<property name="lib.dir" location="lib" />
-	<property name="bin.dir" location="classes" />
-	<property name="src.dir" location="src" />
-
-	<path id="master-classpath">
-		<fileset dir="${lib.dir}">
-			<include name="*.jar" />
-		</fileset>
-
-		<fileset dir="${lib.dir}">
-			<include name="*.jar" />
-		</fileset>
-	</path>
-
-	<target name="build" depends="clean" description="Compile main source tree
-		java files into class files, generate jar files">
-		<mkdir dir="${bin.dir}" />
-		<javac destdir="${bin.dir}" debug="true" deprecation="false" optimize="false" failonerror="true" includeantruntime="true">
-			<compilerarg line="-encoding UTF-8 "/>   
-            <src path="${src.dir}" />
-			<classpath refid="master-classpath" />
-		</javac>
-	</target>
-
-	<target name="jar" depends="build">
-		<jar jarfile="start.jar" basedir="${bin.dir}" includes="**/*.*">
-			<manifest>
-                <attribute name="Main-Class" value="com.shentar.frontend.FrontMain"/>
-                <attribute name="Class-Path" value=". lib/jetty-all.jar"/>
-             </manifest>
-		</jar>
-	</target>
-
-	<target name="clean">
-		<delete dir="${bin.dir}" />
-		<delete dir="${dist.dir}" />
-	</target>
-
-
-
+  <property name="dist.dir" location="dist"/>
+  <property name="lib.dir" location="lib"/>
+  <property name="bin.dir" location="classes"/>
+  <property name="src.dir" location="src"/>
+  <path id="master-classpath">
+    <fileset dir="${lib.dir}">
+      <include name="*.jar"/>
+    </fileset>
+    <fileset dir="${lib.dir}">
+      <include name="*.jar"/>
+    </fileset>
+  </path>
+  <target name="build" depends="clean" description="Compile main source tree   java files into class files, generate jar files">
+    <mkdir dir="${bin.dir}"/>
+    <javac destdir="${bin.dir}" debug="true" deprecation="false" optimize="false" failonerror="true" includeantruntime="true">
+      <compilerarg line="-encoding UTF-8 "/>
+      <src path="${src.dir}"/>
+      <classpath refid="master-classpath"/>
+    </javac>
+  </target>
+  <target name="jar" depends="build">
+    <jar jarfile="start.jar" basedir="${bin.dir}" includes="**/*.*">
+      <manifest>
+        <attribute name="Main-Class" value="com.shentar.frontend.FrontMain"/>
+        <attribute name="Class-Path" value=". lib/jetty-all.jar"/>
+      </manifest>
+    </jar>
+  </target>
+  <target name="clean">
+    <delete dir="${bin.dir}"/>
+    <delete dir="${dist.dir}"/>
+  </target>
 </project>

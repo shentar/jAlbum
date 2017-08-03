@@ -10,7 +10,7 @@ This is a local photo management system written with the Java language. Using B/
 >### For ARM platform, such as Raspberry3 ubuntu-mate system, compile jdbcsqlite native so first. Other platform may not need this.
 ```shell
 cd jAlbum
-ant -f build_for_Raspberry3.xml
+mvn clean compile package install -f pom_for_Raspberry3.xml
 ```
 For other platforms, such as Windows, X86 Linux etc. just run the command like:
 ```shell
