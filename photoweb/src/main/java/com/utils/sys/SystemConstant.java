@@ -12,6 +12,8 @@ public class SystemConstant
 
     public static final String IS_FACES_KEY = "is_faces";
 
+    public static final String IS_NO_FACES_KEY = "is_nofaces";
+
     public static final String REQEUSTIDKEY = "requestid";
 
     public static final String USER_AGENT = "user-agent";

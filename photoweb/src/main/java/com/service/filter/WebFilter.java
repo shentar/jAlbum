@@ -72,6 +72,11 @@ public class WebFilter implements Filter
                 SystemProperties.add(SystemConstant.IS_FACES_KEY, new Boolean(true));
             }
 
+            if (newreq.getParameter("noface") != null)
+            {
+                SystemProperties.add(SystemConstant.IS_NO_FACES_KEY, new Boolean(true));
+            }
+
             String ft = newreq.getParameter("facetoken");
             if (ft != null && ft.length() >= 32)
             {
