@@ -319,6 +319,11 @@ public class GenerateHTML
                             "<a href=\"/?video=true\"><input type=\"button\" value=\"视频\"/></a></td>");
                     i++;
 
+                    ylst.append("<td width=\"5%\" height=\"30px\" bordercolor=\"#000000\">");
+                    ylst.append(
+                            "<a href=\"/?noface=true\"><input type=\"button\" value=\"风景\"/></a></td>");
+                    i++;
+
                     if (HeadUtils.isVideo() || HeadUtils.isFaces())
                     {
                         break;
