@@ -469,6 +469,62 @@ public class FaceTableDao extends AbstractRecordsStore
         }
     }
 
+    public List<Face> getNextNoFacesPics(String id, int count, boolean isNext)
+    {
+        if (count <= 0)
+        {
+            return null;
+        }
+
+        PreparedStatement prep = null;
+        ResultSet res = null;
+
+        try
+        {
+            lock.readLock().lock();
+            FileInfo f = null;
+            if (StringUtils.isNotBlank(id))
+            {
+                f = UniqPhotosStore.getInstance().getOneFileByHashStr(id);
+            }
+
+            String statment = "select * from faces where facetoken='null' ";
+            if (f == null)
+            {
+                statment += " order by ptime " + (isNext ? "desc" : "asc") + " limit " + count
+                        + ";";
+                prep = conn.prepareStatement(statment);
+            }
+            else
+            {
+                statment += " and ptime " + (isNext ? "<" : ">") + "?" + " order by ptime "
+                        + (isNext ? "desc" : "asc") + " limit " + count + ";";
+                prep = conn.prepareStatement(statment);
+                prep.setDate(1, f.getPhotoTime());
+            }
+            res = prep.executeQuery();
+
+            List<Face> flst = new LinkedList<Face>();
+            while (res.next())
+            {
+                flst.add(getFaceFromTableRecord(res));
+            }
+
+            return flst;
+        }
+        catch (Exception e)
+        {
+            logger.warn("caused by: ", e);
+        }
+        finally
+        {
+            closeResource(prep, res);
+            lock.readLock().unlock();
+        }
+
+        return null;
+    }
+
     public List<Face> getNextNineFileByHashStr(String id, int count, boolean isnext)
     {
         if (count <= 0)
@@ -597,5 +653,43 @@ public class FaceTableDao extends AbstractRecordsStore
             lock.writeLock().unlock();
             UniqPhotosStore.getInstance().lock.readLock().unlock();
         }
+    }
+
+    public Face getFaceByEtag(FileInfo f)
+    {
+        if (f == null)
+        {
+            return null;
+        }
+
+        PreparedStatement prep = null;
+        ResultSet res = null;
+        lock.readLock().lock();
+        try
+        {
+            prep = conn.prepareStatement("select * from faces where etag=?;");
+            prep.setString(1, f.getHash256());
+
+            res = prep.executeQuery();
+
+            if (res.next())
+            {
+                Face face = getFaceFromTableRecord(res);
+                face.setFi(f);
+                return face;
+            }
+
+            return null;
+        }
+        catch (Exception e)
+        {
+            logger.warn("caused by: ", e);
+        }
+        finally
+        {
+            closeResource(prep, res);
+            lock.readLock().unlock();
+        }
+        return null;
     }
 }

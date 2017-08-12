@@ -38,6 +38,12 @@ public class HeadUtils
         return isFaces != null && isFaces.booleanValue();
     }
 
+    public static boolean isNoFaces()
+    {
+        Boolean isFaces = (Boolean) SystemProperties.get(SystemConstant.IS_NO_FACES_KEY);
+        return isFaces != null && isFaces.booleanValue();
+    }
+
     public static boolean isIOS()
     {
         Boolean ismobile = (Boolean) SystemProperties.get(SystemConstant.IS_IOS);

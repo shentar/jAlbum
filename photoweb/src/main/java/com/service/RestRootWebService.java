@@ -168,6 +168,18 @@ public class RestRootWebService extends HttpServlet
                 }
             }
         }
+        else if (HeadUtils.isNoFaces())
+        {
+            lst = FaceTableDao.getInstance().getNextNoFacesPics(id, count, isnext);
+            if (lst != null)
+            {
+                for (Object f : lst)
+                {
+                    ((Face) f).setFi(UniqPhotosStore.getInstance()
+                            .getOneFileByHashStr(((Face) f).getEtag()));
+                }
+            }
+        }
         else
         {
             lst = UniqPhotosStore.getInstance().getNextNineFileByHashStr(id, count, isnext,
@@ -222,7 +234,6 @@ public class RestRootWebService extends HttpServlet
     {
         if (StringUtils.isNotBlank(id))
         {
-
             return new ObjectService(id);
         }
         else

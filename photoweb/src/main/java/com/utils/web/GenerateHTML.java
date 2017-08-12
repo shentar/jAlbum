@@ -96,17 +96,28 @@ public class GenerateHTML
             else if (f instanceof Face)
             {
                 Face face = (Face) f;
-                sb.append("<a href=\"" + "/facetoken/" + face.getFacetoken() + extraQueryParas(true)
-                        + "\">");
                 FileInfo fi = face.getFi();
                 if (fi == null)
                 {
                     fi = UniqPhotosStore.getInstance().getOneFileByHashStr(((Face) f).getEtag());
                 }
+
                 if (fi != null)
                 {
                     face.setFi(fi);
-                    sb.append(generateImgTag(face, false));
+                    if (HeadUtils.isNoFaces())
+                    {
+                        sb.append("<a href=\"" + "/photos/" + fi.getHash256()
+                                + extraQueryParas(true) + "\">");
+                        sb.append(generateImgTag(fi, 310));
+                    }
+                    else
+                    {
+                        sb.append("<a href=\"" + "/facetoken/" + face.getFacetoken()
+                                + extraQueryParas(true) + "\">");
+                        sb.append(generateImgTag(face, false));
+                    }
+
                 }
             }
             else
@@ -144,18 +155,30 @@ public class GenerateHTML
     private static String extraQueryParas(boolean isFirst)
     {
         String tag = "";
-        if (HeadUtils.isVideo() || HeadUtils.isFaces())
+        if (HeadUtils.isVideo() || HeadUtils.isFaces() || HeadUtils.isNoFaces())
         {
             tag += (isFirst ? "?" : "&");
 
-            if (HeadUtils.isVideo() && HeadUtils.isFaces())
+            if (HeadUtils.isNoFaces())
             {
-                tag += "video=true&face=true";
+                tag += "noface=true&";
             }
-            else
+
+            if (HeadUtils.isVideo())
             {
-                tag += (HeadUtils.isVideo() ? "video=true" : "face=true");
+                tag += "video=true&";
             }
+
+            if (HeadUtils.isFaces())
+            {
+                tag += "face=true&";
+            }
+        }
+
+        if (tag.endsWith("&"))
+        {
+            // "hamburger".substring(0, 8) returns "hamburge"
+            tag = tag.substring(0, tag.length() - 1);
         }
 
         return tag;
@@ -208,7 +231,23 @@ public class GenerateHTML
         }
         else if (o instanceof Face)
         {
-            id = ((Face) o).getFacetoken();
+            if (HeadUtils.isNoFaces())
+            {
+                FileInfo fi = ((Face) o).getFi();
+                if (fi == null)
+                {
+                    fi = UniqPhotosStore.getInstance().getOneFileByHashStr(((Face) o).getEtag());
+                }
+
+                if (fi != null)
+                {
+                    id = fi.getHash256();
+                }
+            }
+            else
+            {
+                id = ((Face) o).getFacetoken();
+            }
         }
 
         return id;
@@ -1025,6 +1064,11 @@ public class GenerateHTML
             return generate404Notfound();
         }
         f.setFi(fi);
+
+        if (HeadUtils.isNoFaces())
+        {
+            return generateSinglePhoto(fi);
+        }
 
         StringBuffer sb = new StringBuffer(getHtmlHead(true));
         String yearNavigage = genYearNavigate();
