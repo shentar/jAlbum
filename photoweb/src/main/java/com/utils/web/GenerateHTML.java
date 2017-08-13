@@ -22,7 +22,7 @@ import com.utils.media.MediaTool;;
 
 public class GenerateHTML
 {
-    private static final String seprator = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+    private static final String seprator = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
 
     private static final Logger logger = LoggerFactory.getLogger(GenerateHTML.class);
 
@@ -213,13 +213,19 @@ public class GenerateHTML
             photoTime = f1.getPhotoTime() + " ~ " + f2.getPhotoTime();
         }
 
-        sb.append("<tr><td width=\"100%\" bordercolor=\"#000000\">");
+        sb.append("<tr><td width=\"100%\" bordercolor=\"#000000\" " + getTdHeight() + ">");
         sb.append(prevPage + seprator);
         sb.append(photoTime + seprator);
         sb.append(nextPage);
         sb.append("</td></tr></table>");
 
         return sb.toString();
+    }
+
+    private static String getTdHeight()
+    {
+        String tdHeight = HeadUtils.isMobile() ? " height=\"180px\" " : " ";
+        return tdHeight;
     }
 
     private static String getID(Object o)
@@ -488,7 +494,7 @@ public class GenerateHTML
                 dayStr.substring(4, 6), dayStr.substring(6, 8));
         String returnToDayPage = "<a href=\"/day/" + dayStr + extraQueryParas(true) + "\">浏览 <b>"
                 + viewDayStr + "</b></a>";
-        sb.append("<tr><td width=\"100%\" bordercolor=\"#000000\">");
+        sb.append("<tr><td width=\"100%\" bordercolor=\"#000000\"" + getTdHeight() + ">");
         sb.append(returnToDayPage + seprator);
         sb.append(getPhotoLink(f.getHash256(), false) + seprator);
         sb.append(getPhotoLink(f.getHash256(), 1, false));
@@ -517,7 +523,8 @@ public class GenerateHTML
         // sb.append("</a>");
         sb.append("</td></tr>");
 
-        sb.append("<tr><td width=\"100%\" height=\"100%\" bordercolor=\"#000000\">");
+        sb.append("<tr><td width=\"100%\" " + getTdHeight() + " bordercolor=\"#000000\""
+                + getTdHeight() + ">");
 
         String leftRotateLink = "<input id=\"leftrotate\" type=\"button\" value=\"左旋转\" />";
         String rightRotateLink = "<input id=\"rightrotate\" type=\"button\" value=\"右旋转\" />";
@@ -1164,7 +1171,7 @@ public class GenerateHTML
         // sb.append("</a>");
         sb.append("</td></tr>");
 
-        sb.append("<tr><td width=\"100%\" height=\"100%\" bordercolor=\"#000000\">");
+        sb.append("<tr><td width=\"100%\" " + getTdHeight() + " bordercolor=\"#000000\">");
 
         String leftRotateLink = "<input id=\"leftrotate\" type=\"button\" value=\"左旋转\" />";
         String rightRotateLink = "<input id=\"rightrotate\" type=\"button\" value=\"右旋转\" />";
