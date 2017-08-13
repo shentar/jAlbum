@@ -817,11 +817,11 @@ public class GenerateHTML
         dayNavigate.append("<table style=\"text-align: center;\" width=\"100%\" "
                 + "height=\"100%\" border=\"0\" bordercolor=\"#000000\">");
 
-        dayNavigate.append("<tr><td width=\"20%\">");
+        dayNavigate.append("<tr><td width=\"20%\"" + getTdHeight() + ">");
         dayNavigate.append("<a href=\"/month/" + day.substring(0, 6) + "\">返回" + day.substring(0, 4)
                 + "年" + day.substring(4, 6) + "月</a></td>");
 
-        dayNavigate.append("<td  width=\"20%\" style=\"text-align:center\">");
+        dayNavigate.append("<td  width=\"20%\" " + getTdHeight() + "style=\"text-align:center\">");
         if (StringUtils.isNotBlank(prevDay))
         {
             dayNavigate.append("<a href=\"/day/" + prevDay + "\">"
@@ -829,9 +829,10 @@ public class GenerateHTML
         }
         dayNavigate.append("</td>");
 
-        dayNavigate.append("<td  width=\"20%\" style=\"text-align:center\">" + day + "</td>");
+        dayNavigate.append("<td  width=\"20%\" " + getTdHeight() + "style=\"text-align:center\">"
+                + day + "</td>");
 
-        dayNavigate.append("<td  width=\"20%\" style=\"text-align:center\">");
+        dayNavigate.append("<td  width=\"20%\" " + getTdHeight() + "style=\"text-align:center\">");
         if (StringUtils.isNotBlank(nextDay))
         {
             dayNavigate.append("<a href=\"/day/" + nextDay + "\">"
@@ -839,7 +840,7 @@ public class GenerateHTML
         }
         dayNavigate.append("</td>");
 
-        dayNavigate.append("<td width=\"20%\"></td>");
+        dayNavigate.append("<td width=\"20%\"" + getTdHeight() + "></td>");
 
         dayNavigate.append("</tr>");
 
@@ -919,24 +920,25 @@ public class GenerateHTML
         StringBuffer monthNavigate = new StringBuffer();
         monthNavigate.append("<table style=\"text-align: center;\" width=\"100%\" "
                 + "height=\"100%\" border=\"0\" bordercolor=\"#000000\">");
-        monthNavigate.append("<tr>" + "<td width=\"20%\">");
+        monthNavigate.append("<tr>" + "<td width=\"20%\" " + getTdHeight() + ">");
         monthNavigate.append("<a href=\"/year/" + monthstr.substring(0, 4) + "\">返回"
                 + monthstr.substring(0, 4) + "年</a>");
-        monthNavigate.append("</td>" + "<td width=\"20%\">");
+        monthNavigate.append("</td>" + "<td width=\"20%\"" + getTdHeight() + ">");
         if (StringUtils.isNotBlank(prevMonth))
         {
             monthNavigate.append("<a href=\"/month/" + prevMonth + "\">"
                     + "<input value=\"上一月\" type=\"button\"/></a>");
         }
         monthNavigate.append("</td>");
-        monthNavigate.append("<td  width=\"20%\" style=\"text-align:center\">" + monthstr + "月"
-                + "</td><td width=\"20%\">");
+        monthNavigate.append("<td  width=\"20%\"" + getTdHeight() + " style=\"text-align:center\">"
+                + monthstr + "月" + "</td><td width=\"20%\">");
         if (StringUtils.isNotBlank(nextMonth))
         {
             monthNavigate.append("<a href=\"/month/" + nextMonth + "\">"
                     + "<input value=\"下一月\" type=\"button\"/></a>");
         }
-        monthNavigate.append("</td>" + "<td width=\"20%\"></td>" + "</tr>" + "</table>");
+        monthNavigate.append(
+                "</td>" + "<td width=\"20%\"" + getTdHeight() + "></td>" + "</tr>" + "</table>");
         return monthNavigate.toString();
     }
 
