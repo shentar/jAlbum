@@ -1,11 +1,14 @@
 package com.service;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
+import com.backend.dao.FaceTableDao;
+import com.backend.dao.UniqPhotosStore;
+import com.backend.facer.Face;
+import com.backend.scan.BackendScanner;
+import com.utils.web.GenerateHTML;
+import com.utils.web.HeadUtils;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -18,19 +21,10 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
+import java.io.*;
+import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.backend.dao.FaceTableDao;
-import com.backend.dao.UniqPhotosStore;
-import com.backend.facer.Face;
-import com.backend.scan.BackendScaner;
-import com.utils.web.GenerateHTML;
-import com.utils.web.HeadUtils;
-
-@Produces(value = { "text/html", "application/octet-stream" })
+@Produces(value = {"text/html", "application/octet-stream"})
 public class RestRootWebService extends HttpServlet
 {
     private static final Logger logger = LoggerFactory.getLogger(RestRootWebService.class);
@@ -41,8 +35,8 @@ public class RestRootWebService extends HttpServlet
     @Path("/flushnow")
     public Response flushNow(@Context HttpServletRequest req, @Context HttpServletResponse res)
     {
-        String message = "";
-        if (BackendScaner.getInstance().scheduleOneTask())
+        String message;
+        if (BackendScanner.getInstance().scheduleOneTask())
         {
             message = "The refresh task was submitted successfully.";
         }
@@ -57,7 +51,7 @@ public class RestRootWebService extends HttpServlet
     @GET
     @Path("/favicon.ico")
     public Response getFavicon(@Context HttpServletRequest req,
-            @Context HttpServletResponse response)
+                               @Context HttpServletResponse response)
     {
         logger.debug("getFavicon in!");
         ResponseBuilder builder = Response.ok();
@@ -80,16 +74,15 @@ public class RestRootWebService extends HttpServlet
     @GET
     @Path("/js/{file}")
     public Response getJSFile(@PathParam("file") String file, @Context HttpServletRequest req,
-            @Context HttpServletResponse response)
+                              @Context HttpServletResponse response)
     {
         logger.debug("get js file in!");
-        ResponseBuilder builder = null;
+        ResponseBuilder builder = Response.ok();
         try
         {
             File filepath = new File("js" + File.separator + file);
             if (filepath.isFile())
             {
-                builder = Response.ok();
                 BufferedInputStream fp = new BufferedInputStream(new FileInputStream(filepath));
                 builder.entity(fp);
                 builder.header("Content-type", HeadUtils.judgeMIME(file));
@@ -98,7 +91,6 @@ public class RestRootWebService extends HttpServlet
             }
             else
             {
-                builder = Response.ok();
                 builder.status(404);
             }
         }
@@ -117,7 +109,7 @@ public class RestRootWebService extends HttpServlet
     {
         ResponseBuilder builder = Response.status(200);
         String body = GenerateHTML.genIndexPage(getFileList(req),
-                (HeadUtils.isMobile() || HeadUtils.isVideo()) ? 3 : 5, true);
+                                                (HeadUtils.isMobile() || HeadUtils.isVideo()) ? 3 : 5, true);
         if (StringUtils.isNotBlank(body))
         {
             builder.entity(body);
@@ -132,14 +124,9 @@ public class RestRootWebService extends HttpServlet
         return builder.build();
     }
 
-    /*
-     * @Path("/video{var:.*}") public Object getViedoResource(@PathParam("var")
-     * String var, @Context HttpServletRequest req, @Context HttpServletResponse
-     * response) throws IOException { return new VideoRootResource(var); }
-     */
     public List<?> getFileList(HttpServletRequest req)
     {
-        List<?> lst = null;
+        List<?> lst;
 
         int count = HeadUtils.judgeCountPerOnePage(req);
         String next = req.getParameter("next");
@@ -164,7 +151,7 @@ public class RestRootWebService extends HttpServlet
                 for (Object f : lst)
                 {
                     ((Face) f).setFi(UniqPhotosStore.getInstance()
-                            .getOneFileByHashStr(((Face) f).getEtag()));
+                                             .getOneFileByHashStr(((Face) f).getEtag()));
                 }
             }
         }
@@ -176,18 +163,18 @@ public class RestRootWebService extends HttpServlet
                 for (Object f : lst)
                 {
                     ((Face) f).setFi(UniqPhotosStore.getInstance()
-                            .getOneFileByHashStr(((Face) f).getEtag()));
+                                             .getOneFileByHashStr(((Face) f).getEtag()));
                 }
             }
         }
         else
         {
             lst = UniqPhotosStore.getInstance().getNextNineFileByHashStr(id, count, isnext,
-                    HeadUtils.isVideo());
+                                                                         HeadUtils.isVideo());
             if ((lst == null || lst.isEmpty()) && id != null)
             {
                 lst = UniqPhotosStore.getInstance().getNextNineFileByHashStr(null, count, isnext,
-                        HeadUtils.isVideo());
+                                                                             HeadUtils.isVideo());
             }
         }
         return lst;
@@ -230,7 +217,7 @@ public class RestRootWebService extends HttpServlet
 
     @Path("/photos/{id}")
     public Object getPhoto(@PathParam("id") String id, @Context HttpServletRequest req,
-            @Context HttpServletResponse response, @Context HttpHeaders headers, InputStream body)
+                           @Context HttpServletResponse response, @Context HttpHeaders headers, InputStream body)
     {
         if (StringUtils.isNotBlank(id))
         {
@@ -244,7 +231,7 @@ public class RestRootWebService extends HttpServlet
 
     @Path("/year/{year}")
     public Object getYearView(@PathParam("year") String year, @Context HttpServletRequest req,
-            @Context HttpServletResponse response, @Context HttpHeaders headers, InputStream body)
+                              @Context HttpServletResponse response, @Context HttpHeaders headers, InputStream body)
     {
         if (StringUtils.isNotBlank(year))
         {
@@ -258,7 +245,7 @@ public class RestRootWebService extends HttpServlet
 
     @Path("/month/{month}")
     public Object getMonthView(@PathParam("month") String month, @Context HttpServletRequest req,
-            @Context HttpServletResponse response, @Context HttpHeaders headers, InputStream body)
+                               @Context HttpServletResponse response, @Context HttpHeaders headers, InputStream body)
     {
         if (StringUtils.isNotBlank(month) && month.length() == 6)
         {
@@ -272,7 +259,7 @@ public class RestRootWebService extends HttpServlet
 
     @Path("/day/{day}")
     public Object getDayView(@PathParam("day") String day, @Context HttpServletRequest req,
-            @Context HttpServletResponse response, @Context HttpHeaders headers, InputStream body)
+                             @Context HttpServletResponse response, @Context HttpHeaders headers, InputStream body)
     {
         if (StringUtils.isNotBlank(day) && day.length() == 8)
         {

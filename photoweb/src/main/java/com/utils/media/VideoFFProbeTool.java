@@ -51,7 +51,7 @@ public class VideoFFProbeTool
 
             int nlen = 1024 * 64;
             byte[] buffer = new byte[nlen];
-            int rlen = 0;
+            int rlen;
             int off = 0;
             StringBuilder sb = new StringBuilder();
             while (true)

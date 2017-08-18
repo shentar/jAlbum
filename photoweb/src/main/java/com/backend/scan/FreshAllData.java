@@ -14,7 +14,7 @@ public class FreshAllData
 {
     private static final Logger logger = LoggerFactory.getLogger(FreshAllData.class);
 
-    private static final long IDLE_REFRESH_INTEVAL = AppConfig.getInstance()
+    private static final long IDLE_REFRESH_INTERVAL = AppConfig.getInstance()
             .getIdleRefreshInteval();
 
     private static final long BUSY_REFRESH_INTERVAL = AppConfig.getInstance()
@@ -50,7 +50,7 @@ public class FreshAllData
 
         if (firstTime || lastEventTime != 0
                 && (System.currentTimeMillis() - lastEventTime >= BUSY_REFRESH_INTERVAL
-                        || System.currentTimeMillis() - lastFreshTime >= IDLE_REFRESH_INTEVAL))
+                        || System.currentTimeMillis() - lastFreshTime >= IDLE_REFRESH_INTERVAL))
         {
             doRefresh();
             firstTime = false;

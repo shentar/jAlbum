@@ -1,19 +1,18 @@
 package com.backend.facer;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.backend.dao.GlobalConfDao;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.utils.conf.AppConfig;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 public class FaceSetToken
 {
@@ -68,7 +67,7 @@ public class FaceSetToken
                 {
                     currentFaceSetID = 0;
                     GlobalConfDao.getInstance().setConf(CURRENT_FACESETID_CONF_KEY,
-                            currentFaceSetID + "");
+                                                        currentFaceSetID + "");
                 }
             }
 
@@ -76,7 +75,7 @@ public class FaceSetToken
             {
                 facecount = getFaceCount();
                 logger.warn("the count of faces in the faceset[{}] is {}", getCurrentFaceSetID(),
-                        facecount);
+                            facecount);
             }
 
             while (facecount >= 1000)
@@ -131,7 +130,7 @@ public class FaceSetToken
     private void createFaceSet()
     {
         String facesetid = getCurrentFaceSetID();
-        Map<String, Object> mp = new HashMap<String, Object>();
+        Map<String, Object> mp = new HashMap<>();
         mp.put("display_name", "jAlbum_FaceSet");
         mp.put("outer_id", facesetid);
         String result = FacerUtils.post(FacerUtils.FACESET_CREATE_URL, mp);
@@ -152,6 +151,7 @@ public class FaceSetToken
         if (flst == null)
         {
             createFaceSet();
+            return 0;
         }
 
         return flst.size();
@@ -164,7 +164,7 @@ public class FaceSetToken
             return null;
         }
 
-        Map<String, Object> mp = new HashMap<String, Object>();
+        Map<String, Object> mp = new HashMap<>();
         mp.put(FacerUtils.OUTER_ID, faceSetID);
         String result = FacerUtils.post(FacerUtils.FACESET_DETAIL_URL, mp);
 
@@ -173,7 +173,7 @@ public class FaceSetToken
             return null;
         }
 
-        List<String> flst = new LinkedList<String>();
+        List<String> flst = new LinkedList<>();
 
         JsonParser parser = new JsonParser();
         JsonObject jr = (JsonObject) parser.parse(result);

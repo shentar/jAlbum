@@ -1,20 +1,19 @@
 package com.backend.facer;
 
-import java.io.File;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.backend.FileInfo;
 import com.backend.dao.FaceTableDao;
 import com.utils.conf.AppConfig;
 import com.utils.media.MediaTool;
 import com.utils.media.ThumbnailManager;
-import com.utils.sys.GloableLockBaseOnString;
+import com.utils.sys.GlobalLockBaseOnString;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class FaceRecService
 {
@@ -57,7 +56,7 @@ public class FaceRecService
             return;
         }
 
-        if (!GloableLockBaseOnString.getInstance(GloableLockBaseOnString.FACE_DETECT_LOCK)
+        if (!GlobalLockBaseOnString.getInstance(GlobalLockBaseOnString.FACE_DETECT_LOCK)
                 .tryToDo(fi.getHash256()))
         {
             logger.warn("a task already asigned {}", fi);
@@ -103,7 +102,7 @@ public class FaceRecService
                 }
                 finally
                 {
-                    GloableLockBaseOnString.getInstance(GloableLockBaseOnString.FACE_DETECT_LOCK)
+                    GlobalLockBaseOnString.getInstance(GlobalLockBaseOnString.FACE_DETECT_LOCK)
                             .done(fi.getHash256());
                 }
             }
@@ -183,7 +182,6 @@ public class FaceRecService
                             if (faceid != fc.getFaceid())
                             {
                                 FaceTableDao.getInstance().updateFaceID(fc.getFaceid(), faceid);
-                                continue;
                             }
                         }
                     }
@@ -213,14 +211,16 @@ public class FaceRecService
         if (fid > 0)
         {
             List<Face> flst = FaceTableDao.getInstance().getFacesByID(fid, needFileInfo);
-            if (flst != null && !flst.isEmpty())
+            if (flst == null || flst.isEmpty())
             {
-                FacerUtils.sortByTime(flst);
+                return null;
             }
+
+            FacerUtils.sortByTime(flst);
 
             if (count > 0)
             {
-                List<Face> truncateList = new LinkedList<Face>();
+                List<Face> truncateList = new LinkedList<>();
                 int needCount = count > flst.size() ? flst.size() : count;
                 for (int i = 0; i != needCount; i++)
                 {
@@ -246,7 +246,7 @@ public class FaceRecService
             return null;
         }
 
-        List<Face> fflist = new LinkedList<Face>();
+        List<Face> fflist = new LinkedList<>();
         for (long fid : faceids)
         {
             Face f = FaceTableDao.getInstance().getNewestFaceByID(fid, true);

@@ -40,7 +40,7 @@ public class WebFilter implements Filter
         try
         {
             initMDC();
-            MDC.put(SystemConstant.REQEUSTIDKEY, UUIDGenerator.getUUID());
+            MDC.put(SystemConstant.REQUESTIDKEY, UUIDGenerator.getUUID());
 
             if (!(req instanceof HttpServletRequest) || !(res instanceof HttpServletResponse))
             {
@@ -51,7 +51,7 @@ public class WebFilter implements Filter
             HttpServletResponse newres = (HttpServletResponse) res;
 
             newres.setHeader(SystemConstant.REQUEST_ID_HEADER,
-                    (String) MDC.get(SystemConstant.REQEUSTIDKEY));
+                    (String) MDC.get(SystemConstant.REQUESTIDKEY));
 
             String useragent = newreq.getHeader(SystemConstant.USER_AGENT_HEADER);
             if (StringUtils.isNotBlank(useragent))
@@ -64,17 +64,17 @@ public class WebFilter implements Filter
 
             if (newreq.getParameter("video") != null)
             {
-                SystemProperties.add(SystemConstant.IS_VIDEO, new Boolean(true));
+                SystemProperties.add(SystemConstant.IS_VIDEO, true);
             }
 
             if (newreq.getParameter("face") != null)
             {
-                SystemProperties.add(SystemConstant.IS_FACES_KEY, new Boolean(true));
+                SystemProperties.add(SystemConstant.IS_FACES_KEY, Boolean.TRUE);
             }
 
             if (newreq.getParameter("noface") != null)
             {
-                SystemProperties.add(SystemConstant.IS_NO_FACES_KEY, new Boolean(true));
+                SystemProperties.add(SystemConstant.IS_NO_FACES_KEY, Boolean.TRUE);
             }
 
             String ft = newreq.getParameter("facetoken");
@@ -117,7 +117,7 @@ public class WebFilter implements Filter
         MDC.put(SystemConstant.HTTP_STATUS, SystemConstant.DEFAULT_LOG_VALUE);
         MDC.put(SystemConstant.REMOTE_ADDR, SystemConstant.DEFAULT_LOG_VALUE);
         MDC.put(SystemConstant.USER_AGENT, SystemConstant.DEFAULT_LOG_VALUE);
-        MDC.put(SystemConstant.REQEUSTIDKEY, SystemConstant.DEFAULT_LOG_VALUE);
+        MDC.put(SystemConstant.REQUESTIDKEY, SystemConstant.DEFAULT_LOG_VALUE);
         MDC.put(SystemConstant.FILE_NAME, SystemConstant.DEFAULT_LOG_VALUE);
         MDC.put(SystemConstant.HTTP_URI, SystemConstant.DEFAULT_LOG_VALUE);
         MDC.put(SystemConstant.RANGE_HEADER_KEY, SystemConstant.DEFAULT_LOG_VALUE);

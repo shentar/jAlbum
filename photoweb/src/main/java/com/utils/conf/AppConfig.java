@@ -15,7 +15,7 @@ public class AppConfig
 {
     private static final Logger logger = LoggerFactory.getLogger(AppConfig.class);
 
-    public static final String configFilePath = "jalbum.xml";
+    private static final String configFilePath = "jalbum.xml";
 
     private static XMLConfiguration config;
 
@@ -53,10 +53,10 @@ public class AppConfig
 
     public List<String> getInputDir()
     {
-        List<String> dirlst = new LinkedList<String>();
+        List<String> dirlst = new LinkedList<>();
         try
         {
-            List<String> strList = new LinkedList<String>();
+            List<String> strList = new LinkedList<>();
             List<Object> lst = config.getList("inputdir.dir");
             for (Object s : lst)
             {
@@ -85,13 +85,13 @@ public class AppConfig
 
     public List<String> getFileSuffix()
     {
-        List<String> dirLst = new LinkedList<String>();
+        List<String> dirLst = new LinkedList<>();
         List<Object> lst = config.getList("picfilesuffix.suffix");
         for (Object s : lst)
         {
             if (s instanceof String)
             {
-                dirLst.add("." + (String) s);
+                dirLst.add("." + s);
             }
         }
 
@@ -130,11 +130,11 @@ public class AppConfig
 
     public List<String> getExcludedir()
     {
-        List<String> dirlst = new LinkedList<String>();
+        List<String> dirlst = new LinkedList<>();
 
         try
         {
-            List<String> strList = new LinkedList<String>();
+            List<String> strList = new LinkedList<>();
             List<Object> lst = config.getList("excludedir.dir");
             for (Object s : lst)
             {
@@ -214,12 +214,8 @@ public class AppConfig
 
     public boolean isS3ProxyConfiged()
     {
-        if (StringUtils.isNotBlank(getS3ProxyHost()) && getS3ProxyPort() != -1)
-        {
-            return true;
-        }
+        return StringUtils.isNotBlank(getS3ProxyHost()) && getS3ProxyPort() != -1;
 
-        return false;
     }
 
     public String getS3ProxyHost()
@@ -282,12 +278,8 @@ public class AppConfig
 
     public boolean isFacerConfigured()
     {
-        if (StringUtils.isNotBlank(getApiKey()) && StringUtils.isNotBlank(getSecret()))
-        {
-            return true;
-        }
+        return StringUtils.isNotBlank(getApiKey()) && StringUtils.isNotBlank(getSecret());
 
-        return false;
     }
 
     public boolean facerUseHttps()

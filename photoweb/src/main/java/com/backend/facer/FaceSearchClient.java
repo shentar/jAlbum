@@ -43,10 +43,10 @@ public class FaceSearchClient
             maxIDu = 1000;
         }
 
-        List<Face> flst = new ArrayList<Face>();
+        List<Face> flst = new ArrayList<>();
         for (int i = 0; i <= maxIDu; i++)
         {
-            Map<String, Object> mp = new HashMap<String, Object>();
+            Map<String, Object> mp = new HashMap<>();
             mp.put(FacerUtils.FACE_TOKEN, facetoken);
             mp.put(FacerUtils.OUTER_ID, FaceSetToken.getInstance().getFaceSetIDBySn(i));
             mp.put(RETURN_RESULT_COUNT, MAX_RETURN_COUNT + "");
@@ -75,7 +75,7 @@ public class FaceSearchClient
         JsonArray ja = jr.getAsJsonArray("results");
         if (ja != null && ja.size() > 0)
         {
-            List<Face> ls = new ArrayList<Face>();
+            List<Face> ls = new ArrayList<>();
             for (int i = 0; i != ja.size(); i++)
             {
                 JsonObject je = ja.get(i).getAsJsonObject();

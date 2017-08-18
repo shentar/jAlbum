@@ -13,7 +13,7 @@ import com.backend.facer.Face;
 import com.backend.facer.FaceRecService;
 import com.backend.facer.FacerUtils;
 import com.utils.conf.AppConfig;
-import com.utils.sys.GloableLockBaseOnString;
+import com.utils.sys.GlobalLockBaseOnString;
 import com.utils.web.HeadUtils;
 
 public class ThumbnailManager
@@ -194,7 +194,7 @@ public class ThumbnailManager
             return;
         }
 
-        if (!GloableLockBaseOnString.getInstance(GloableLockBaseOnString.FACE_THUMBNAIL_LOCK)
+        if (!GlobalLockBaseOnString.getInstance(GlobalLockBaseOnString.FACE_THUMBNAIL_LOCK)
                 .tryToDo(f.getFacetoken()))
         {
             logger.warn("already gen the file: {}", f);
@@ -250,7 +250,7 @@ public class ThumbnailManager
         }
         finally
         {
-            GloableLockBaseOnString.getInstance(GloableLockBaseOnString.FACE_THUMBNAIL_LOCK)
+            GlobalLockBaseOnString.getInstance(GlobalLockBaseOnString.FACE_THUMBNAIL_LOCK)
                     .done(f.getFacetoken());
         }
     }

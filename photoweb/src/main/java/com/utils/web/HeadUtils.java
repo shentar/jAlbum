@@ -1,19 +1,5 @@
 package com.utils.web;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.core.Response.ResponseBuilder;
-
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.backend.FileInfo;
 import com.backend.FileType;
 import com.service.filter.LoginStatus;
@@ -21,6 +7,18 @@ import com.utils.conf.AppConfig;
 import com.utils.media.MediaTool;
 import com.utils.sys.SystemConstant;
 import com.utils.sys.SystemProperties;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.Response.ResponseBuilder;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class HeadUtils
 {
@@ -29,35 +27,31 @@ public class HeadUtils
     public static boolean isMobile()
     {
         Boolean ismobile = (Boolean) SystemProperties.get(SystemConstant.IS_MOBILE_KEY);
-        return ismobile != null && ismobile.booleanValue();
+        return ismobile != null && ismobile;
     }
 
     public static boolean isFaces()
     {
         Boolean isFaces = (Boolean) SystemProperties.get(SystemConstant.IS_FACES_KEY);
-        return isFaces != null && isFaces.booleanValue();
+        return isFaces != null && isFaces;
     }
 
     public static boolean isNoFaces()
     {
         Boolean isFaces = (Boolean) SystemProperties.get(SystemConstant.IS_NO_FACES_KEY);
-        return isFaces != null && isFaces.booleanValue();
+        return isFaces != null && isFaces;
     }
 
     public static boolean isIOS()
     {
         Boolean ismobile = (Boolean) SystemProperties.get(SystemConstant.IS_IOS);
-        return ismobile != null && ismobile.booleanValue();
+        return ismobile != null && ismobile;
     }
 
     public static boolean needRotatePic(FileInfo f)
     {
-        if (!isIOS() && f.getRoatateDegree() != 0)
-        {
-            return true;
-        }
+        return !isIOS() && f.getRoatateDegree() != 0;
 
-        return false;
     }
 
     public static void checkMobile(String ua)
@@ -80,8 +74,8 @@ public class HeadUtils
             }
         }
 
-        SystemProperties.add(SystemConstant.IS_MOBILE_KEY, new Boolean(isMobile));
-        SystemProperties.add(SystemConstant.IS_IOS, new Boolean(isIOS));
+        SystemProperties.add(SystemConstant.IS_MOBILE_KEY, isMobile);
+        SystemProperties.add(SystemConstant.IS_IOS, isIOS);
     }
 
     public static void setExpiredTime(ResponseBuilder builder)
@@ -228,7 +222,7 @@ public class HeadUtils
     public static boolean isVideo()
     {
         Boolean isvideo = (Boolean) SystemProperties.get(SystemConstant.IS_VIDEO);
-        return isvideo != null && isvideo.booleanValue();
+        return isvideo != null && isvideo;
     }
 
     public static int judgeCountPerOnePage(HttpServletRequest req)

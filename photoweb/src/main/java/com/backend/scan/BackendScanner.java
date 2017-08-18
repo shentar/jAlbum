@@ -12,11 +12,11 @@ import com.backend.facer.FaceRecService;
 import com.backend.facer.FaceSetManager;
 import com.utils.conf.AppConfig;
 
-public class BackendScaner
+public class BackendScanner
 {
-    private static final Logger logger = LoggerFactory.getLogger(BackendScaner.class);
+    private static final Logger logger = LoggerFactory.getLogger(BackendScanner.class);
 
-    private static final BackendScaner instance = new BackendScaner();
+    private static final BackendScanner instance = new BackendScanner();
 
     private boolean isFirstTime = true;
 
@@ -60,12 +60,12 @@ public class BackendScaner
 
     private Future<?> facerScanTaskFuture = null;
 
-    private BackendScaner()
+    private BackendScanner()
     {
 
     }
 
-    public static BackendScaner getInstance()
+    public static BackendScanner getInstance()
     {
         return instance;
     }
@@ -87,8 +87,8 @@ public class BackendScaner
             return true;
         }
 
-        logger.warn("the task is already scheduled: isFirstTime {}, isDone {}.", isFirstTime,
-                isDone);
+        logger.warn("the task is already scheduled: isFirstTime {}, isDone {}.", false,
+                    false);
 
         return false;
     }

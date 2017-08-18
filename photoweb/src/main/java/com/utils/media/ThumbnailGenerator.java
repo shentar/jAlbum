@@ -87,12 +87,12 @@ public class ThumbnailGenerator
         String types = Arrays.toString(ImageIO.getReaderFormatNames());
         String suffix = null;
         // 获取图片后缀
-        if (imgFile.getName().indexOf(".") > -1)
+        if (imgFile.getName().contains("."))
         {
             suffix = imgFile.getName().substring(imgFile.getName().lastIndexOf(".") + 1);
         }
 
-        if (suffix == null || types.toLowerCase().indexOf(suffix.toLowerCase()) < 0)
+        if (suffix == null || !types.toLowerCase().contains(suffix.toLowerCase()))
         {
             logger.error(
                     "Sorry, the image suffix is illegal. the standard image suffix is {}." + types);

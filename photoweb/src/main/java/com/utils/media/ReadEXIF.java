@@ -40,7 +40,7 @@ public class ReadEXIF
         if (!f.exists())
         {
             logger.error("the file is not exist: " + filePath);
-            return fi;
+            return null;
         }
 
         try

@@ -1,16 +1,11 @@
 package com.utils.media;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-
+import com.utils.conf.AppConfig;
 import org.apache.commons.lang.StringUtils;
 
-import com.utils.conf.AppConfig;
+import java.io.*;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 public class FileSHA256Caculater
 {
@@ -80,27 +75,27 @@ public class FileSHA256Caculater
         return byte2hex(md.digest());
     }
 
-    private static String byte2hex(byte[] b)
+    private static String byte2hex(byte[] bytes)
     {
-        if (b == null || b.length == 0)
+        if (bytes == null || bytes.length == 0)
         {
             return null;
         }
 
-        String hs = "";
-        String stmp = "";
-        for (int n = 0; n < b.length; n++)
+        StringBuilder hs = new StringBuilder();
+        String stmp;
+        for (byte b : bytes)
         {
-            stmp = (java.lang.Integer.toHexString(b[n] & 0XFF));
+            stmp = (Integer.toHexString(b & 0XFF));
             if (stmp.length() == 1)
             {
-                hs = hs + "0" + stmp;
+                hs.append("0").append(stmp);
             }
             else
             {
-                hs = hs + stmp;
+                hs.append(stmp);
             }
         }
-        return hs.toUpperCase();
+        return hs.toString().toUpperCase();
     }
 }

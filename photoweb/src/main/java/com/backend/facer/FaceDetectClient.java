@@ -25,7 +25,7 @@ public class FaceDetectClient
             return null;
         }
 
-        Map<String, Object> mp = new HashMap<String, Object>();
+        Map<String, Object> mp = new HashMap<>();
         Object file = FacerUtils.getFileForDetectFaces(fi);
         if (file == null)
         {
@@ -56,7 +56,7 @@ public class FaceDetectClient
             return null;
         }
 
-        List<Face> ls = new ArrayList<Face>();
+        List<Face> ls = new ArrayList<>();
         for (int i = 0; i != ja.size(); i++)
         {
             JsonObject je = ja.get(i).getAsJsonObject();

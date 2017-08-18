@@ -9,7 +9,7 @@ import com.utils.sys.SystemConstant;
 
 public class TokenCache
 {
-    private CopyOnWriteArraySet<String> tokenset = new CopyOnWriteArraySet<String>();
+    private CopyOnWriteArraySet<String> tokenset = new CopyOnWriteArraySet<>();
 
     private String superToken = null;
 

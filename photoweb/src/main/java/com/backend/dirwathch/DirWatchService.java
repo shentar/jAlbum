@@ -27,7 +27,7 @@ public class DirWatchService
 {
     private static final Logger logger = LoggerFactory.getLogger(DirWatchService.class);
 
-    private ConcurrentHashMap<WatchKey, String> keyMap = new ConcurrentHashMap<WatchKey, String>();
+    private ConcurrentHashMap<WatchKey, String> keyMap = new ConcurrentHashMap<>();
     private WatchService ws = null;
     private static DirWatchService instance = new DirWatchService();
 

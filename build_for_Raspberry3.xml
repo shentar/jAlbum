@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<project name="jAlbum" basedir="." default="all">
+<project name="jAlbum" basedir="." default="cpfiles">
   <property name="dedup.dir" location="dedup"/>
   <property name="photoweb.dir" location="photoweb"/>
   <property name="distribute.dir" location="distribute"/>

@@ -22,7 +22,7 @@ public class AuthFilter extends AbstractFilter
 {
     private static final Logger logger = LoggerFactory.getLogger(AuthFilter.class);
 
-    private static final String ORIGNAL_URI_KEY = "origuri";
+    private static final String ORIGINAL_URI_KEY = "origuri";
 
     private static final String cookieNamePrefix = "SESSION";
 
@@ -65,7 +65,7 @@ public class AuthFilter extends AbstractFilter
 
         Cookie[] cookies = httpreq.getCookies();
         LoginStatus loginStatus = LoginStatus.Unlogin;
-        String origUri = httpreq.getParameter(ORIGNAL_URI_KEY);
+        String origUri = httpreq.getParameter(ORIGINAL_URI_KEY);
         String redirectLocation = "";
         String token = httpreq.getParameter("token");
 
@@ -88,7 +88,7 @@ public class AuthFilter extends AbstractFilter
                 logger.warn("token error: " + token);
                 loginStatus = LoginStatus.TokenError;
                 redirectLocation = "/login" + (StringUtils.isBlank(origUri) ? ""
-                        : "?" + ORIGNAL_URI_KEY + "=" + origUri);
+                        : "?" + ORIGINAL_URI_KEY + "=" + origUri);
             }
             break;
 
@@ -100,7 +100,7 @@ public class AuthFilter extends AbstractFilter
             if (cookies == null || cookies.length == 0)
             {
                 loginStatus = LoginStatus.Unlogin;
-                redirectLocation = "/login" + "?" + ORIGNAL_URI_KEY + "=" + httpreq.getRequestURI();
+                redirectLocation = "/login" + "?" + ORIGINAL_URI_KEY + "=" + httpreq.getRequestURI();
             }
             else
             {
@@ -129,7 +129,7 @@ public class AuthFilter extends AbstractFilter
                 {
                     logger.warn("cookies login error: " + token);
                     loginStatus = LoginStatus.CookiesError;
-                    redirectLocation = "/login" + "?" + ORIGNAL_URI_KEY + "="
+                    redirectLocation = "/login" + "?" + ORIGINAL_URI_KEY + "="
                             + httpreq.getRequestURI();
                 }
             }
@@ -151,15 +151,12 @@ public class AuthFilter extends AbstractFilter
             break;
 
         case CookiesError:
-            if (cookies != null)
+            for (Cookie ctmp : cookies)
             {
-                for (Cookie ctmp : cookies)
+                if (StringUtils.equalsIgnoreCase(ctmp.getName(), cookieName))
                 {
-                    if (StringUtils.equalsIgnoreCase(ctmp.getName(), cookieName))
-                    {
-                        ctmp.setMaxAge(0);
-                        httpres.addCookie(ctmp);
-                    }
+                    ctmp.setMaxAge(0);
+                    httpres.addCookie(ctmp);
                 }
             }
         case TokenError:
@@ -186,7 +183,7 @@ public class AuthFilter extends AbstractFilter
         httpres.setStatus(200);
         try
         {
-            String origUri = httpreq.getParameter(ORIGNAL_URI_KEY);
+            String origUri = httpreq.getParameter(ORIGINAL_URI_KEY);
             String hh = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" "
                     + "\"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">"
                     + "<html xmlns=\"http://www.w3.org/1999/xhtml\" lang=\"zh-CN\">"

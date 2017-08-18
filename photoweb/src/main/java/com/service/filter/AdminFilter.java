@@ -89,7 +89,7 @@ public class AdminFilter extends AbstractFilter
 
     private synchronized void checkAndGenToken(HttpServletResponse httpres)
     {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
 
         for (int i = 0; i != 5; i++)
         {

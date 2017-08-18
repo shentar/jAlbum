@@ -74,7 +74,7 @@ public class ObjectService
             File cfile = new File(f.getPath());
             if (cfile.isFile())
             {
-                InputStream fi = null;
+                InputStream fi;
                 File thumbnail = null;
                 String sizestr = req.getParameter("size");
                 if (StringUtils.isNotBlank(sizestr))
@@ -120,24 +120,21 @@ public class ObjectService
                     }
                 }
 
-                if (fi != null)
-                {
-                    String fileName = thumbnail != null ? thumbnail.getName()
-                            : new File(f.getPath()).getName();
-                    String contenttype = thumbnail != null
-                            ? HeadUtils.getContentType(thumbnail.getCanonicalPath())
-                            : HeadUtils.getContentType(f.getPath());
+                String fileName = thumbnail != null ? thumbnail.getName()
+                        : new File(f.getPath()).getName();
+                String contenttype = thumbnail != null
+                        ? HeadUtils.getContentType(thumbnail.getCanonicalPath())
+                        : HeadUtils.getContentType(f.getPath());
 
-                    MDC.put(SystemConstant.FILE_NAME, fileName);
-                    builder.entity(fi);
+                MDC.put(SystemConstant.FILE_NAME, fileName);
+                builder.entity(fi);
 
-                    builder.header("Content-type", contenttype);
-                    logger.info("content type is: {}", contenttype);
-                    HeadUtils.setExpiredTime(builder);
-                    builder.header("Content-Disposition", "filename=" + fileName);
-                    builder.header("MediaFileFullPath", URLEncoder.encode(f.getPath(), "UTF-8"));
-                    logger.info("the file is: {}, Mime: {}", f, contenttype);
-                }
+                builder.header("Content-type", contenttype);
+                logger.info("content type is: {}", contenttype);
+                HeadUtils.setExpiredTime(builder);
+                builder.header("Content-Disposition", "filename=" + fileName);
+                builder.header("MediaFileFullPath", URLEncoder.encode(f.getPath(), "UTF-8"));
+                logger.info("the file is: {}, Mime: {}", f, contenttype);
             }
             else
             {
@@ -187,7 +184,7 @@ public class ObjectService
 
     private List<Range> parseRangeStrEx(String rstr) throws IOException
     {
-        List<Range> rlst = new LinkedList<Range>();
+        List<Range> rlst = new LinkedList<>();
         try
         {
             if (StringUtils.isBlank(rstr))
@@ -217,15 +214,12 @@ public class ObjectService
                 }
 
                 String[] rs = ranges.split(",");
-                if (rs != null)
+                for (String oner : rs)
                 {
-                    for (String oner : rs)
+                    Range r = getOneRange(oner);
+                    if (r != null)
                     {
-                        Range r = getOneRange(oner);
-                        if (r != null)
-                        {
-                            rlst.add(r);
-                        }
+                        rlst.add(r);
                     }
                 }
 
@@ -273,7 +267,7 @@ public class ObjectService
     @SuppressWarnings("unused")
     private List<Range> parseRangeStr(String rangestr)
     {
-        List<Range> rlst = new LinkedList<Range>();
+        List<Range> rlst = new LinkedList<>();
         // 需要考虑ranges下载，暂时只支持单range下载。
         // Content-Range:bytes 0-17190973/17190974
         // Range:bytes=0-
@@ -289,7 +283,7 @@ public class ObjectService
                 if (rangestr.contains(","))
                 {
                     String[] rs = rangestr.split(",");
-                    if (rs != null && rs.length > 0)
+                    if (rs.length > 0)
                     {
                         if (rs[0].contains("-"))
                         {

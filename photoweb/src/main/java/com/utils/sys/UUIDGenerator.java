@@ -8,11 +8,12 @@ public class UUIDGenerator
     {
         String uuid = UUID.randomUUID().toString();
         String[] splits = uuid.split("-");
-        String ret = "";
+        StringBuilder retBuilder = new StringBuilder();
         for (String s : splits)
         {
-            ret += s;
+            retBuilder.append(s);
         }
+        String ret = retBuilder.toString();
 
         if (ret.isEmpty())
         {

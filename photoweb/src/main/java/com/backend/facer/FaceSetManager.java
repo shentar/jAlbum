@@ -41,7 +41,7 @@ public class FaceSetManager
         }
 
         String facesetid = FaceSetToken.getInstance().acquireFaceSetID();
-        Map<String, Object> mp = new HashMap<String, Object>();
+        Map<String, Object> mp = new HashMap<>();
         mp.put("face_tokens", faceToken);
         mp.put("outer_id", facesetid);
         int retryTimes = 3;
@@ -75,7 +75,7 @@ public class FaceSetManager
             return true;
         }
 
-        Map<String, Object> mp = new HashMap<String, Object>();
+        Map<String, Object> mp = new HashMap<>();
         String fts = getFaceTokensString(flst);
         mp.put("face_tokens", fts);
         mp.put("outer_id", faceSetID);
@@ -101,7 +101,7 @@ public class FaceSetManager
 
     private String getFaceTokensString(List<String> flst)
     {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         for (String ftoken : flst)
         {
             sb.append(ftoken).append(",");
@@ -145,7 +145,7 @@ public class FaceSetManager
         {
             String faceSetID = FaceSetToken.getInstance().getFaceSetIDBySn(i);
             List<String> flst = FaceSetToken.getInstance().getFaceTokens(faceSetID);
-            List<String> dlst = new LinkedList<String>();
+            List<String> dlst = new LinkedList<>();
             if (flst != null)
             {
                 for (String token : flst)

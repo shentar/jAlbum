@@ -1,12 +1,12 @@
 package com.shentar.frontend;
 
-import java.io.File;
-import java.io.IOException;
-
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.webapp.WebAppContext;
+
+import java.io.File;
+import java.io.IOException;
 
 public class FrontMain
 {
@@ -44,15 +44,15 @@ public class FrontMain
 
         String epath = "lib" + File.separator + "extra";
         File[] fs = new File(epath).listFiles();
-        if (fs.length > 0)
+        if (fs != null && fs.length > 0)
         {
-            StringBuffer extraPath = new StringBuffer();
+            StringBuilder extraPath = new StringBuilder();
             for (File f : fs)
             {
                 String filename = f.getName();
                 if (filename.toLowerCase().endsWith(".jar"))
                 {
-                    extraPath.append(epath + File.separator + filename).append(",");
+                    extraPath.append(epath).append(File.separator).append(filename).append(",");
                 }
             }
             context.setExtraClasspath(extraPath.toString());
@@ -73,7 +73,7 @@ public class FrontMain
 
         /**
          * SignalHandler sig = new SignalHandler() {
-         * 
+         *
          * @Override public void handle(Signal signum) { System.out.println(
          *           "caught signal " + signum); if (signum.getNumber() == 15) {
          *           System.out.println("caught KILL signal, exit now."); try {

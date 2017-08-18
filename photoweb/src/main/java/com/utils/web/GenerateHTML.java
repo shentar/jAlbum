@@ -1,28 +1,21 @@
 package com.utils.web;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.TreeMap;
-
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.backend.FileInfo;
 import com.backend.dao.DateRecords;
 import com.backend.dao.DateTableDao;
 import com.backend.dao.UniqPhotosStore;
 import com.backend.facer.Face;
-import com.utils.media.MediaTool;;
+import com.utils.media.MediaTool;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.*;
+import java.util.Map.Entry;
 
 public class GenerateHTML
 {
-    private static final String seprator = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+    private static final String separator = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
 
     private static final Logger logger = LoggerFactory.getLogger(GenerateHTML.class);
 
@@ -72,7 +65,7 @@ public class GenerateHTML
         }
 
         sb.append("<table style=\"text-align: center;\" width=\"100%\" height=\"100%\" "
-                + "border=\"0\" bordercolor=\"#000000\">");
+                          + "border=\"0\" bordercolor=\"#000000\">");
         int i = 0;
         int start = 0;
         int end = 0;
@@ -90,7 +83,7 @@ public class GenerateHTML
             {
                 FileInfo fi = (FileInfo) f;
                 sb.append("<a href=\"" + "/photos/" + fi.getHash256() + extraQueryParas(true)
-                        + "\">");
+                                  + "\">");
                 sb.append(generateImgTag(fi, 310));
             }
             else if (f instanceof Face)
@@ -108,13 +101,13 @@ public class GenerateHTML
                     if (HeadUtils.isNoFaces())
                     {
                         sb.append("<a href=\"" + "/photos/" + fi.getHash256()
-                                + extraQueryParas(true) + "\">");
+                                          + extraQueryParas(true) + "\">");
                         sb.append(generateImgTag(fi, 310));
                     }
                     else
                     {
                         sb.append("<a href=\"" + "/facetoken/" + face.getFacetoken()
-                                + extraQueryParas(true) + "\">");
+                                          + extraQueryParas(true) + "\">");
                         sb.append(generateImgTag(face, false));
                     }
 
@@ -186,9 +179,9 @@ public class GenerateHTML
 
     private static String genIndexNavigate(Object firstP, Object endP)
     {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append("<table style=\"text-align: center;\" width=\"100%\" height=\"100%\" "
-                + "border=\"0\" bordercolor=\"#000000\">");
+                          + "border=\"0\" bordercolor=\"#000000\">");
 
         String prevPage = getPhotoLink(getID(firstP), false);
         String nextPage = getPhotoLink(getID(endP), true);
@@ -214,8 +207,8 @@ public class GenerateHTML
         }
 
         sb.append("<tr><td width=\"100%\" bordercolor=\"#000000\" " + getTdHeight() + ">");
-        sb.append(prevPage + seprator);
-        sb.append(photoTime + seprator);
+        sb.append(prevPage + separator);
+        sb.append(photoTime + separator);
         sb.append(nextPage);
         sb.append("</td></tr></table>");
 
@@ -224,8 +217,7 @@ public class GenerateHTML
 
     private static String getTdHeight()
     {
-        String tdHeight = HeadUtils.isMobile() ? " height=\"180px\" " : " ";
-        return tdHeight;
+        return HeadUtils.isMobile() ? " height=\"180px\" " : " ";
     }
 
     private static String getID(Object o)
@@ -270,10 +262,9 @@ public class GenerateHTML
         value += "一";
         value += (count == 1 ? "张" : "页");
 
-        String prevPage = "<a href=\"" + getPhotoUrl(id, count, isNext) + "\"><input value=\""
+        return "<a href=\"" + getPhotoUrl(id, count, isNext) + "\"><input value=\""
                 + value + "\" type=\"button\"/></a>";
 
-        return prevPage;
     }
 
     private static String getPhotoUrl(String id, int count, boolean isNext)
@@ -289,7 +280,7 @@ public class GenerateHTML
                 .getInstance().getAllDateRecord();
         if (allrecords != null && !allrecords.isEmpty())
         {
-            StringBuffer ylst = new StringBuffer(
+            StringBuilder ylst = new StringBuilder(
                     "<table style=\"text-align: center;\" width=\"100%\" height=\"100%\" "
                             + "border=\"0\" bordercolor=\"#000000\">");
 
@@ -338,7 +329,7 @@ public class GenerateHTML
 
                 ylst.append("<td width=\"5%\" bordercolor=\"#000000\">");
                 ylst.append("<a href=\"/year/" + f + "\" >" + "<input type=\"button\" value=\"" + f
-                        + "\"/></a></td>");
+                                    + "\"/></a></td>");
 
                 if ((i + 1) % rowcount == 0)
                 {
@@ -403,7 +394,7 @@ public class GenerateHTML
 
     private static List<String> getSortedKeyList(Set<String> set)
     {
-        List<String> arrayList = new LinkedList<String>();
+        List<String> arrayList = new LinkedList<>();
         arrayList.addAll(set);
         Collections.sort(arrayList, new Comparator<String>()
         {
@@ -443,13 +434,13 @@ public class GenerateHTML
         }
         // 隐藏照片
         sb.append("<script type=\"text/javascript\">"
-                + "function changeUrl(url){window.history.pushState({},0,'http://'+window.location.host+'/'+url);}"
-                + "window.onload=changeUrl(" + "'photos/" + f.getHash256() + extraQueryParas(true)
-                + "');"
-                + "function deletephoto(path){jConfirm('该操作将永久隐藏照片，无法撤消，确认是否继续？','确认',function(r){if (r){"
-                + "changeUrl('?next=" + f.getHash256() + extraQueryParas(false) + "&count=1');"
-                + "window.location.reload();" + "$.ajax({url:path,type:'DELETE',"
-                + "success:function(result){}});}});}");
+                          + "function changeUrl(url){window.history.pushState({},0,'http://'+window.location.host+'/'+url);}"
+                          + "window.onload=changeUrl(" + "'photos/" + f.getHash256() + extraQueryParas(true)
+                          + "');"
+                          + "function deletephoto(path){jConfirm('该操作将永久隐藏照片，无法撤消，确认是否继续？','确认',function(r){if (r){"
+                          + "changeUrl('?next=" + f.getHash256() + extraQueryParas(false) + "&count=1');"
+                          + "window.location.reload();" + "$.ajax({url:path,type:'DELETE',"
+                          + "success:function(result){}});}});}");
 
         if (HeadUtils.isMobile())
         {
@@ -458,9 +449,9 @@ public class GenerateHTML
             sb.append("$(\"#singlephoto\").swipe({");
             sb.append("swipe: function(event, direction, distance, duration, fingerCount) {");
             sb.append("if (distance>=30){if (direction=='right'){top.location=" + "'"
-                    + getPhotoUrl(f.getHash256(), 1, false)
-                    + "';}else if (direction=='left') {top.location=" + "'"
-                    + getPhotoUrl(f.getHash256(), 1, true) + "';" + "}");
+                              + getPhotoUrl(f.getHash256(), 1, false)
+                              + "';}else if (direction=='left') {top.location=" + "'"
+                              + getPhotoUrl(f.getHash256(), 1, true) + "';" + "}");
             sb.append("}},});});");
             /*
              * sb.append("$(document).ready(function(){"); sb.append(
@@ -477,9 +468,9 @@ public class GenerateHTML
             sb.append("$(document).ready(function(){");
             sb.append("$(\"body\").keyup(function(event){");
             sb.append("if(event.keyCode==37)top.location=" + "'"
-                    + getPhotoUrl(f.getHash256(), 1, false) + "';");
+                              + getPhotoUrl(f.getHash256(), 1, false) + "';");
             sb.append("if(event.keyCode==39)top.location=" + "'"
-                    + getPhotoUrl(f.getHash256(), 1, true) + "';");
+                              + getPhotoUrl(f.getHash256(), 1, true) + "';");
             sb.append("if(event.keyCode==46)deletephoto('/photos/" + f.getHash256() + "');");
             sb.append("});});");
         }
@@ -487,25 +478,25 @@ public class GenerateHTML
         sb.append("</script>");
 
         sb.append("<table style=\"text-align: center;\" width=\"100%\" "
-                + "height=\"100%\" border=\"0\" bordercolor=\"#000000\">");
+                          + "height=\"100%\" border=\"0\" bordercolor=\"#000000\">");
 
         String dayStr = HeadUtils.formatDate(f.getPhotoTime());
         String viewDayStr = String.format("%s年%s月%s日", dayStr.substring(0, 4),
-                dayStr.substring(4, 6), dayStr.substring(6, 8));
+                                          dayStr.substring(4, 6), dayStr.substring(6, 8));
         String returnToDayPage = "<a href=\"/day/" + dayStr + extraQueryParas(true) + "\">浏览 <b>"
                 + viewDayStr + "</b></a>";
         sb.append("<tr><td width=\"100%\" bordercolor=\"#000000\"" + getTdHeight() + ">");
-        sb.append(returnToDayPage + seprator);
-        sb.append(getPhotoLink(f.getHash256(), false) + seprator);
+        sb.append(returnToDayPage + separator);
+        sb.append(getPhotoLink(f.getHash256(), false) + separator);
         sb.append(getPhotoLink(f.getHash256(), 1, false));
         sb.append("&nbsp;" + f.getPhotoTime() + "&nbsp;");
-        sb.append(getPhotoLink(f.getHash256(), 1, true) + seprator);
+        sb.append(getPhotoLink(f.getHash256(), 1, true) + separator);
         sb.append(getPhotoLink(f.getHash256(), true));
         sb.append("</td></tr>");
         sb.append("</table>");
 
         sb.append("<table style=\"text-align: center;\" width=\"100%\" "
-                + "height=\"890px\" border=\"0\" bordercolor=\"#000000\">");
+                          + "height=\"890px\" border=\"0\" bordercolor=\"#000000\">");
 
         sb.append("<tr><td width=\"100%\" height=\"100%\" bordercolor=\"#000000\">");
         // sb.append("<a href=\"/photos/" + f.getHash256() + "?content=true"
@@ -524,15 +515,15 @@ public class GenerateHTML
         sb.append("</td></tr>");
 
         sb.append("<tr><td width=\"100%\" " + getTdHeight() + " bordercolor=\"#000000\""
-                + getTdHeight() + ">");
+                          + getTdHeight() + ">");
 
         String leftRotateLink = "<input id=\"leftrotate\" type=\"button\" value=\"左旋转\" />";
         String rightRotateLink = "<input id=\"rightrotate\" type=\"button\" value=\"右旋转\" />";
         String deleteLink = "<input id=\"deletephotob\" type=\"button\" value=\"隐藏\" />";
 
-        sb.append(leftRotateLink + seprator);
-        sb.append(deleteLink + seprator);
-        sb.append(rightRotateLink + seprator);
+        sb.append(leftRotateLink + separator);
+        sb.append(deleteLink + separator);
+        sb.append(rightRotateLink + separator);
         sb.append("</td><tr>");
 
         int r = 0;
@@ -544,12 +535,12 @@ public class GenerateHTML
 
         // 左旋转和右旋转照片
         sb.append("<script type=\"text/javascript\">" + "var r = " + r + ";"
-                + "$(\"#rightrotate\").click(function(){r++; if (r > 3){r = 0;}"
-                + "$(\"#singlephoto\").rotate(90*r);}); "
-                + "$(\"#leftrotate\").click(function(){r--; if (r < 0){ r = 3;}"
-                + "$(\"#singlephoto\").rotate(90*r);}); "
-                + "$(\"#deletephotob\").click(function(){deletephoto('/photos/" + f.getHash256()
-                + "');});" + "</script>");
+                          + "$(\"#rightrotate\").click(function(){r++; if (r > 3){r = 0;}"
+                          + "$(\"#singlephoto\").rotate(90*r);}); "
+                          + "$(\"#leftrotate\").click(function(){r--; if (r < 0){ r = 3;}"
+                          + "$(\"#singlephoto\").rotate(90*r);}); "
+                          + "$(\"#deletephotob\").click(function(){deletephoto('/photos/" + f.getHash256()
+                          + "');});" + "</script>");
 
         sb.append("</table>");
 
@@ -567,9 +558,9 @@ public class GenerateHTML
     }
 
     private static String generateImgTag(FileInfo f, int size, String exinfo, String id,
-            boolean isFace)
+                                         boolean isFace)
     {
-        String content = null;
+        String content;
         if (MediaTool.isVideo(f.getPath()) && size > 400)
         {
             // 非缩略图 视频。
@@ -664,7 +655,7 @@ public class GenerateHTML
     }
 
     public static String generateYearPage(String year,
-            TreeMap<String, TreeMap<String, DateRecords>> currentyear)
+                                          TreeMap<String, TreeMap<String, DateRecords>> currentyear)
     {
         if (StringUtils.isBlank(year) || currentyear == null || currentyear.isEmpty())
         {
@@ -679,7 +670,7 @@ public class GenerateHTML
             sb.append(yearNavigete);
         }
         sb.append("<table style=\"text-align: center;\" width=\"100%\" "
-                + "height=\"100%\" border=\"0\" bordercolor=\"#000000\">");
+                          + "height=\"100%\" border=\"0\" bordercolor=\"#000000\">");
 
         int i = 0;
         int start = 0;
@@ -739,13 +730,13 @@ public class GenerateHTML
     }
 
     public static String generateDayPage(String day, String prevDay, String nextDay,
-            List<FileInfo> flst)
+                                         List<FileInfo> flst)
     {
         return generateDayPage(day, prevDay, nextDay, flst, 5);
     }
 
     public static String generateDayPage(String day, String prevDay, String nextDay,
-            List<FileInfo> flst, int rowCount)
+                                         List<FileInfo> flst, int rowCount)
     {
         if (StringUtils.isBlank(day) || flst == null || flst.isEmpty() || rowCount <= 0)
         {
@@ -770,7 +761,7 @@ public class GenerateHTML
         sb.append(dayNavigate);
 
         sb.append("<table style=\"text-align: center;\" width=\"100%\" "
-                + "height=\"100%\" border=\"0\" bordercolor=\"#000000\">");
+                          + "height=\"100%\" border=\"0\" bordercolor=\"#000000\">");
         int i = 0;
         int start = 0;
         int end = 0;
@@ -813,30 +804,30 @@ public class GenerateHTML
 
     private static String genDayNavigate(String day, String prevDay, String nextDay)
     {
-        StringBuffer dayNavigate = new StringBuffer();
+        StringBuilder dayNavigate = new StringBuilder();
         dayNavigate.append("<table style=\"text-align: center;\" width=\"100%\" "
-                + "height=\"100%\" border=\"0\" bordercolor=\"#000000\">");
+                                   + "height=\"100%\" border=\"0\" bordercolor=\"#000000\">");
 
         dayNavigate.append("<tr><td width=\"20%\"" + getTdHeight() + ">");
         dayNavigate.append("<a href=\"/month/" + day.substring(0, 6) + "\">返回" + day.substring(0, 4)
-                + "年" + day.substring(4, 6) + "月</a></td>");
+                                   + "年" + day.substring(4, 6) + "月</a></td>");
 
         dayNavigate.append("<td  width=\"20%\" " + getTdHeight() + "style=\"text-align:center\">");
         if (StringUtils.isNotBlank(prevDay))
         {
             dayNavigate.append("<a href=\"/day/" + prevDay + "\">"
-                    + "<input value=\"上一天\" type=\"button\"/></a>");
+                                       + "<input value=\"上一天\" type=\"button\"/></a>");
         }
         dayNavigate.append("</td>");
 
         dayNavigate.append("<td  width=\"20%\" " + getTdHeight() + "style=\"text-align:center\">"
-                + day + "</td>");
+                                   + day + "</td>");
 
         dayNavigate.append("<td  width=\"20%\" " + getTdHeight() + "style=\"text-align:center\">");
         if (StringUtils.isNotBlank(nextDay))
         {
             dayNavigate.append("<a href=\"/day/" + nextDay + "\">"
-                    + "<input value=\"下一天\" type=\"button\"/></a>");
+                                       + "<input value=\"下一天\" type=\"button\"/></a>");
         }
         dayNavigate.append("</td>");
 
@@ -849,7 +840,7 @@ public class GenerateHTML
     }
 
     public static Object generateMonthPage(String monthstr, String nextMonth, String prevMonth,
-            TreeMap<String, DateRecords> map)
+                                           TreeMap<String, DateRecords> map)
     {
         if (StringUtils.isBlank(monthstr) || map == null || map.isEmpty())
         {
@@ -866,7 +857,7 @@ public class GenerateHTML
         String monthNavigate = genMonthNavigate(monthstr, nextMonth, prevMonth);
         sb.append(monthNavigate);
         sb.append("<table style=\"text-align: center;\" width=\"100%\" "
-                + "height=\"100%\" border=\"0\" bordercolor=\"#000000\">");
+                          + "height=\"100%\" border=\"0\" bordercolor=\"#000000\">");
 
         int i = 0;
         int start = 0;
@@ -891,7 +882,7 @@ public class GenerateHTML
                 sb.append("<a href=\"/day/" + monthstr + day + " \" >");
                 sb.append(generateImgTag(f, 310));
                 sb.append("</a><br/><b>" + monthstr + "-" + day + " (" + mr.getPiccount()
-                        + "张)</b></td>");
+                                  + "张)</b></td>");
             }
             if ((i + 1) % rowcount == 0)
             {
@@ -917,25 +908,25 @@ public class GenerateHTML
 
     private static String genMonthNavigate(String monthstr, String nextMonth, String prevMonth)
     {
-        StringBuffer monthNavigate = new StringBuffer();
+        StringBuilder monthNavigate = new StringBuilder();
         monthNavigate.append("<table style=\"text-align: center;\" width=\"100%\" "
-                + "height=\"100%\" border=\"0\" bordercolor=\"#000000\">");
+                                     + "height=\"100%\" border=\"0\" bordercolor=\"#000000\">");
         monthNavigate.append("<tr>" + "<td width=\"20%\" " + getTdHeight() + ">");
         monthNavigate.append("<a href=\"/year/" + monthstr.substring(0, 4) + "\">返回"
-                + monthstr.substring(0, 4) + "年</a>");
+                                     + monthstr.substring(0, 4) + "年</a>");
         monthNavigate.append("</td>" + "<td width=\"20%\"" + getTdHeight() + ">");
         if (StringUtils.isNotBlank(prevMonth))
         {
             monthNavigate.append("<a href=\"/month/" + prevMonth + "\">"
-                    + "<input value=\"上一月\" type=\"button\"/></a>");
+                                         + "<input value=\"上一月\" type=\"button\"/></a>");
         }
         monthNavigate.append("</td>");
         monthNavigate.append("<td  width=\"20%\"" + getTdHeight() + " style=\"text-align:center\">"
-                + monthstr + "月" + "</td><td width=\"20%\">");
+                                     + monthstr + "月" + "</td><td width=\"20%\">");
         if (StringUtils.isNotBlank(nextMonth))
         {
             monthNavigate.append("<a href=\"/month/" + nextMonth + "\">"
-                    + "<input value=\"下一月\" type=\"button\"/></a>");
+                                         + "<input value=\"下一月\" type=\"button\"/></a>");
         }
         monthNavigate.append(
                 "</td>" + "<td width=\"20%\"" + getTdHeight() + "></td>" + "</tr>" + "</table>");
@@ -953,14 +944,7 @@ public class GenerateHTML
         if (f.getHeight() > 0 && f.getWidth() > 0)
         {
             double rate = (((double) f.getWidth()) / f.getHeight());
-            if (rate > 1)
-            {
-                ret = true;
-            }
-            else
-            {
-                ret = false;
-            }
+            ret = rate > 1;
         }
 
         // if (f.getRoatateDegree() == 90 || f.getRoatateDegree() == 270)
@@ -1022,7 +1006,7 @@ public class GenerateHTML
         }
 
         sb.append("<table style=\"text-align: center;\" width=\"100%\" height=\"100%\" "
-                + "border=\"0\" bordercolor=\"#000000\">");
+                          + "border=\"0\" bordercolor=\"#000000\">");
         int i = 0;
         int start = 0;
         int end = 0;
@@ -1036,7 +1020,7 @@ public class GenerateHTML
 
             sb.append("<td width=\"20%\" height=\"18%\" bordercolor=\"#000000\"><br/>");
             sb.append("<a href=\"" + "/faces/" + f.getFaceid() + "?facetoken=" + f.getFacetoken()
-                    + extraQueryParas(false) + "\">");
+                              + extraQueryParas(false) + "\">");
             sb.append(generateImgTag(f, true));
             sb.append("</a></td>");
 
@@ -1092,13 +1076,13 @@ public class GenerateHTML
         }
         // 隐藏照片
         sb.append("<script type=\"text/javascript\">"
-                + "function changeUrl(url){window.history.pushState({},0,'http://'+window.location.host+'/'+url);}"
-                + "window.onload=changeUrl(" + "'facetoken/" + f.getFacetoken()
-                + extraQueryParas(true) + "');"
-                + "function deletephoto(path){jConfirm('该操作将永久隐藏照片，无法撤消，确认是否继续？','确认',function(r){if (r){"
-                + "changeUrl('?next=" + f.getFacetoken() + extraQueryParas(false) + "&count=1');"
-                + "window.location.reload();" + "$.ajax({url:path,type:'DELETE',"
-                + "success:function(result){}});}});}");
+                          + "function changeUrl(url){window.history.pushState({},0,'http://'+window.location.host+'/'+url);}"
+                          + "window.onload=changeUrl(" + "'facetoken/" + f.getFacetoken()
+                          + extraQueryParas(true) + "');"
+                          + "function deletephoto(path){jConfirm('该操作将永久隐藏照片，无法撤消，确认是否继续？','确认',function(r){if (r){"
+                          + "changeUrl('?next=" + f.getFacetoken() + extraQueryParas(false) + "&count=1');"
+                          + "window.location.reload();" + "$.ajax({url:path,type:'DELETE',"
+                          + "success:function(result){}});}});}");
 
         if (HeadUtils.isMobile())
         {
@@ -1107,9 +1091,9 @@ public class GenerateHTML
             sb.append("$(\"#singlephoto\").swipe({");
             sb.append("swipe: function(event, direction, distance, duration, fingerCount) {");
             sb.append("if (distance>=30){if (direction=='right'){top.location=" + "'"
-                    + getPhotoUrl(f.getFacetoken(), 1, false)
-                    + "';}else if (direction=='left') {top.location=" + "'"
-                    + getPhotoUrl(f.getFacetoken(), 1, true) + "';" + "}");
+                              + getPhotoUrl(f.getFacetoken(), 1, false)
+                              + "';}else if (direction=='left') {top.location=" + "'"
+                              + getPhotoUrl(f.getFacetoken(), 1, true) + "';" + "}");
             sb.append("}},});});");
             /*
              * sb.append("$(document).ready(function(){"); sb.append(
@@ -1126,9 +1110,9 @@ public class GenerateHTML
             sb.append("$(document).ready(function(){");
             sb.append("$(\"body\").keyup(function(event){");
             sb.append("if(event.keyCode==37)top.location=" + "'"
-                    + getPhotoUrl(f.getFacetoken(), 1, false) + "';");
+                              + getPhotoUrl(f.getFacetoken(), 1, false) + "';");
             sb.append("if(event.keyCode==39)top.location=" + "'"
-                    + getPhotoUrl(f.getFacetoken(), 1, true) + "';");
+                              + getPhotoUrl(f.getFacetoken(), 1, true) + "';");
             sb.append(
                     "if(event.keyCode==46)deletephoto('/photos/" + f.getFi().getHash256() + "');");
             sb.append("});});");
@@ -1137,25 +1121,25 @@ public class GenerateHTML
         sb.append("</script>");
 
         sb.append("<table style=\"text-align: center;\" width=\"100%\" "
-                + "height=\"100%\" border=\"0\" bordercolor=\"#000000\">");
+                          + "height=\"100%\" border=\"0\" bordercolor=\"#000000\">");
 
         String dayStr = HeadUtils.formatDate(f.getFi().getPhotoTime());
         String viewDayStr = String.format("%s年%s月%s日", dayStr.substring(0, 4),
-                dayStr.substring(4, 6), dayStr.substring(6, 8));
+                                          dayStr.substring(4, 6), dayStr.substring(6, 8));
         String returnToDayPage = "<a href=\"/day/" + dayStr + extraQueryParas(true) + "\">浏览 <b>"
                 + viewDayStr + "</b></a>";
         sb.append("<tr><td width=\"100%\" bordercolor=\"#000000\">");
-        sb.append(returnToDayPage + seprator);
-        sb.append(getPhotoLink(f.getFacetoken(), false) + seprator);
+        sb.append(returnToDayPage + separator);
+        sb.append(getPhotoLink(f.getFacetoken(), false) + separator);
         sb.append(getPhotoLink(f.getFacetoken(), 1, false));
         sb.append("&nbsp;" + f.getFi().getPhotoTime() + "&nbsp;");
-        sb.append(getPhotoLink(f.getFacetoken(), 1, true) + seprator);
+        sb.append(getPhotoLink(f.getFacetoken(), 1, true) + separator);
         sb.append(getPhotoLink(f.getFacetoken(), true));
         sb.append("</td></tr>");
         sb.append("</table>");
 
         sb.append("<table style=\"text-align: center;\" width=\"100%\" "
-                + "height=\"890px\" border=\"0\" bordercolor=\"#000000\">");
+                          + "height=\"890px\" border=\"0\" bordercolor=\"#000000\">");
 
         sb.append("<tr><td width=\"100%\" height=\"100%\" bordercolor=\"#000000\">");
         // sb.append("<a href=\"/photos/" + f.getHash256() + "?content=true"
@@ -1179,9 +1163,9 @@ public class GenerateHTML
         String rightRotateLink = "<input id=\"rightrotate\" type=\"button\" value=\"右旋转\" />";
         String deleteLink = "<input id=\"deletephotob\" type=\"button\" value=\"隐藏\" />";
 
-        sb.append(leftRotateLink + seprator);
-        sb.append(deleteLink + seprator);
-        sb.append(rightRotateLink + seprator);
+        sb.append(leftRotateLink + separator);
+        sb.append(deleteLink + separator);
+        sb.append(rightRotateLink + separator);
         sb.append("</td><tr>");
 
         int r = 0;
@@ -1193,12 +1177,12 @@ public class GenerateHTML
 
         // 左旋转和右旋转照片
         sb.append("<script type=\"text/javascript\">" + "var r = " + r + ";"
-                + "$(\"#rightrotate\").click(function(){r++; if (r > 3){r = 0;}"
-                + "$(\"#singlephoto\").rotate(90*r);}); "
-                + "$(\"#leftrotate\").click(function(){r--; if (r < 0){ r = 3;}"
-                + "$(\"#singlephoto\").rotate(90*r);}); "
-                + "$(\"#deletephotob\").click(function(){deletephoto('/photos/"
-                + f.getFi().getHash256() + "');});" + "</script>");
+                          + "$(\"#rightrotate\").click(function(){r++; if (r > 3){r = 0;}"
+                          + "$(\"#singlephoto\").rotate(90*r);}); "
+                          + "$(\"#leftrotate\").click(function(){r--; if (r < 0){ r = 3;}"
+                          + "$(\"#singlephoto\").rotate(90*r);}); "
+                          + "$(\"#deletephotob\").click(function(){deletephoto('/photos/"
+                          + f.getFi().getHash256() + "');});" + "</script>");
 
         sb.append("</table>");
 

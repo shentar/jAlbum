@@ -47,11 +47,7 @@ public class SqliteConnManger
             Class.forName("org.sqlite.JDBC");
             setConn(DriverManager.getConnection("jdbc:sqlite:dedup.db", prop));
         }
-        catch (SQLException e)
-        {
-            logger.error("caught: ", e);
-        }
-        catch (ClassNotFoundException e)
+        catch (SQLException | ClassNotFoundException e)
         {
             logger.error("caught: ", e);
         }

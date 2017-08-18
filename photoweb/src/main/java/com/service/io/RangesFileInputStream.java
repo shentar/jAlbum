@@ -1,14 +1,13 @@
 package com.service.io;
 
+import com.utils.web.HeadUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.utils.web.HeadUtils;
 
 public class RangesFileInputStream extends InputStream
 {
@@ -22,6 +21,8 @@ public class RangesFileInputStream extends InputStream
 
     public RangesFileInputStream(File in, long start, long end)
     {
+        assert in != null;
+
         if (start == -1 && end == -1)
         {
             erroroccured = true;
@@ -35,16 +36,14 @@ public class RangesFileInputStream extends InputStream
         long reangeLen = MAX_DEFAULT_RANGELEN;
         if (start == 0)
         {
+
             reangeLen = HeadUtils.isMobile() ? in.length() : FIRST_RANGE_LENGtH;
         }
 
         if (end == -1)
         {
-            if (in != null)
-            {
-                end = (in.length() > (start + reangeLen) ? (start + reangeLen) : in.length());
-                --end;
-            }
+            end = (in.length() > (start + reangeLen) ? (start + reangeLen) : in.length());
+            --end;
         }
 
         if (end <= start || start < 0 || end >= in.length())

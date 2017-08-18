@@ -74,7 +74,7 @@ public class GlobalConfDao extends AbstractRecordsStore
         if (!StringUtils.isBlank(oldvalue))
         {
             logger.warn("the conf [{}] changes from {} to {}.",
-                    new Object[] { key, oldvalue, value });
+                        key, oldvalue, value);
             isupdate = true;
         }
         else

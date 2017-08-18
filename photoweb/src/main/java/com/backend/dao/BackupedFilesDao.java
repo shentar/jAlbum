@@ -34,8 +34,8 @@ public class BackupedFilesDao extends AbstractRecordsStore
             return;
         }
 
-        PreparedStatement prep = null;
-        ResultSet res = null;
+        PreparedStatement prep;
+        ResultSet res;
         try
         {
             lock.readLock().lock();
@@ -70,7 +70,7 @@ public class BackupedFilesDao extends AbstractRecordsStore
 
     public void checkAndCreateTable()
     {
-        PreparedStatement prep = null;
+        PreparedStatement prep;
         try
         {
             if (checkTableExist("backuped"))
@@ -90,7 +90,7 @@ public class BackupedFilesDao extends AbstractRecordsStore
 
     public List<String> getAllHashStr()
     {
-        List<String> lst = new ArrayList<String>();
+        List<String> lst = new ArrayList<>();
 
         PreparedStatement prep = null;
         ResultSet res = null;

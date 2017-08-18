@@ -117,9 +117,7 @@ public class FacerUtils
         HttpHost httpHost = new HttpHost(hostname, port);
         cm.setMaxPerRoute(new HttpRoute(httpHost), maxRoute);
 
-        CloseableHttpClient httpClient = HttpClients.custom().setConnectionManager(cm).build();
-
-        return httpClient;
+        return HttpClients.custom().setConnectionManager(cm).build();
     }
 
     public static Object getFileForDetectFaces(FileInfo fi)

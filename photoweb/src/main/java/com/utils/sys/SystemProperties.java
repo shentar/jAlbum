@@ -29,7 +29,7 @@ public final class SystemProperties
         {
             public HashMap<String, Object> initialValue()
             {
-                return new HashMap<String, Object>();
+                return new HashMap<>();
             }
         };
     }

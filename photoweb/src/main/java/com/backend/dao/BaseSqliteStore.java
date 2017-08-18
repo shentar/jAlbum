@@ -1,16 +1,5 @@
 package com.backend.dao;
 
-import java.io.File;
-import java.io.IOException;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.List;
-
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.backend.FileInfo;
 import com.backend.FileType;
 import com.backend.PicStatus;
@@ -23,6 +12,16 @@ import com.utils.media.MediaTool;
 import com.utils.media.ThumbnailManager;
 import com.utils.sys.PerformanceStatistics;
 import com.utils.web.HeadUtils;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.IOException;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.List;
 
 public class BaseSqliteStore extends AbstractRecordsStore
 {
@@ -82,11 +81,8 @@ public class BaseSqliteStore extends AbstractRecordsStore
 
     /**
      * 相比于并发性能，这里选择不做同步，数据表主键相同会自动互斥。
-     * 
-     * @param f
-     *            文件对象
-     * @param sha256
-     *            文件hash值。
+     *
+     * @param fi 文件对象
      */
     public void insertOneRecord(FileInfo fi)
     {
@@ -220,11 +216,7 @@ public class BaseSqliteStore extends AbstractRecordsStore
                 }
             }
         }
-        catch (SQLException e)
-        {
-            logger.error("caught: " + f, e);
-        }
-        catch (IOException e)
+        catch (SQLException | IOException e)
         {
             logger.error("caught: " + f, e);
         }
@@ -267,7 +259,7 @@ public class BaseSqliteStore extends AbstractRecordsStore
         return PicStatus.valueOf(value);
     }
 
-    private void checkPhotoTime(FileInfo oldfi) throws IOException
+    private void checkPhotoTime(FileInfo oldfi)
     {
         List<String> suffixs = AppConfig.getInstance().getFileSuffix();
         for (String s : suffixs)
@@ -312,7 +304,7 @@ public class BaseSqliteStore extends AbstractRecordsStore
         {
             lock.writeLock().lock();
             prep = conn.prepareStatement("update files set phototime=?,width=?,height=?,"
-                    + "deleted=?,ftype=? where path=?;");
+                                                 + "deleted=?,ftype=? where path=?;");
             prep.setDate(1, fi.getPhotoTime());
             prep.setLong(2, fi.getWidth());
             prep.setLong(3, fi.getHeight());
@@ -361,7 +353,6 @@ public class BaseSqliteStore extends AbstractRecordsStore
                     if (ThumbnailManager.checkTheThumbnailExist(fi.getHash256()))
                     {
                         PerformanceStatistics.getInstance().addOneFile(false);
-                        continue;
                     }
                     else
                     {
@@ -529,7 +520,6 @@ public class BaseSqliteStore extends AbstractRecordsStore
     }
 
     /**
-     * 
      * @return 返回true，则为新插入，否则更新信息。
      */
     public boolean checkAndRefreshFileInfo(FileInfo fi)

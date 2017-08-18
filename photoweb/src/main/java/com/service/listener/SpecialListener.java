@@ -12,7 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.backend.dao.SqliteConnManger;
-import com.backend.scan.BackendScaner;
+import com.backend.scan.BackendScanner;
 import com.backend.scan.FileTools;
 import com.backend.scan.FreshAllData;
 
@@ -47,7 +47,7 @@ public class SpecialListener implements ServletContextListener
 
     private void startBackGroundTask()
     {
-        BackendScaner.getInstance().scheduleOneTask();
+        BackendScanner.getInstance().scheduleOneTask();
 
         // 5秒检查是否需要刷新数据表。
         f = new ScheduledThreadPoolExecutor(1).scheduleWithFixedDelay(new Runnable()

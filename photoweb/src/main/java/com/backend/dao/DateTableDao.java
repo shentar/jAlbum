@@ -35,7 +35,7 @@ public class DateTableDao extends AbstractRecordsStore
 
     public TreeMap<String, TreeMap<String, TreeMap<String, DateRecords>>> getAllDateRecord()
     {
-        TreeMap<String, TreeMap<String, TreeMap<String, DateRecords>>> allrecords = new TreeMap<String, TreeMap<String, TreeMap<String, DateRecords>>>();
+        TreeMap<String, TreeMap<String, TreeMap<String, DateRecords>>> allrecords = new TreeMap<>();
         lock.readLock().lock();
         PreparedStatement prep = null;
         ResultSet res = null;
@@ -60,14 +60,14 @@ public class DateTableDao extends AbstractRecordsStore
                 TreeMap<String, TreeMap<String, DateRecords>> myear = allrecords.get(year);
                 if (myear == null)
                 {
-                    myear = new TreeMap<String, TreeMap<String, DateRecords>>();
+                    myear = new TreeMap<>();
                     allrecords.put(year, myear);
                 }
 
                 TreeMap<String, DateRecords> mmonth = myear.get(month);
                 if (mmonth == null)
                 {
-                    mmonth = new TreeMap<String, DateRecords>();
+                    mmonth = new TreeMap<>();
                     myear.put(month, mmonth);
                 }
 

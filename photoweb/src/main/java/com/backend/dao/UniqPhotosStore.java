@@ -1,24 +1,18 @@
 package com.backend.dao;
 
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.backend.FileInfo;
 import com.backend.FileType;
 import com.backend.scan.RefreshFlag;
 import com.utils.web.HeadUtils;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.*;
 
 public class UniqPhotosStore extends AbstractRecordsStore
 {
@@ -49,8 +43,7 @@ public class UniqPhotosStore extends AbstractRecordsStore
 
             if (res.next())
             {
-                FileInfo f = getFileInfoFromTable(res);
-                return f;
+                return getFileInfoFromTable(res);
             }
         }
         catch (Exception e)
@@ -79,7 +72,7 @@ public class UniqPhotosStore extends AbstractRecordsStore
             prep = conn.prepareStatement("select * from uniqphotos1;");
             res = prep.executeQuery();
 
-            Map<String, DateRecords> dst = new HashMap<String, DateRecords>();
+            Map<String, DateRecords> dst = new HashMap<>();
             while (res.next())
             {
                 Date ptime = res.getDate("phototime");
@@ -121,7 +114,7 @@ public class UniqPhotosStore extends AbstractRecordsStore
     }
 
     public List<FileInfo> getNextNineFileByHashStr(String id, int count, boolean isnext,
-            boolean isvideo)
+                                                   boolean isvideo)
     {
         logger.debug("start to get file list: {}, {}, {}, {}", id, count, isnext, isvideo);
         PreparedStatement prep = null;
@@ -193,7 +186,7 @@ public class UniqPhotosStore extends AbstractRecordsStore
 
             res = prep.executeQuery();
 
-            List<FileInfo> lst = new LinkedList<FileInfo>();
+            List<FileInfo> lst = new LinkedList<>();
             while (res.next())
             {
                 FileInfo f = getFileInfoFromTable(res);
@@ -227,7 +220,7 @@ public class UniqPhotosStore extends AbstractRecordsStore
          * select * from files where sha256 in( select sha256 from files group
          * by sha256 having count(sha256)>1 ) ORDER BY sha256
          */
-        PreparedStatement prep = null;
+        PreparedStatement prep;
         try
         {
             boolean ut1 = checkTableExist("uniqphotos1");
@@ -261,11 +254,11 @@ public class UniqPhotosStore extends AbstractRecordsStore
 
             BaseSqliteStore.getInstance().lock.readLock().lock();
             prep = conn.prepareStatement("insert into uniqphotos2(path,hashstr,size,phototime,"
-                    + "width,height,degree, ftype) select path,sha256,size,"
-                    + "phototime,width,height,degree,ftype from files where "
-                    + "(deleted=='false' or deleted=='EXIST' or deleted is null) and "
-                    + "sha256 in(select sha256 from files group by sha256) "
-                    + "group by sha256 ORDER BY phototime DESC");
+                                                 + "width,height,degree, ftype) select path,sha256,size,"
+                                                 + "phototime,width,height,degree,ftype from files where "
+                                                 + "(deleted=='false' or deleted=='EXIST' or deleted is null) and "
+                                                 + "sha256 in(select sha256 from files group by sha256) "
+                                                 + "group by sha256 ORDER BY phototime DESC");
             prep.execute();
             closeResource(prep, null);
             BaseSqliteStore.getInstance().lock.readLock().unlock();
@@ -304,11 +297,11 @@ public class UniqPhotosStore extends AbstractRecordsStore
 
     public List<FileInfo> getAllPhotosBy(String day)
     {
-        java.util.Date d = null;
+        java.util.Date d;
         d = HeadUtils.parseDate(day);
         if (d == null)
         {
-            return new ArrayList<FileInfo>();
+            return new ArrayList<>();
         }
 
         PreparedStatement prep = null;
@@ -324,7 +317,7 @@ public class UniqPhotosStore extends AbstractRecordsStore
             prep.setDate(2, dend);
             res = prep.executeQuery();
 
-            List<FileInfo> flst = new LinkedList<FileInfo>();
+            List<FileInfo> flst = new LinkedList<>();
             while (res.next())
             {
                 FileInfo f = getFileInfoFromTable(res);

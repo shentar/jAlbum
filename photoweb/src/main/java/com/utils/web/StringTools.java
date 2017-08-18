@@ -23,7 +23,7 @@ public class StringTools
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < length; i++)
         {
-            int number = 0;
+            int number;
 
             synchronized (lock)
             {

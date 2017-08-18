@@ -1,16 +1,19 @@
 package com.backend.scan;
 
-import java.awt.Dimension;
-import java.awt.Graphics2D;
-import java.awt.Rectangle;
+import com.backend.FileInfo;
+import com.backend.PicStatus;
+import com.utils.conf.AppConfig;
+import com.utils.media.ExifCreator;
+import com.utils.media.ThumbnailManager;
+import com.utils.sys.GlobalLockBaseOnString;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
@@ -22,33 +25,17 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import javax.imageio.ImageIO;
-
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.backend.FileInfo;
-import com.backend.PicStatus;
-import com.utils.conf.AppConfig;
-import com.utils.media.ExifCreator;
-import com.utils.media.ThumbnailManager;
-import com.utils.sys.GloableLockBaseOnString;
-
 public class FileTools
 {
     private static final Logger logger = LoggerFactory.getLogger(FileTools.class);
-    public static boolean usesqlite = "true".equals(System.getProperty("usesqlite", "true")) ? true
-            : false;
-    public static long lastScanTime = 0;
+
     public static final ExecutorService threadPool = Executors
             .newFixedThreadPool(AppConfig.getInstance().getThreadCount());
 
     // 对于树莓派等系统，最多只能2个线程同时计算缩略图。
     public static final ExecutorService threadPool4Thumbnail = Executors.newFixedThreadPool(2);
 
-    public static void readShortFileContent(byte[] buffer, File f)
-            throws FileNotFoundException, IOException
+    public static void readShortFileContent(byte[] buffer, File f) throws IOException
     {
         int maxLen = buffer.length;
         FileInputStream fin = null;
@@ -82,14 +69,9 @@ public class FileTools
         }
     }
 
-    public static boolean checkFileExist(String path)
+    private static boolean checkFileExist(String path)
     {
-        if (StringUtils.isBlank(path))
-        {
-            return false;
-        }
-
-        return new File(path).isFile();
+        return !StringUtils.isBlank(path) && new File(path).isFile();
     }
 
     public static boolean checkFileLengthValid(String path)
@@ -101,13 +83,9 @@ public class FileTools
         File f = new File(path);
 
         // 文件大小不合法。
-        if (f.isFile() && f.length() > AppConfig.getInstance().getMinFileSize()
-                && f.length() <= AppConfig.getInstance().getMaxFilesize())
-        {
-            return true;
-        }
+        return f.isFile() && f.length() > AppConfig.getInstance().getMinFileSize()
+                && f.length() <= AppConfig.getInstance().getMaxFilesize();
 
-        return false;
     }
 
     public static boolean checkExclude(final FileInfo fi, List<String> excludeDirs)
@@ -134,13 +112,8 @@ public class FileTools
         }
 
         File f = new File(fi.getPath());
-        if (f.isFile() && fi.getcTime().getTime() == FileTools.getFileCreateTime(f)
-                && fi.getSize() == f.length())
-        {
-            return false;
-        }
-
-        return true;
+        return !(f.isFile() && fi.getcTime().getTime() == FileTools.getFileCreateTime(f)
+                && fi.getSize() == f.length());
     }
 
     public static PicStatus checkFileDeleted(final FileInfo fi, List<String> excludeDirs)
@@ -206,7 +179,7 @@ public class FileTools
             String tmpFilePath = fi.getPath() + "_tmpfile";
             new File(fi.getPath()).renameTo(new File(tmpFilePath));
             ExifCreator.addExifDate(
-                    new String[] { tmpFilePath, fi.getPath(), sf.format(fi.getPhotoTime()) });
+                    new String[]{tmpFilePath, fi.getPath(), sf.format(fi.getPhotoTime())});
 
         }
         catch (Exception e)
@@ -224,10 +197,10 @@ public class FileTools
         }
         Path path = FileSystems.getDefault().getPath(f.getParent(), f.getName());
         BasicFileAttributes attrs = Files.readAttributes(path, BasicFileAttributes.class,
-                LinkOption.NOFOLLOW_LINKS);
+                                                         LinkOption.NOFOLLOW_LINKS);
         long timetmp = attrs.lastModifiedTime().toMillis();
         logger.debug("the timetmp is: lastModify[{}], creation[{}], fileLastModify[{}]",
-                attrs.lastModifiedTime(), attrs.creationTime(), new Date(f.lastModified()));
+                     attrs.lastModifiedTime(), attrs.creationTime(), new Date(f.lastModified()));
         if (timetmp > attrs.creationTime().toMillis())
         {
             timetmp = attrs.creationTime().toMillis();
@@ -239,7 +212,7 @@ public class FileTools
 
     /**
      * 旋转照片
-     * 
+     *
      * @return
      */
     public static void rotatePhonePhoto(String fullPath, int angel)
@@ -264,7 +237,7 @@ public class FileTools
             Rectangle rect_des = new Rectangle(new Dimension(swidth, sheight));
 
             BufferedImage res = new BufferedImage(rect_des.width, rect_des.height,
-                    BufferedImage.TYPE_INT_RGB);
+                                                  BufferedImage.TYPE_INT_RGB);
             Graphics2D g2 = res.createGraphics();
 
             g2.translate((rect_des.width - src_width) / 2, (rect_des.height - src_height) / 2);
@@ -293,7 +266,7 @@ public class FileTools
             fis = new BufferedInputStream(new FileInputStream(src));
             fos = new BufferedOutputStream(new FileOutputStream(dst));
 
-            int bytes = -1;
+            int bytes;
             while ((bytes = fis.read(iobuff)) != -1)
             {
                 fos.write(iobuff, 0, bytes);
@@ -335,7 +308,7 @@ public class FileTools
 
     public static void submitAnThumbnailTask(final FileInfo fi)
     {
-        if (!GloableLockBaseOnString.getInstance(GloableLockBaseOnString.PIC_THUMBNAIL_LOCK)
+        if (!GlobalLockBaseOnString.getInstance(GlobalLockBaseOnString.PIC_THUMBNAIL_LOCK)
                 .tryToDo(fi.getHash256()))
         {
             logger.warn("the task of pic id [{}] is already being done.", fi);
@@ -353,7 +326,7 @@ public class FileTools
                 }
                 finally
                 {
-                    GloableLockBaseOnString.getInstance(GloableLockBaseOnString.PIC_THUMBNAIL_LOCK)
+                    GlobalLockBaseOnString.getInstance(GlobalLockBaseOnString.PIC_THUMBNAIL_LOCK)
                             .done(fi.getHash256());
                 }
             }

@@ -110,10 +110,10 @@ public class ExifCreator
             {
                 entry = exif.getTagValue(Exif.EXIFIMAGEWIDTH, true);
                 if (entry != null)
-                    entry.setValue(0, new Integer(imageWidth));
+                    entry.setValue(0, imageWidth);
                 entry = exif.getTagValue(Exif.EXIFIMAGELENGTH, true);
                 if (entry != null)
-                    entry.setValue(0, new Integer(imageHeight));
+                    entry.setValue(0, imageHeight);
             }
         }
 
@@ -146,7 +146,7 @@ public class ExifCreator
     {
         ImageReader reader;
         ImageInputStream iis = ImageIO.createImageInputStream(ip);
-        reader = (ImageReader) ImageIO.getImageReaders(iis).next();
+        reader = ImageIO.getImageReaders(iis).next();
         reader.setInput(iis);
         BufferedImage image = reader.read(0);
         iis.close();

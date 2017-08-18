@@ -46,7 +46,7 @@ public class DayService
         String prevDay = null;
         String nextDay = null;
 
-        TreeMap<String, DateRecords> mmap = null;
+        TreeMap<String, DateRecords> mmap;
 
         TreeMap<String, TreeMap<String, DateRecords>> ymap = map.get(year);
         if (ymap != null)

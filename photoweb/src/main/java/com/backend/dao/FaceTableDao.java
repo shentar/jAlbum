@@ -1,5 +1,12 @@
 package com.backend.dao;
 
+import com.backend.FileInfo;
+import com.backend.facer.Face;
+import com.backend.facer.FacerUtils;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -8,14 +15,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.backend.FileInfo;
-import com.backend.facer.Face;
-import com.backend.facer.FacerUtils;
 
 public class FaceTableDao extends AbstractRecordsStore
 {
@@ -90,7 +89,7 @@ public class FaceTableDao extends AbstractRecordsStore
 
     public void checkAndCreateTable()
     {
-        PreparedStatement prep = null;
+        PreparedStatement prep;
         try
         {
             if (checkTableExist("faces"))
@@ -100,7 +99,7 @@ public class FaceTableDao extends AbstractRecordsStore
 
             prep = conn
                     .prepareStatement("CREATE TABLE faces (facetoken STRING, etag STRING (32, 32), "
-                            + "pos STRING, faceid BIGINT, quality STRING, gender STRING, age STRING, ptime DATE);");
+                                              + "pos STRING, faceid BIGINT, quality STRING, gender STRING, age STRING, ptime DATE);");
             prep.execute();
             prep.close();
 
@@ -172,12 +171,12 @@ public class FaceTableDao extends AbstractRecordsStore
         try
         {
             prep = conn.prepareStatement("select * from faces where faceid=? "
-                    + "and facetoken <> ? order by quality asc;");
+                                                 + "and facetoken <> ? order by quality asc;");
             prep.setLong(1, -1);
             prep.setString(2, "null");
             res = prep.executeQuery();
 
-            List<Face> flst = new LinkedList<Face>();
+            List<Face> flst = new LinkedList<>();
             while (res.next())
             {
                 flst.add(getFaceFromTableRecord(res));
@@ -214,7 +213,7 @@ public class FaceTableDao extends AbstractRecordsStore
             prep.setString(1, token);
             res = prep.executeQuery();
 
-            Face f = null;
+            Face f;
             if (res.next())
             {
                 f = getFaceFromTableRecord(res);
@@ -261,7 +260,7 @@ public class FaceTableDao extends AbstractRecordsStore
         f.setAge(res.getString("age"));
         f.setQuality(res.getString("quality"));
         Date pt = res.getDate("ptime");
-        f.setPtime(pt == null ? 0l : pt.getTime());
+        f.setPtime(pt == null ? 0L : pt.getTime());
         logger.debug("get a face record: {}", f);
         return f;
     }
@@ -334,7 +333,7 @@ public class FaceTableDao extends AbstractRecordsStore
 
     public List<Long> getAllValidFaceID(int facecount)
     {
-        List<Long> lst = new ArrayList<Long>();
+        List<Long> lst = new ArrayList<>();
         PreparedStatement prep = null;
         ResultSet res = null;
         lock.readLock().lock();
@@ -402,7 +401,7 @@ public class FaceTableDao extends AbstractRecordsStore
             return null;
         }
 
-        List<Face> lst = new ArrayList<Face>();
+        List<Face> lst = new ArrayList<>();
         PreparedStatement prep = null;
         ResultSet res = null;
         lock.readLock().lock();
@@ -504,7 +503,7 @@ public class FaceTableDao extends AbstractRecordsStore
             }
             res = prep.executeQuery();
 
-            List<Face> flst = new LinkedList<Face>();
+            List<Face> flst = new LinkedList<>();
             while (res.next())
             {
                 flst.add(getFaceFromTableRecord(res));
@@ -531,9 +530,6 @@ public class FaceTableDao extends AbstractRecordsStore
         {
             return null;
         }
-
-        PreparedStatement prep = null;
-        ResultSet res = null;
 
         try
         {
@@ -576,7 +572,7 @@ public class FaceTableDao extends AbstractRecordsStore
             int maxCount = allf.size() < count ? allf.size() : count;
 
             int c = 0;
-            List<Face> flst = new LinkedList<Face>();
+            List<Face> flst = new LinkedList<>();
             boolean start = false;
             for (Face face : allf)
             {
@@ -625,7 +621,6 @@ public class FaceTableDao extends AbstractRecordsStore
         }
         finally
         {
-            closeResource(prep, res);
             lock.readLock().unlock();
         }
 
@@ -640,7 +635,7 @@ public class FaceTableDao extends AbstractRecordsStore
         try
         {
             prep = conn.prepareStatement("delete from faces where etag not in"
-                    + " (select hashstr from uniqphotos1 group by hashstr);");
+                                                 + " (select hashstr from uniqphotos1 group by hashstr);");
             prep.execute();
         }
         catch (Exception e)
