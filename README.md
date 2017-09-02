@@ -79,7 +79,7 @@ edit the jalbum.xml
 ***maxpicsperonepage*** specify the max pic count of one index page.</br>
 ***threadcount*** specify the size of thread pool.<br/>
 ***hashalog*** specify the file HASH fingerprint Algorithm. The common algorithms are: SHA-256, MD5, SHA-1. You can find the stand algorithm names in [MessageDigest Algorithms](https://docs.oracle.com/javase/8/docs/technotes/guides/security/StandardNames.html#MessageDigest).<br/>
-***accessAuth*** specifie whether public access is allowed.
+***accessAuth*** specifie whether public access is allowed.<br/>
 ***thumbnaildir*** specify the folder which to store the thumbnail to.<br/>
 ***s3*** specify the Amazon S3 backup info such as bucketname, ak, sk and useHttps.<br/>
 ***Facer*** specify the face++ service API info, such as ak, sk and custom facesetprefix.
