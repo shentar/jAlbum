@@ -76,7 +76,7 @@ public class BackendScanner
 
         if (isFirstTime || isDone)
         {
-            ToolMain.setFirstRun(false);
+            ToolMain.setFirstRun(true);
             logger.warn("start a new Scan Task: isFirstTime {}, isDone {}.", isFirstTime, isDone);
             isFirstTime = false;
             scanallTaskFuture = threadPool.submit(scanallTask);
