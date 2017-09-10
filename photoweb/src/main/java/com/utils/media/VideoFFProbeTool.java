@@ -1,26 +1,24 @@
 package com.utils.media;
 
+import com.backend.FileInfo;
+import com.backend.FileType;
+import com.backend.PicStatus;
+import com.backend.scan.FileTools;
+import net.bramp.ffmpeg.FFprobe;
+import net.bramp.ffmpeg.probe.FFmpegFormat;
+import net.bramp.ffmpeg.probe.FFmpegProbeResult;
+import net.bramp.ffmpeg.probe.FFmpegStream;
+import net.bramp.ffmpeg.probe.FFmpegStream.CodecType;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.sql.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.backend.FileInfo;
-import com.backend.FileType;
-import com.backend.PicStatus;
-import com.backend.scan.FileTools;
-
-import net.bramp.ffmpeg.FFprobe;
-import net.bramp.ffmpeg.probe.FFmpegFormat;
-import net.bramp.ffmpeg.probe.FFmpegProbeResult;
-import net.bramp.ffmpeg.probe.FFmpegStream;
-import net.bramp.ffmpeg.probe.FFmpegStream.CodecType;
 
 public class VideoFFProbeTool
 {
@@ -39,7 +37,7 @@ public class VideoFFProbeTool
         {
             String query = "ffprobe -v quiet -print_format json -show_format -show_streams \""
                     + filePath + "\"";
-            String[] command = { "/bin/sh", "-c", query };
+            String[] command = {"/bin/sh", "-c", query};
             Process process = Runtime.getRuntime().exec(command);
             process.waitFor();
 
@@ -146,10 +144,25 @@ public class VideoFFProbeTool
             Object ti = fs.tags.get("creation_time");
             if (ti != null)
             {
-                SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                String dateStr = ti.toString();
+                if (StringUtils.isBlank(dateStr))
+                {
+                    return INVALID_TIME_IN_MILLS;
+                }
+
+                SimpleDateFormat sf;
+                if (dateStr.contains("T"))
+                {
+                    sf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'");
+                }
+                else
+                {
+                    sf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                }
+
                 try
                 {
-                    return sf.parse(ti.toString()).getTime();
+                    return sf.parse(dateStr).getTime();
                 }
                 catch (ParseException e)
                 {
@@ -229,9 +242,9 @@ public class VideoFFProbeTool
     private static String generateFingerStringForVideo(FFmpegStream fs)
     {
         return String.format("[%s,%s,%s,%s,%s,%s,%s,%s,%s,%s]", fs.avg_frame_rate.toString(),
-                fs.bit_rate + "", fs.bits_per_raw_sample + "", fs.codec_name + "", fs.duration + "",
-                fs.duration_ts + "", fs.display_aspect_ratio + "", fs.max_bit_rate + "",
-                fs.width + "", fs.height + "");
+                             fs.bit_rate + "", fs.bits_per_raw_sample + "", fs.codec_name + "", fs.duration + "",
+                             fs.duration_ts + "", fs.display_aspect_ratio + "", fs.max_bit_rate + "",
+                             fs.width + "", fs.height + "");
     }
 
 }
