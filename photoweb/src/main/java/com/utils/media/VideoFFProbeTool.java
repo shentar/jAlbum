@@ -153,7 +153,7 @@ public class VideoFFProbeTool
                 SimpleDateFormat sf;
                 if (dateStr.contains("T"))
                 {
-                    sf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXXZ");
+                    sf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'");
                 }
                 else
                 {
