@@ -43,6 +43,7 @@ public class ToolMain
                     mapAllfiles(new File(dir), excludeDirs);
                 }
 
+                logger.warn("all file count is " + filecount.get());
                 while (filecount.get() != 0)
                 {
                     Thread.sleep(100);
