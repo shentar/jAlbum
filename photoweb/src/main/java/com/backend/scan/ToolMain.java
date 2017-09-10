@@ -1,13 +1,5 @@
 package com.backend.scan;
 
-import java.io.File;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicLong;
-
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.backend.FileInfo;
 import com.backend.PicStatus;
 import com.backend.dao.BaseSqliteStore;
@@ -15,6 +7,13 @@ import com.utils.conf.AppConfig;
 import com.utils.media.FileSHA256Caculater;
 import com.utils.media.MediaTool;
 import com.utils.sys.PerformanceStatistics;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class ToolMain
 {
@@ -33,17 +32,12 @@ public class ToolMain
             if (firstRun)
             {
                 firstRun = false;
-                logger.warn("start to scan the base table one time after the program start.");
-                filecount.set(0);
-                PerformanceStatistics.getInstance().reset();
                 List<String> excludeDirs = AppConfig.getInstance().getExcludedir();
-                logger.warn("the exclude dirs are: " + excludeDirs);
-                metaDataStore.scanAllRecords(excludeDirs);
-                logger.warn("end to scan the base table.");
 
                 PerformanceStatistics.getInstance().reset();
+                filecount.set(0);
                 logger.warn("start to scan the filesystem which specified by the config file: "
-                        + AppConfig.getInstance().getInputDir());
+                                    + AppConfig.getInstance().getInputDir());
                 for (String dir : AppConfig.getInstance().getInputDir())
                 {
                     mapAllfiles(new File(dir), excludeDirs);
@@ -55,6 +49,12 @@ public class ToolMain
                 }
                 PerformanceStatistics.getInstance().printPerformanceLog(System.currentTimeMillis());
                 logger.warn("end to scan the filesystem.");
+
+                logger.warn("start to scan the base table one time after the program start.");
+                PerformanceStatistics.getInstance().reset();
+                logger.warn("the exclude dirs are: " + excludeDirs);
+                metaDataStore.scanAllRecords(excludeDirs);
+                logger.warn("end to scan the base table.");
             }
         }
         catch (Throwable th)
@@ -136,7 +136,7 @@ public class ToolMain
                     if (!FileTools.checkFileLengthValid(f.getCanonicalPath()))
                     {
                         logger.info("the size is too small or too big. "
-                                + "it maybe not a normal photo file: " + f);
+                                            + "it maybe not a normal photo file: " + f);
                         break;
                     }
 
@@ -175,4 +175,10 @@ public class ToolMain
             logger.error("caught: ", e);
         }
     }
+
+    public static void setFirstRun(boolean firstRun)
+    {
+        ToolMain.firstRun = firstRun;
+    }
+
 }

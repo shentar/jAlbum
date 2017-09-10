@@ -1,16 +1,15 @@
 package com.backend.scan;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.backend.dirwathch.DirWatchService;
 import com.backend.facer.FaceRecService;
 import com.backend.facer.FaceSetManager;
 import com.utils.conf.AppConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 public class BackendScanner
 {
@@ -77,13 +76,14 @@ public class BackendScanner
 
         if (isFirstTime || isDone)
         {
+            ToolMain.setFirstRun(false);
             logger.warn("start a new Scan Task: isFirstTime {}, isDone {}.", isFirstTime, isDone);
             isFirstTime = false;
             scanallTaskFuture = threadPool.submit(scanallTask);
             facerScanTaskFuture = threadPool.submit(facerScanTask);
             DirWatchService.getInstance().restartScanAllFolders();
             logger.warn("scheduled a new Scan Task: isFirstTime {}, isDone {}.", isFirstTime,
-                    isDone);
+                        isDone);
             return true;
         }
 
