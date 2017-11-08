@@ -1,16 +1,19 @@
 package com.shentar.frontend;
 
-import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.http.HttpVersion;
+import org.eclipse.jetty.server.*;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.webapp.WebAppContext;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
 
 public class FrontMain
 {
-    public static final int DEFAULT_PORT = 2148;
+    private static final int DEFAULT_PORT = 2148;
 
     public static void main(String[] args) throws Exception
     {
@@ -69,6 +72,19 @@ public class FrontMain
         connector.setPort(port);
         connector.setAcceptQueueSize(4);
         // connector.setSoLingerTime(5000);
+        server.addConnector(connector);
+
+        SslContextFactory sslContextFactory = new SslContextFactory();
+        sslContextFactory.setKeyStorePath("keystore");
+        sslContextFactory.setKeyStorePassword("123456");
+        sslContextFactory.setKeyManagerPassword("123456");
+        SslConnectionFactory scf =
+                new SslConnectionFactory(sslContextFactory, HttpVersion.HTTP_1_1.asString());
+
+        connector = new ServerConnector(server, scf, new HttpConnectionFactory());
+        connector.setAcceptQueueSize(4);
+        connector.setIdleTimeout(5000);
+        connector.setPort(5443);
         server.addConnector(connector);
 
         /**

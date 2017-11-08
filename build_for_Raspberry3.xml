@@ -30,6 +30,7 @@
         <include name="favicon.ico"/>
         <include name="jalbum.xml"/>
         <include name="log4j.xml"/>
+        <include name="keystore"/>		
       </fileset>
       <fileset dir="${scripts.dir}">
         <include name="jalbum_for_Raspberry3.sh"/>
