@@ -173,6 +173,7 @@ public class AuthFilter extends AbstractFilter
         if (StringUtils.isNotBlank(redirectLocation))
         {
             goToUrl(httpres, redirectLocation);
+            passed = false;
         }
 
         return passed;
