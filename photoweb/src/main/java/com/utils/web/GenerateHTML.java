@@ -434,12 +434,13 @@ public class GenerateHTML
         }
         // 隐藏照片
         sb.append("<script type=\"text/javascript\">"
-                          + "function changeUrl(url){window.history.pushState({},0,'http://'+window.location.host+'/'+url);}"
-                          + "window.onload=changeUrl(" + "'photos/" + f.getHash256() + extraQueryParas(true)
-                          + "');"
+                          + "function changeUrl(url){window.history.pushState({},0,'//'+window.location.host+'/'+url);}"
+                          + "window.onload=changeUrl(" + "'photos/" + f.getHash256()
+                          + extraQueryParas(true) + "');"
                           + "function deletephoto(path){jConfirm('该操作将永久隐藏照片，无法撤消，确认是否继续？','确认',function(r){if (r){"
-                          + "changeUrl('?next=" + f.getHash256() + extraQueryParas(false) + "&count=1');"
-                          + "window.location.reload();" + "$.ajax({url:path,type:'DELETE',"
+                          + "changeUrl('?next=" + f.getHash256() + extraQueryParas(false)
+                          + "&count=1');" + "window.location.reload();"
+                          + "$.ajax({url:path,type:'DELETE',"
                           + "success:function(result){}});}});}");
 
         if (HeadUtils.isMobile())
@@ -1076,7 +1077,7 @@ public class GenerateHTML
         }
         // 隐藏照片
         sb.append("<script type=\"text/javascript\">"
-                          + "function changeUrl(url){window.history.pushState({},0,'http://'+window.location.host+'/'+url);}"
+                          + "function changeUrl(url){window.history.pushState({},0,'//'+window.location.host+'/'+url);}"
                           + "window.onload=changeUrl(" + "'facetoken/" + f.getFacetoken()
                           + extraQueryParas(true) + "');"
                           + "function deletephoto(path){jConfirm('该操作将永久隐藏照片，无法撤消，确认是否继续？','确认',function(r){if (r){"
