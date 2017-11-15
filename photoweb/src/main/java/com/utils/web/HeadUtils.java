@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -87,8 +88,8 @@ public class HeadUtils
 
         long expirAge = 3600 * 1000 * 24 * 7;
         long expirtime = System.currentTimeMillis() + expirAge;
-        builder.header("Expires", new Date(expirtime));
-        builder.header("Cache-Control", "max-age=" + expirAge);
+        builder.expires(new Date(expirtime));
+        builder.cacheControl(CacheControl.valueOf("max-age=" + expirAge));
     }
 
     public static int getMaxCountOfOnePage()
