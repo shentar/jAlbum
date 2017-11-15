@@ -67,7 +67,11 @@ public class FrontMain
 
         server.setHandler(context);
 
-        ServerConnector connector = new ServerConnector(server);
+        HttpConfiguration configuration = new HttpConfiguration();
+        configuration.setSendDateHeader(false);
+
+        ServerConnector connector =
+                new ServerConnector(server, new HttpConnectionFactory(configuration));
         connector.setIdleTimeout(5000);
         connector.setPort(port);
         connector.setAcceptQueueSize(4);
@@ -81,7 +85,7 @@ public class FrontMain
         SslConnectionFactory scf =
                 new SslConnectionFactory(sslContextFactory, HttpVersion.HTTP_1_1.asString());
 
-        connector = new ServerConnector(server, scf, new HttpConnectionFactory());
+        connector = new ServerConnector(server, scf, new HttpConnectionFactory(configuration));
         connector.setAcceptQueueSize(4);
         connector.setIdleTimeout(5000);
         connector.setPort(5443);
