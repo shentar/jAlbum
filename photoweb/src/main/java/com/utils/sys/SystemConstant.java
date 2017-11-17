@@ -46,4 +46,7 @@ public class SystemConstant
 
     public static final String INSTANCE_ID = "instance_id";
 
+    public static final String COOKIE_NAME_PREFIX = "SESSION";
+
+    public static final String COOKIE_CONTENT = "cookie_content";
 }

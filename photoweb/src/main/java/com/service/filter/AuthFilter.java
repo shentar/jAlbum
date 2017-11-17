@@ -8,15 +8,14 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.utils.web.HeadUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.backend.dao.GlobalConfDao;
 import com.utils.conf.AppConfig;
 import com.utils.sys.SystemConstant;
 import com.utils.sys.SystemProperties;
-import com.utils.sys.UUIDGenerator;
 
 public class AuthFilter extends AbstractFilter
 {
@@ -24,20 +23,10 @@ public class AuthFilter extends AbstractFilter
 
     private static final String ORIGINAL_URI_KEY = "origuri";
 
-    private static final String cookieNamePrefix = "SESSION";
-
-    private static String cookieName = cookieNamePrefix;
-
     @Override
     public void init(FilterConfig arg0) throws ServletException
     {
-        String id = GlobalConfDao.getInstance().getConf(SystemConstant.INSTANCE_ID);
-        if (StringUtils.isBlank(id))
-        {
-            id = UUIDGenerator.getUUID();
-            GlobalConfDao.getInstance().setConf(SystemConstant.INSTANCE_ID, id);
-        }
-        cookieName = cookieNamePrefix + "_" + id;
+
     }
 
     @Override
@@ -52,20 +41,20 @@ public class AuthFilter extends AbstractFilter
         if (StringUtils.equals(httpreq.getRemoteAddr(), "127.0.0.1"))
         {
             logger.info("login from local host.");
-            SystemProperties.add(SystemConstant.USER_LOGIN_STATUS, LoginStatus.LocalLoin);
-            return true;
-        }
+        SystemProperties.add(SystemConstant.USER_LOGIN_STATUS, LoginStatus.LocalLoin);
+        return true;
+    }
 
-        String uri = httpreq.getRequestURI();
+    String uri = httpreq.getRequestURI();
 
         if (StringUtils.equals("/favicon.ico", uri))
-        {
-            return true;
-        }
+    {
+        return true;
+    }
 
-        Cookie[] cookies = httpreq.getCookies();
-        LoginStatus loginStatus = LoginStatus.Unlogin;
-        String origUri = httpreq.getParameter(ORIGINAL_URI_KEY);
+    Cookie[] cookies = httpreq.getCookies();
+    LoginStatus loginStatus = LoginStatus.Unlogin;
+    String origUri = httpreq.getParameter(ORIGINAL_URI_KEY);
         String redirectLocation = "";
         String token = httpreq.getParameter("token");
 
@@ -109,7 +98,7 @@ public class AuthFilter extends AbstractFilter
                     // 登录信息过期，或者cookies不对，则删除cookies，并跳转到登录页面。
                     for (Cookie c : cookies)
                     {
-                        if (StringUtils.equalsIgnoreCase(cookieName, c.getName()))
+                        if (StringUtils.equalsIgnoreCase(HeadUtils.getCookieName(), c.getName()))
                         {
                             token = c.getValue();
                             if (TokenCache.getInstance().isSupper(token))
@@ -146,17 +135,13 @@ public class AuthFilter extends AbstractFilter
             case SuperLogin:
             case CookiesLoin:
             case TokenLoin:
-                // 登录成功跳转到主页
-                Cookie c = new Cookie(cookieName, token);
-                c.setMaxAge(3600 * 24 * 30);
-                httpres.addCookie(c);
+                SystemProperties.add(SystemConstant.COOKIE_CONTENT, token);
                 passed = true;
                 break;
-
             case CookiesError:
                 for (Cookie ctmp : cookies)
                 {
-                    if (StringUtils.equalsIgnoreCase(ctmp.getName(), cookieName))
+                    if (StringUtils.equalsIgnoreCase(ctmp.getName(), HeadUtils.getCookieName()))
                     {
                         ctmp.setMaxAge(0);
                         httpres.addCookie(ctmp);

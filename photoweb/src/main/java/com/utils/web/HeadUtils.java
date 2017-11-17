@@ -2,16 +2,20 @@ package com.utils.web;
 
 import com.backend.FileInfo;
 import com.backend.FileType;
+import com.backend.dao.GlobalConfDao;
 import com.service.filter.LoginStatus;
 import com.utils.conf.AppConfig;
 import com.utils.media.MediaTool;
 import com.utils.sys.SystemConstant;
 import com.utils.sys.SystemProperties;
+import com.utils.sys.UUIDGenerator;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import java.io.IOException;
@@ -24,6 +28,8 @@ import java.util.Date;
 public class HeadUtils
 {
     private static final Logger logger = LoggerFactory.getLogger(HeadUtils.class);
+
+    private static String cookieName = null;
 
     public static boolean isMobile()
     {
@@ -63,8 +69,8 @@ public class HeadUtils
         {
             ua = ua.toLowerCase();
 
-            if (ua.contains("mobile") || ua.contains("android")
-                    || (ua.contains("ios") && !ua.contains("ipad")) || ua.contains("windows phone"))
+            if (ua.contains("mobile") || ua.contains("android") || (ua.contains("ios") && !ua
+                    .contains("ipad")) || ua.contains("windows phone"))
             {
                 isMobile = true;
             }
@@ -287,4 +293,40 @@ public class HeadUtils
 
         return false;
     }
+
+    public synchronized static String getCookieName()
+    {
+        if (StringUtils.isNotBlank(cookieName))
+        {
+            return cookieName;
+        }
+
+        String id = GlobalConfDao.getInstance().getConf(SystemConstant.INSTANCE_ID);
+        if (StringUtils.isBlank(id))
+        {
+            id = UUIDGenerator.getUUID();
+            GlobalConfDao.getInstance().setConf(SystemConstant.INSTANCE_ID, id);
+        }
+        cookieName = SystemConstant.COOKIE_NAME_PREFIX + "_" + id;
+
+        return cookieName;
+    }
+
+    public static void refreshCookie(HttpServletResponse response)
+    {
+        if (response == null)
+        {
+            return;
+        }
+
+        Object s = SystemProperties.get(SystemConstant.COOKIE_CONTENT);
+        if (s != null && s instanceof String)
+        {
+            // 登录成功跳转到主页
+            Cookie c = new Cookie(cookieName, (String) s);
+            c.setMaxAge(3600 * 24 * 30);
+            response.addCookie(c);
+        }
+    }
+
 }
