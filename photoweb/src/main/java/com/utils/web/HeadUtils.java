@@ -323,7 +323,7 @@ public class HeadUtils
         if (s != null && s instanceof String)
         {
             // 登录成功跳转到主页
-            Cookie c = new Cookie(cookieName, (String) s);
+            Cookie c = new Cookie(getCookieName(), (String) s);
             c.setMaxAge(3600 * 24 * 30);
             response.addCookie(c);
         }
