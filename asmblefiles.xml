@@ -54,7 +54,7 @@
     </copy>
     <fixcrlf srcdir="${distribute.dir}/relase_tmp" includes="**/*.xml" eol="crlf"/>
     <zip destfile="jAlbum_release.zip">
-      <zipfileset dir="${distribute.dir}" excludes=".svn/**, thumbnail/**, log/**, relase_tmp/**, dedup.db, log4j.xml, jalbum.xml"/>
+      <zipfileset dir="${distribute.dir}" excludes=".svn/**, thumbnail/**, log/**, relase_tmp/**, dedup.db, log4j.xml, jalbum.xml, keystore"/>
       <zipfileset dir="${dedup.dir}" includes="dedup.db"/>
       <zipfileset dir="${distribute.dir}/relase_tmp" includes="log4j.xml, jalbum.xml, keystore"/>
     </zip>
