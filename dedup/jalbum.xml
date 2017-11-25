@@ -43,8 +43,14 @@ thumbnaildir specify the folder which to store the thumbnail to.
         <bucketname></bucketname>
         <ak></ak>
         <sk></sk>
-    <useHttps>false</useHttps>
+        <useHttps>false</useHttps>
   </s3>
+  <HuaweiOBS>
+        <bucketname></bucketname>
+        <ak></ak>
+        <sk></sk>
+        <useHttps>false</useHttps>
+  </HuaweiOBS>  
   <Facer>
         <ak></ak>
         <sk></sk>

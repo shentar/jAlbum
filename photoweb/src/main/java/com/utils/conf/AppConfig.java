@@ -175,6 +175,7 @@ public class AppConfig
         return config.getInt("maxpicsperonepage", defaultValue);
     }
 
+    // config for AWS S3.
     public String getS3AK()
     {
         return config.getString("s3.ak", "");
@@ -242,29 +243,7 @@ public class AppConfig
         return config.getString("s3.Proxy.password", defaultPass);
     }
 
-
-    public boolean useHuaweiOBSHTTPS()
-    {
-        return config.getBoolean("s3.useHttps", true);
-    }
-
-    public String getHuaweiOBSBucketName()
-    {
-        return config.getString("s3.bucketname", "");
-    }
-
-    public int getHuaweiOBSConcurrentThreads()
-    {
-        return config.getInt("s3.threadperbucket", 20);
-    }
-
-    public boolean isHuaweiOBSConfiged()
-    {
-        return StringUtils.isNotBlank(AppConfig.getInstance().getHuaweiOBSAK()) && StringUtils
-                .isNotBlank(AppConfig.getInstance().getHuaweiOBSSK()) && StringUtils
-                .isNotBlank(AppConfig.getInstance().getHuaweiOBSBucketName());
-    }
-
+    // config for Huawei Cloud OBS.
     public String getHuaweiOBSAK()
     {
         return config.getString("HuaweiOBS.ak", "");
@@ -275,10 +254,32 @@ public class AppConfig
         return config.getString("HuaweiOBS.sk", "");
     }
 
+
+    public boolean useHuaweiOBSHTTPS()
+    {
+        return config.getBoolean("HuaweiOBS.useHttps", true);
+    }
+
+    public String getHuaweiOBSBucketName()
+    {
+        return config.getString("HuaweiOBS.bucketname", "");
+    }
+
+    public int getHuaweiOBSConcurrentThreads()
+    {
+        return config.getInt("HuaweiOBS.threadperbucket", 20);
+    }
+
+    public boolean isHuaweiOBSConfiged()
+    {
+        return StringUtils.isNotBlank(AppConfig.getInstance().getHuaweiOBSAK()) && StringUtils
+                .isNotBlank(AppConfig.getInstance().getHuaweiOBSSK()) && StringUtils
+                .isNotBlank(AppConfig.getInstance().getHuaweiOBSBucketName());
+    }
+
     public boolean isHWProxyConfiged()
     {
         return StringUtils.isNotBlank(getHWProxyHost()) && getHWProxyPort() != -1;
-
     }
 
     public String getHWProxyHost()
@@ -310,6 +311,7 @@ public class AppConfig
         return config.getString("HuaweiOBS.Proxy.password", defaultPass);
     }
 
+    // config for Face++
     public String getFacerProxyHost()
     {
         String defaultHost = config.getString("Proxy.host", "");
