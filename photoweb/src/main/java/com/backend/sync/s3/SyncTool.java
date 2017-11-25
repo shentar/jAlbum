@@ -9,12 +9,13 @@ import com.utils.conf.AppConfig;
 
 public class SyncTool
 {
-    private static final ExecutorService threadPool = Executors
-            .newFixedThreadPool(AppConfig.getInstance().getS3ConcurrentThreads());
+    private static final ExecutorService threadPool =
+            Executors.newFixedThreadPool(AppConfig.getInstance().getS3ConcurrentThreads());
 
     public static void submitSyncTask(FileInfo fi)
     {
-        if (AppConfig.getInstance().isS3Configed() && new File(fi.getPath()).exists())
+        if ((AppConfig.getInstance().isS3Configed() || AppConfig.getInstance()
+                .isHuaweiOBSConfiged()) && new File(fi.getPath()).exists())
         {
             threadPool.submit(new SyncS3Task(fi));
         }

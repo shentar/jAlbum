@@ -25,9 +25,9 @@ import java.io.*;
 import java.util.List;
 
 @Produces(value = { "text/html", "application/octet-stream" })
-public class RestRootWebService extends HttpServlet
+public class RootWebService extends HttpServlet
 {
-    private static final Logger logger = LoggerFactory.getLogger(RestRootWebService.class);
+    private static final Logger logger = LoggerFactory.getLogger(RootWebService.class);
 
     private static final long serialVersionUID = -7748065720779404006L;
 

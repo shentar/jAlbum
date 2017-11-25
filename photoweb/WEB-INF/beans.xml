@@ -25,5 +25,5 @@ http://cxf.apache.org/schemas/jaxrs.xsd">
         </jaxrs:providers>
     </jaxrs:server>
 
-    <bean id="customerBean" class="com.service.RestRootWebService"/>
+    <bean id="customerBean" class="com.service.RootWebService"/>
 </beans>

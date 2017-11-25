@@ -7,13 +7,10 @@ import com.utils.media.MediaTool;
 import com.utils.web.HeadUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jets3t.service.Constants;
-import org.jets3t.service.Jets3tProperties;
 import org.jets3t.service.S3Service;
 import org.jets3t.service.StorageObjectsChunk;
-import org.jets3t.service.impl.rest.httpclient.RestS3Service;
 import org.jets3t.service.model.S3Object;
 import org.jets3t.service.model.StorageObject;
-import org.jets3t.service.security.AWSCredentials;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,10 +23,10 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
-public class SyncS3Service
+public abstract class AbstractSyncS3Service
 {
     private static final String OBJECTPREFIX = "homenas/";
-    private static final Logger logger = LoggerFactory.getLogger(SyncS3Service.class);
+    private static final Logger logger = LoggerFactory.getLogger(AbstractSyncS3Service.class);
 
     private Map<String, StorageObject> allobjs = new ConcurrentHashMap<>();
 
@@ -40,44 +37,6 @@ public class SyncS3Service
     private S3Service s3service = null;
 
     private AtomicInteger failedTimes = new AtomicInteger(0);
-
-    private static class ServiceHolder
-    {
-        private static final SyncS3Service instance = new SyncS3Service();
-    }
-
-    public static SyncS3Service getInstance()
-    {
-        ServiceHolder.instance.init();
-        return ServiceHolder.instance;
-    }
-
-    private SyncS3Service()
-    {
-        Jets3tProperties jets3tproperties = new Jets3tProperties();
-        jets3tproperties.setProperty("httpclient.connection-timeout-ms", "" + 60000);
-        jets3tproperties.setProperty("httpclient.socket-timeout-ms", "" + 60000);
-        // jets3tproperties.setProperty("s3service.s3-endpoint", "codefine.co");
-        jets3tproperties.setProperty("s3service.https-only",
-                                     "" + AppConfig.getInstance().useHTTPS());
-
-        if (AppConfig.getInstance().isS3ProxyConfiged())
-        {
-            jets3tproperties.setProperty("httpclient.proxy-host",
-                                         AppConfig.getInstance().getS3ProxyHost());
-            jets3tproperties.setProperty("httpclient.proxy-port",
-                                         "" + AppConfig.getInstance().getS3ProxyPort());
-            jets3tproperties.setProperty("httpclient.proxy-user",
-                                         AppConfig.getInstance().getS3ProxyUser());
-            jets3tproperties.setProperty("httpclient.proxy-password",
-                                         AppConfig.getInstance().getS3ProxyPWD());
-            jets3tproperties.setProperty("httpclient.proxy-autodetect", "false");
-
-        }
-        s3service = new RestS3Service(new AWSCredentials(AppConfig.getInstance().getAK(),
-                                                         AppConfig.getInstance().getSK()), "jAlbum 0.2.2", null,
-                                      jets3tproperties);
-    }
 
     public boolean checkAlreadyBackuped(FileInfo fi)
     {
@@ -134,20 +93,22 @@ public class SyncS3Service
             so.addMetadata(Constants.REST_METADATA_PREFIX + "type",
                            HeadUtils.getFileType(fi.getPath()).name());
 
-            S3Object o = s3service.putObject(AppConfig.getInstance().getBucketName(), so);
+            S3Object o = s3service.putObject(getBucketName(), so);
             logger.warn("upload the object successfully: {}", o);
             logger.warn("the size of all object in s3 is: space size: {}, object count: [{}]",
-                        String.format("%4.3fGB", ((float) backedUpSize.get()) / (1024 * 1024 * 1024)),
+                        String.format("%4.3fGB",
+                                      ((float) backedUpSize.get()) / (1024 * 1024 * 1024)),
                         allobjs.size());
             failedTimes.set(0);
-            if (StringUtils.equalsIgnoreCase(o.getETag(), fi.getHash256())
-                    || MediaTool.isVideo(fi.getPath()))
+            if (StringUtils.equalsIgnoreCase(o.getETag(), fi.getHash256()) || MediaTool
+                    .isVideo(fi.getPath()))
             {
                 // 使用jalbum提取的指纹计算得到的etag来做key，而不是使用真实的文件的etag。
                 allobjs.put(fi.getHash256().toUpperCase(), o);
                 backedUpSize.addAndGet(o.getContentLength());
-                BackupedFilesDao.getInstance().checkAndaddOneRecords(fi.getHash256().toUpperCase(),
-                                                                     o.getETag(), o.getKey());
+                getBackupedFileDao()
+                        .checkAndaddOneRecords(fi.getHash256().toUpperCase(), o.getETag(),
+                                               o.getKey());
             }
             else
             {
@@ -163,6 +124,7 @@ public class SyncS3Service
         }
 
     }
+
 
     private String genObjectKey(FileInfo fi)
     {
@@ -190,18 +152,20 @@ public class SyncS3Service
         return sf.format(new Date(date));
     }
 
-    private synchronized void init()
+    protected synchronized void init()
     {
         if (isInit)
         {
             return;
         }
 
-        BackupedFilesDao.getInstance().checkAndCreateTable();
+        s3service = generateS3Service();
 
         logger.warn("start to init sync srvice. try to get the object list.");
 
-        List<String> lst = BackupedFilesDao.getInstance().getAllHashStr();
+        getBackupedFileDao().checkAndCreateTable();
+
+        List<String> lst = getBackupedFileDao().getAllHashStr();
         for (String s : lst)
         {
             allobjs.put(s.toUpperCase(), new StorageObject());
@@ -213,16 +177,16 @@ public class SyncS3Service
         {
             try
             {
-                sc = s3service.listObjectsChunked(AppConfig.getInstance().getBucketName(),
-                                                  "homenas/", null, 1000, priorLastKey, false);
+                sc = s3service
+                        .listObjectsChunked(getBucketName(), "homenas/", null, 1000, priorLastKey,
+                                            false);
                 failedTimes.set(0);
                 StorageObject[] obs = sc.getObjects();
 
                 if (obs == null)
                 {
                     isInit = true;
-                    logger.warn("there is no object in the bucket: {}",
-                                AppConfig.getInstance().getBucketName());
+                    logger.warn("there is no object in the bucket: {}", getBucketName());
                     break;
                 }
 
@@ -247,10 +211,8 @@ public class SyncS3Service
                     }
 
                     logger.warn("the file is in s3 but not in the local table: {}", o);
-                    BackupedFilesDao.getInstance().checkAndaddOneRecords(hashStr, o.getETag(),
-                                                                         o.getKey());
+                    getBackupedFileDao().checkAndaddOneRecords(hashStr, o.getETag(), o.getKey());
                     allobjs.put(hashStr, o);
-
                 }
 
                 if (sc.isListingComplete())
@@ -275,4 +237,9 @@ public class SyncS3Service
         }
     }
 
+    protected abstract String getBucketName();
+
+    protected abstract S3Service generateS3Service();
+
+    protected abstract BackupedFilesDao getBackupedFileDao();
 }

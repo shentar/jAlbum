@@ -1,30 +1,20 @@
 package com.backend.dao;
 
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-public class BackupedFilesDao extends AbstractRecordsStore
+public abstract class BackupedFilesDao extends AbstractRecordsStore
 {
     private static final Logger logger = LoggerFactory.getLogger(BackupedFilesDao.class);
 
-    private static BackupedFilesDao instance = new BackupedFilesDao();
-
-    private BackupedFilesDao()
-    {
-
-    }
-
-    public static BackupedFilesDao getInstance()
-    {
-        return instance;
-    }
+    protected abstract String getBackupedTableName();
 
     public void checkAndaddOneRecords(String hashStr, String eTag, String objkey)
     {
@@ -39,7 +29,8 @@ public class BackupedFilesDao extends AbstractRecordsStore
         try
         {
             lock.readLock().lock();
-            prep = conn.prepareStatement("select * from backuped where hashstr=?;");
+            prep = conn.prepareStatement(
+                    "select * from " + getBackupedTableName() + " where hashstr=?;");
             prep.setString(1, hashStr);
             res = prep.executeQuery();
 
@@ -54,7 +45,8 @@ public class BackupedFilesDao extends AbstractRecordsStore
             closeResource(prep, res);
 
             lock.writeLock().lock();
-            prep = conn.prepareStatement("insert into backuped values(?,?,?);");
+            prep = conn.prepareStatement(
+                    "insert into " + getBackupedTableName() + " values(?,?,?);");
             prep.setString(1, hashStr);
             prep.setString(2, eTag);
             prep.setString(3, objkey);
@@ -78,8 +70,8 @@ public class BackupedFilesDao extends AbstractRecordsStore
                 return;
             }
 
-            prep = conn.prepareStatement(
-                    "CREATE TABLE backuped (hashstr STRING PRIMARY KEY, etag STRING (32, 32), objkey STRING);");
+            prep = conn.prepareStatement("CREATE TABLE " + getBackupedTableName()
+                                                 + " (hashstr STRING PRIMARY KEY, etag STRING (32, 32), objkey STRING);");
             prep.execute();
         }
         catch (Exception e)
@@ -97,7 +89,7 @@ public class BackupedFilesDao extends AbstractRecordsStore
         try
         {
             lock.readLock().lock();
-            prep = conn.prepareStatement("select * from backuped;");
+            prep = conn.prepareStatement("select * from " + getBackupedTableName() + ";");
             res = prep.executeQuery();
 
             while (res.next())

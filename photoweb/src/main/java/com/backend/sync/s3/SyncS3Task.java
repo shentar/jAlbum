@@ -15,12 +15,19 @@ public class SyncS3Task implements Runnable
     @Override
     public void run()
     {
-        if (fi == null || !AppConfig.getInstance().isS3Configed())
+        if (fi == null)
         {
             return;
         }
 
-        SyncS3Service.getInstance().uploadObject(fi);
-    }
+        if (AppConfig.getInstance().isS3Configed())
+        {
+            AWSS3SyncService.getInstance().uploadObject(fi);
+        }
 
+        if (AppConfig.getInstance().isHuaweiOBSConfiged())
+        {
+            HuaweiOBSSyncService.getInstance().uploadObject(fi);
+        }
+    }
 }

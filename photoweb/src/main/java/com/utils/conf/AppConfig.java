@@ -1,15 +1,15 @@
 package com.utils.conf;
 
-import java.io.File;
-import java.util.LinkedList;
-import java.util.List;
-
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.configuration.reloading.FileChangedReloadingStrategy;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.util.LinkedList;
+import java.util.List;
 
 public class AppConfig
 {
@@ -175,22 +175,22 @@ public class AppConfig
         return config.getInt("maxpicsperonepage", defaultValue);
     }
 
-    public String getAK()
+    public String getS3AK()
     {
         return config.getString("s3.ak", "");
     }
 
-    public String getSK()
+    public String getS3SK()
     {
         return config.getString("s3.sk", "");
     }
 
-    public boolean useHTTPS()
+    public boolean useS3HTTPS()
     {
         return config.getBoolean("s3.useHttps", true);
     }
 
-    public String getBucketName()
+    public String getS3BucketName()
     {
         return config.getString("s3.bucketname", "");
     }
@@ -202,9 +202,9 @@ public class AppConfig
 
     public boolean isS3Configed()
     {
-        return StringUtils.isNotBlank(AppConfig.getInstance().getAK())
-                && StringUtils.isNotBlank(AppConfig.getInstance().getSK())
-                && StringUtils.isNotBlank(AppConfig.getInstance().getBucketName());
+        return StringUtils.isNotBlank(AppConfig.getInstance().getS3AK()) && StringUtils
+                .isNotBlank(AppConfig.getInstance().getS3SK()) && StringUtils
+                .isNotBlank(AppConfig.getInstance().getS3BucketName());
     }
 
     public long getRetryInitS3()
@@ -240,6 +240,74 @@ public class AppConfig
     {
         String defaultPass = config.getString("Proxy.password", "");
         return config.getString("s3.Proxy.password", defaultPass);
+    }
+
+
+    public boolean useHuaweiOBSHTTPS()
+    {
+        return config.getBoolean("s3.useHttps", true);
+    }
+
+    public String getHuaweiOBSBucketName()
+    {
+        return config.getString("s3.bucketname", "");
+    }
+
+    public int getHuaweiOBSConcurrentThreads()
+    {
+        return config.getInt("s3.threadperbucket", 20);
+    }
+
+    public boolean isHuaweiOBSConfiged()
+    {
+        return StringUtils.isNotBlank(AppConfig.getInstance().getHuaweiOBSAK()) && StringUtils
+                .isNotBlank(AppConfig.getInstance().getHuaweiOBSSK()) && StringUtils
+                .isNotBlank(AppConfig.getInstance().getHuaweiOBSBucketName());
+    }
+
+    public String getHuaweiOBSAK()
+    {
+        return config.getString("HuaweiOBS.ak", "");
+    }
+
+    public String getHuaweiOBSSK()
+    {
+        return config.getString("HuaweiOBS.sk", "");
+    }
+
+    public boolean isHWProxyConfiged()
+    {
+        return StringUtils.isNotBlank(getHWProxyHost()) && getHWProxyPort() != -1;
+
+    }
+
+    public String getHWProxyHost()
+    {
+        String defaultHost = config.getString("Proxy.host", "");
+        return config.getString("HuaweiOBS.Proxy.host", defaultHost);
+    }
+
+    public int getHWProxyPort()
+    {
+        int defaultport = config.getInt("Proxy.port", -1);
+        return config.getInt("HuaweiOBS.Proxy.port", defaultport);
+    }
+
+    public String getHWProxyUser()
+    {
+        String defaultUser = config.getString("Proxy.user", "");
+        return config.getString("HuaweiOBS.Proxy.user", defaultUser);
+    }
+
+    public String getHWOBSEndPoint()
+    {
+        return config.getString("HuaweiOBS.EndPoint", "obs.myhwclouds.com");
+    }
+
+    public String getHWProxyPWD()
+    {
+        String defaultPass = config.getString("Proxy.password", "");
+        return config.getString("HuaweiOBS.Proxy.password", defaultPass);
     }
 
     public String getFacerProxyHost()
