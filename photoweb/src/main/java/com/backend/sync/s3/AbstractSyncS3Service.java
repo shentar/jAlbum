@@ -38,7 +38,7 @@ public abstract class AbstractSyncS3Service
 
     private AtomicInteger failedTimes = new AtomicInteger(0);
 
-    public boolean checkAlreadyBackuped(FileInfo fi)
+    private boolean checkAlreadyBackuped(FileInfo fi)
     {
         if (fi != null && allobjs.containsKey(fi.getHash256()))
         {
