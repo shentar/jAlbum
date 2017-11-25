@@ -1,3 +1,11 @@
+jAlbum_0.2.9
+1、支持备份数据到Huawei Cloud OBS对象存储。
+
+jAlbum_0.2.8
+1、支持HTTPS访问； 
+2、解决响应中重复HTTP头域Date和Expire问题； 
+3、解决鉴权Bug。 
+
 jAlbum_0.2.7
 1、解决可靠性问题。
 2、编译工具修改为Maven。
