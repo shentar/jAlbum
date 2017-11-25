@@ -65,7 +65,7 @@ public abstract class BackupedFilesDao extends AbstractRecordsStore
         PreparedStatement prep;
         try
         {
-            if (checkTableExist("backuped"))
+            if (checkTableExist(getBackupedTableName()))
             {
                 return;
             }
