@@ -64,6 +64,13 @@ edit the jalbum.xml
         <sk></sk>
         <useHttps>false</useHttps>
     </s3>
+    <HuaweiOBS>
+        <bucketname></bucketname>
+        <ak></ak>
+        <sk></sk>
+        <EndPoint></EndPoint>
+        <useHttps>false</useHttps>
+    </HuaweiOBS>    
     <Facer>
         <ak></ak>
         <sk></sk>
@@ -82,6 +89,7 @@ edit the jalbum.xml
 ***accessAuth*** specifie whether public access is allowed.<br/>
 ***thumbnaildir*** specify the folder which to store the thumbnail to.<br/>
 ***s3*** specify the Amazon S3 backup info such as bucketname, ak, sk and useHttps.<br/>
+***HuaweiOBS*** specify the Huawei Cloud OBS backup info such as access endpoint, bucketname, ak, sk and useHttps.<br/>
 ***Facer*** specify the face++ service API info, such as ak, sk and custom facesetprefix.
 <br/>
 
