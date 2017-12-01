@@ -203,6 +203,7 @@ public abstract class AbstractSyncS3Service
                     String hashStr = getHashStrFromObjectKey(o.getKey());
                     if (hashStr == null)
                     {
+                        logger.warn("the file is not abnormal: {}", o);
                         hashStr = o.getETag().toUpperCase();
                     }
 
