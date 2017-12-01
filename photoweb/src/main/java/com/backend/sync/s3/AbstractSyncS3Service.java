@@ -94,11 +94,7 @@ public abstract class AbstractSyncS3Service
                            HeadUtils.getFileType(fi.getPath()).name());
 
             S3Object o = s3service.putObject(getBucketName(), so);
-            logger.warn("upload the object successfully: {}", o);
-            logger.warn("the size of all object in s3 is: space size: {}, object count: [{}]",
-                        String.format("%4.3fGB",
-                                      ((float) backedUpSize.get()) / (1024 * 1024 * 1024)),
-                        allobjs.size());
+
             failedTimes.set(0);
             if (StringUtils.equalsIgnoreCase(o.getETag(), fi.getHash256()) || MediaTool
                     .isVideo(fi.getPath()))
@@ -114,6 +110,11 @@ public abstract class AbstractSyncS3Service
             {
                 logger.warn("the object etag is not equals file info is: {}", fi);
             }
+            logger.warn("upload the object successfully: {}", o);
+            logger.warn("the size of all object in s3 is: space size: {}, object count: [{}]",
+                        String.format("%4.3fGB",
+                                      ((float) backedUpSize.get()) / (1024 * 1024 * 1024)),
+                        allobjs.size());
         }
         catch (Exception e)
         {
