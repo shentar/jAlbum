@@ -196,6 +196,7 @@ public abstract class AbstractSyncS3Service
                 {
                     if (o.getContentLength() <= 0)
                     {
+                        logger.warn("the object is abnormal: {}", o);
                         continue;
                     }
 
@@ -203,7 +204,7 @@ public abstract class AbstractSyncS3Service
                     String hashStr = getHashStrFromObjectKey(o.getKey());
                     if (hashStr == null)
                     {
-                        logger.warn("the file is not abnormal: {}", o);
+                        logger.warn("the object is abnormal: {}", o);
                         hashStr = o.getETag().toUpperCase();
                     }
 
