@@ -22,6 +22,8 @@ public class FaceTableDao extends AbstractRecordsStore
 
     private static FaceTableDao instance = new FaceTableDao();
 
+    private boolean isInit = false;
+
     private FaceTableDao()
     {
 
@@ -29,7 +31,44 @@ public class FaceTableDao extends AbstractRecordsStore
 
     public static FaceTableDao getInstance()
     {
+        instance.checkAndCreateTable();
         return instance;
+    }
+
+    private synchronized void checkAndCreateTable()
+    {
+        if (isInit)
+        {
+            return;
+        }
+
+        PreparedStatement prep;
+        try
+        {
+            if (checkTableExist("faces"))
+            {
+                isInit = true;
+                return;
+            }
+
+            logger.warn("the table [faces] is not exist, created.");
+
+            prep = conn.prepareStatement(
+                    "CREATE TABLE faces (facetoken STRING, etag STRING (32, 32), "
+                            + "pos STRING, faceid BIGINT, quality STRING, gender STRING, age STRING, ptime DATE);");
+            prep.execute();
+            prep.close();
+
+            prep = conn.prepareStatement(
+                    "CREATE INDEX faceindex ON faces (facetoken, etag, faceid, ptime);");
+            prep.execute();
+            prep.close();
+            isInit = true;
+        }
+        catch (Exception e)
+        {
+            logger.error("caught: ", e);
+        }
     }
 
     public void insertOneRecord(Face face)
@@ -87,32 +126,6 @@ public class FaceTableDao extends AbstractRecordsStore
         }
     }
 
-    public void checkAndCreateTable()
-    {
-        PreparedStatement prep;
-        try
-        {
-            if (checkTableExist("faces"))
-            {
-                return;
-            }
-
-            prep = conn
-                    .prepareStatement("CREATE TABLE faces (facetoken STRING, etag STRING (32, 32), "
-                                              + "pos STRING, faceid BIGINT, quality STRING, gender STRING, age STRING, ptime DATE);");
-            prep.execute();
-            prep.close();
-
-            prep = conn.prepareStatement(
-                    "CREATE INDEX faceindex ON faces (facetoken, etag, faceid, ptime);");
-            prep.execute();
-            prep.close();
-        }
-        catch (Exception e)
-        {
-            logger.error("caught: ", e);
-        }
-    }
 
     public boolean checkAlreadyDetect(String eTag)
     {
@@ -341,8 +354,8 @@ public class FaceTableDao extends AbstractRecordsStore
         {
             prep = conn.prepareStatement(
                     "select faceid,count(faceid) " + "from faces where faceid!='-1' "
-                            + "group by faceid order by count(faceid) desc limit "
-                            + ((facecount > 0 && facecount < 300) ? facecount : 25) + ";");
+                            + "group by faceid order by count(faceid) desc limit " + (
+                            (facecount > 0 && facecount < 300) ? facecount : 25) + ";");
             res = prep.executeQuery();
 
             while (res.next())
@@ -490,14 +503,17 @@ public class FaceTableDao extends AbstractRecordsStore
             String statment = "select * from faces where facetoken='null' ";
             if (f == null)
             {
-                statment += " order by ptime " + (isNext ? "desc" : "asc") + " limit " + count
-                        + ";";
+                statment +=
+                        " order by ptime " + (isNext ? "desc" : "asc") + " limit " + count + ";";
                 prep = conn.prepareStatement(statment);
             }
             else
             {
-                statment += " and ptime " + (isNext ? "<" : ">") + "?" + " order by ptime "
-                        + (isNext ? "desc" : "asc") + " limit " + count + ";";
+                statment +=
+                        " and ptime " + (isNext ? "<" : ">") + "?" + " order by ptime " + (isNext
+                                                                                           ? "desc"
+                                                                                           : "asc")
+                                + " limit " + count + ";";
                 prep = conn.prepareStatement(statment);
                 prep.setDate(1, f.getPhotoTime());
             }

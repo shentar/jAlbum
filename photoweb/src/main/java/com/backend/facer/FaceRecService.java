@@ -31,17 +31,7 @@ public class FaceRecService
 
     public static FaceRecService getInstance()
     {
-        ServiceHolder.instance.init();
         return ServiceHolder.instance;
-    }
-
-    private synchronized void init()
-    {
-        if (!isInit)
-        {
-            FaceTableDao.getInstance().checkAndCreateTable();
-            isInit = true;
-        }
     }
 
     public void detactFaces(final FileInfo fi)
