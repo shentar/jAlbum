@@ -19,7 +19,7 @@ public class BackendScanner
 
     private boolean isFirstTime = true;
 
-    private final ExecutorService threadPool = Executors.newFixedThreadPool(2);
+    private final ExecutorService threadPool = Executors.newFixedThreadPool(3);
 
     private Runnable scanallTask = new Runnable()
     {
@@ -59,6 +59,24 @@ public class BackendScanner
 
     private Future<?> facerScanTaskFuture = null;
 
+
+    private Runnable watchServiceRestartTask = new Runnable()
+    {
+        public void run()
+        {
+            try
+            {
+                DirWatchService.getInstance().restartScanAllFolders();
+            }
+            catch (Throwable e)
+            {
+                logger.error("caught: ", e);
+            }
+        }
+    };
+
+    private Future<?> watchServiceRestartTaskFuture = null;
+
     private BackendScanner()
     {
 
@@ -72,7 +90,8 @@ public class BackendScanner
     public synchronized boolean scheduleOneTask()
     {
         boolean isDone = scanallTaskFuture != null && scanallTaskFuture.isDone()
-                && facerScanTaskFuture != null && facerScanTaskFuture.isDone();
+                && facerScanTaskFuture != null && facerScanTaskFuture.isDone()
+                && watchServiceRestartTaskFuture != null && watchServiceRestartTaskFuture.isDone();
 
         if (isFirstTime || isDone)
         {
@@ -81,14 +100,13 @@ public class BackendScanner
             isFirstTime = false;
             scanallTaskFuture = threadPool.submit(scanallTask);
             facerScanTaskFuture = threadPool.submit(facerScanTask);
-            DirWatchService.getInstance().restartScanAllFolders();
+            watchServiceRestartTaskFuture = threadPool.submit(watchServiceRestartTask);
             logger.warn("scheduled a new Scan Task: isFirstTime {}, isDone {}.", isFirstTime,
                         isDone);
             return true;
         }
 
-        logger.warn("the task is already scheduled: isFirstTime {}, isDone {}.", false,
-                    false);
+        logger.warn("the task is already scheduled: isFirstTime {}, isDone {}.", false, false);
 
         return false;
     }
