@@ -98,6 +98,12 @@ public class AppConfig
         return dirLst;
     }
 
+    public boolean isVideoConfigured()
+    {
+        List<String> slst = getFileSuffix();
+        return slst != null && slst.contains("mp4");
+    }
+
     public int getThreadCount()
     {
         return config.getInt("threadcount", 20);
