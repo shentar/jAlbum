@@ -24,7 +24,7 @@ import javax.ws.rs.core.Response.ResponseBuilder;
 import java.io.*;
 import java.util.List;
 
-@Produces(value = { "text/html", "application/octet-stream" })
+@Produces(value = {"text/html", "application/octet-stream"})
 public class RootWebService extends HttpServlet
 {
     private static final Logger logger = LoggerFactory.getLogger(RootWebService.class);
@@ -36,22 +36,33 @@ public class RootWebService extends HttpServlet
     public Response flushNow(@Context HttpServletRequest req, @Context HttpServletResponse res)
     {
         String message;
-        if (BackendScanner.getInstance().scheduleOneTask())
+        ResponseBuilder builder;
+
+        if (!HeadUtils.isSuperLogin() && !HeadUtils.isLocalLogin())
         {
-            message = "The refresh task was submitted successfully.";
+            message = "Only Local login or Administrator login allowed to do this!";
+            builder = Response.ok(message);
         }
         else
         {
-            message = "The refresh task is in progress.!";
+            if (BackendScanner.getInstance().scheduleOneTask())
+            {
+                message = "The refresh task was submitted successfully.";
+            }
+            else
+            {
+                message = "The refresh task is in progress!";
+            }
+            builder = Response.ok(message);
         }
-        ResponseBuilder builder = Response.ok(message);
+
         return builder.build();
     }
 
     @GET
     @Path("/favicon.ico")
     public Response getFavicon(@Context HttpServletRequest req,
-            @Context HttpServletResponse response)
+                               @Context HttpServletResponse response)
     {
         logger.debug("getFavicon in!");
         ResponseBuilder builder = Response.ok();
@@ -74,7 +85,7 @@ public class RootWebService extends HttpServlet
     @GET
     @Path("/js/{file}")
     public Response getJSFile(@PathParam("file") String file, @Context HttpServletRequest req,
-            @Context HttpServletResponse response)
+                              @Context HttpServletResponse response)
     {
         logger.debug("get js file in!");
         ResponseBuilder builder = Response.ok();
@@ -109,7 +120,9 @@ public class RootWebService extends HttpServlet
     {
         ResponseBuilder builder = Response.status(200);
         String body = GenerateHTML.genIndexPage(getFileList(req),
-                (HeadUtils.isMobile() || HeadUtils.isVideo()) ? 3 : 5, true);
+                                                (HeadUtils.isMobile() || HeadUtils.isVideo()) ? 3
+                                                                                              : 5,
+                                                true);
         if (StringUtils.isNotBlank(body))
         {
             builder.entity(body);
@@ -153,7 +166,7 @@ public class RootWebService extends HttpServlet
                 for (Object f : lst)
                 {
                     ((Face) f).setFi(UniqPhotosStore.getInstance()
-                            .getOneFileByHashStr(((Face) f).getEtag()));
+                                             .getOneFileByHashStr(((Face) f).getEtag()));
                 }
             }
         }
@@ -165,7 +178,7 @@ public class RootWebService extends HttpServlet
                 for (Object f : lst)
                 {
                     ((Face) f).setFi(UniqPhotosStore.getInstance()
-                            .getOneFileByHashStr(((Face) f).getEtag()));
+                                             .getOneFileByHashStr(((Face) f).getEtag()));
                 }
             }
         }
@@ -219,7 +232,8 @@ public class RootWebService extends HttpServlet
 
     @Path("/photos/{id}")
     public Object getPhoto(@PathParam("id") String id, @Context HttpServletRequest req,
-            @Context HttpServletResponse response, @Context HttpHeaders headers, InputStream body)
+                           @Context HttpServletResponse response, @Context HttpHeaders headers,
+                           InputStream body)
     {
         if (StringUtils.isNotBlank(id))
         {
@@ -233,7 +247,8 @@ public class RootWebService extends HttpServlet
 
     @Path("/year/{year}")
     public Object getYearView(@PathParam("year") String year, @Context HttpServletRequest req,
-            @Context HttpServletResponse response, @Context HttpHeaders headers, InputStream body)
+                              @Context HttpServletResponse response, @Context HttpHeaders headers,
+                              InputStream body)
     {
         if (StringUtils.isNotBlank(year))
         {
@@ -247,7 +262,8 @@ public class RootWebService extends HttpServlet
 
     @Path("/month/{month}")
     public Object getMonthView(@PathParam("month") String month, @Context HttpServletRequest req,
-            @Context HttpServletResponse response, @Context HttpHeaders headers, InputStream body)
+                               @Context HttpServletResponse response, @Context HttpHeaders headers,
+                               InputStream body)
     {
         if (StringUtils.isNotBlank(month) && month.length() == 6)
         {
@@ -261,7 +277,8 @@ public class RootWebService extends HttpServlet
 
     @Path("/day/{day}")
     public Object getDayView(@PathParam("day") String day, @Context HttpServletRequest req,
-            @Context HttpServletResponse response, @Context HttpHeaders headers, InputStream body)
+                             @Context HttpServletResponse response, @Context HttpHeaders headers,
+                             InputStream body)
     {
         if (StringUtils.isNotBlank(day) && day.length() == 8)
         {
