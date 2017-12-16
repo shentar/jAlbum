@@ -41,7 +41,8 @@ public class RootWebService extends HttpServlet
         if (!HeadUtils.isSuperLogin() && !HeadUtils.isLocalLogin())
         {
             message = "Only Local login or Administrator login allowed to do this!";
-            builder = Response.ok(message);
+            builder = Response.status(403);
+            builder.entity(message);
         }
         else
         {
