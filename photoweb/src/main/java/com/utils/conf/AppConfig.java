@@ -101,7 +101,7 @@ public class AppConfig
     public boolean isVideoConfigured()
     {
         List<String> slst = getFileSuffix();
-        return slst != null && slst.contains("mp4");
+        return slst != null && slst.contains(".mp4");
     }
 
     public int getThreadCount()
