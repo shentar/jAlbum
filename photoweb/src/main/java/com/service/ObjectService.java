@@ -143,7 +143,7 @@ public class ObjectService
         }
         else
         {
-            String bodyContent = GenerateHTML.generateSinglePhoto(f);
+            String bodyContent = GenerateHTML.generateSinglePhoto(f, false);
             builder.header("Content-type", "text/html");
             builder.entity(bodyContent);
             logger.info("the page is {}", bodyContent);
