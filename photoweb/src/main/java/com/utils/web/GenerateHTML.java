@@ -21,11 +21,6 @@ public class GenerateHTML
 
     private static final Logger logger = LoggerFactory.getLogger(GenerateHTML.class);
 
-    public static String genIndexPage(List<FileInfo> flst)
-    {
-        return genIndexPage(flst, 5, true);
-    }
-
     public static String genIndexPage(List<?> flst, int rowCount, boolean needNavigate)
     {
         if (flst == null || flst.isEmpty() || rowCount <= 0)
@@ -42,7 +37,7 @@ public class GenerateHTML
             }
             else if (o instanceof FileInfo)
             {
-                return generateSinglePhoto((FileInfo) o);
+                return generateSinglePhoto((FileInfo) o, false);
             }
             else
             {
@@ -433,7 +428,7 @@ public class GenerateHTML
         return "</body></html>";
     }
 
-    public static String generateSinglePhoto(FileInfo f)
+    public static String generateSinglePhoto(FileInfo f, boolean isBackToMonth)
     {
         if (f == null)
         {
@@ -494,13 +489,25 @@ public class GenerateHTML
         sb.append("<table style=\"text-align: center;\" width=\"100%\" "
                           + "height=\"100%\" border=\"0\" bordercolor=\"#000000\">");
 
-        String dayStr = HeadUtils.formatDate(f.getPhotoTime());
-        String viewDayStr =
-                String.format("%s年%s月%s日", dayStr.substring(0, 4), dayStr.substring(4, 6),
-                              dayStr.substring(6, 8));
-        String returnToDayPage =
-                "<a href=\"/day/" + dayStr + extraQueryParas(true) + "\">浏览 <b>" + viewDayStr
-                        + "</b></a>";
+        String fullDayStr = HeadUtils.formatDate(f.getPhotoTime());
+        String monStr = fullDayStr.substring(4, 6);
+        String yearStr = fullDayStr.substring(0, 4);
+        String dayStr = fullDayStr.substring(6, 8);
+        String viewDayStr = isBackToMonth ? String.format("%s年%s月", yearStr, monStr)
+                                          : String.format("%s年%s月%s日", yearStr, monStr, dayStr);
+        String returnToDayPage;
+        if (isBackToMonth)
+        {
+            returnToDayPage =
+                    "<a href=\"/month/" + yearStr + monStr + extraQueryParas(true) + "\">浏览 <b>"
+                            + viewDayStr + "</b></a>";
+        }
+        else
+        {
+            returnToDayPage = "<a href=\"/day/" + fullDayStr + extraQueryParas(true) + "\">浏览 <b>"
+                    + viewDayStr + "</b></a>";
+        }
+
         sb.append("<tr><td width=\"100%\" bordercolor=\"#000000\"" + getTdHeight() + ">");
         sb.append(returnToDayPage + separator);
         sb.append(getPhotoLink(f.getHash256(), false) + separator);
@@ -749,12 +756,6 @@ public class GenerateHTML
     }
 
     public static String generateDayPage(String day, String prevDay, String nextDay,
-                                         List<FileInfo> flst)
-    {
-        return generateDayPage(day, prevDay, nextDay, flst, 5);
-    }
-
-    public static String generateDayPage(String day, String prevDay, String nextDay,
                                          List<FileInfo> flst, int rowCount)
     {
         if (StringUtils.isBlank(day) || flst == null || flst.isEmpty() || rowCount <= 0)
@@ -764,7 +765,7 @@ public class GenerateHTML
 
         if (flst.size() == 1)
         {
-            return generateSinglePhoto(flst.get(0));
+            return generateSinglePhoto(flst.get(0), true);
         }
 
         StringBuffer sb = new StringBuffer();
@@ -1085,7 +1086,7 @@ public class GenerateHTML
 
         if (HeadUtils.isNoFaces())
         {
-            return generateSinglePhoto(fi);
+            return generateSinglePhoto(fi, false);
         }
 
         StringBuffer sb = new StringBuffer(getHtmlHead(true));
