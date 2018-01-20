@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com</groupId>
   <artifactId>dedup</artifactId>
-  <version>2.6</version>
+  <version>2.9</version>
   <name>dedup</name>
   <url>http://maven.apache.org</url>
   <properties>
