@@ -11,6 +11,7 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.ws.rs.HEAD;
 import java.util.*;
 import java.util.Map.Entry;
 
@@ -542,10 +543,20 @@ public class GenerateHTML
 
         String leftRotateLink = "<input id=\"leftrotate\" type=\"button\" value=\"左旋转\" />";
         String rightRotateLink = "<input id=\"rightrotate\" type=\"button\" value=\"右旋转\" />";
-        String deleteLink = "<input id=\"deletephotob\" type=\"button\" value=\"隐藏\" />";
+
 
         sb.append(leftRotateLink + separator);
-        sb.append(deleteLink + separator);
+
+        if (HeadUtils.isSuperLogin() || HeadUtils.isLocalLogin())
+        {
+            String deleteLink = "<input id=\"deletephotob\" type=\"button\" value=\"隐藏\" />";
+            sb.append(deleteLink + separator);
+        }
+        else
+        {
+            sb.append("&nbsp;&nbsp;&nbsp;&nbsp;");
+        }
+
         sb.append(rightRotateLink + separator);
         sb.append("</td><tr>");
 
@@ -1184,10 +1195,18 @@ public class GenerateHTML
 
         String leftRotateLink = "<input id=\"leftrotate\" type=\"button\" value=\"左旋转\" />";
         String rightRotateLink = "<input id=\"rightrotate\" type=\"button\" value=\"右旋转\" />";
-        String deleteLink = "<input id=\"deletephotob\" type=\"button\" value=\"隐藏\" />";
 
         sb.append(leftRotateLink + separator);
-        sb.append(deleteLink + separator);
+        if (HeadUtils.isSuperLogin() || HeadUtils.isLocalLogin())
+        {
+            String deleteLink = "<input id=\"deletephotob\" type=\"button\" value=\"隐藏\" />";
+            sb.append(deleteLink + separator);
+        }
+        else
+        {
+            sb.append("&nbsp;&nbsp;&nbsp;&nbsp;");
+        }
+
         sb.append(rightRotateLink + separator);
         sb.append("</td><tr>");
 
