@@ -426,7 +426,7 @@ public class GenerateHTML
 
     private static String getHtmlFoot()
     {
-        return "</body></html>";
+        return getGAStr() + "</body></html>";
     }
 
     public static String generateSinglePhoto(FileInfo f, boolean isBackToMonth)
@@ -1235,6 +1235,37 @@ public class GenerateHTML
         logHtml(sb);
         return sb.toString();
 
+    }
+
+    public static String getGAStr()
+    {
+        /*
+         * <!-- Global site tag (gtag.js) - Google Analytics -->
+         <script async src="https://www.googletagmanager.com/gtag/js?id=UA-300061-16"></script>
+         <script>
+         window.dataLayer = window.dataLayer || [];
+         function gtag(){dataLayer.push(arguments);}
+         gtag('js', new Date());
+
+         gtag('config', 'UA-300061-16');
+         </script>
+         */
+        String id = AppConfig.getInstance().getGoogleAnalyticsID();
+        if (StringUtils.isNotBlank(id))
+        {
+            String gastr = "<!-- Global site tag (gtag.js) - Google Analytics -->\n"
+                    + "         <script async src=\"https://www.googletagmanager.com/gtag/js?id="
+                    + id + "\"></script>\n" + "         <script>\n"
+                    + "         window.dataLayer = window.dataLayer || [];\n"
+                    + "         function gtag(){dataLayer.push(arguments);}\n"
+                    + "         gtag('js', new Date());\n" + "         gtag('config', '" + id
+                    + "');\n" + "         </script>";
+            return gastr;
+        }
+        else
+        {
+            return "";
+        }
     }
 
 }

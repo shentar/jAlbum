@@ -129,6 +129,11 @@ public class AppConfig
         return config.getLong("idlerefreshinterval", 5 * 60 * 1000);
     }
 
+    public String getGoogleAnalyticsID()
+    {
+        return config.getString("GoogleAnalyticsID");
+    }
+
     public long getBusyRefreshInteval()
     {
         return config.getLong("busyrefreshinterval", 10 * 1000);
