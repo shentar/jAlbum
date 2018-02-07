@@ -51,7 +51,11 @@ public class WebFilter implements Filter
             HttpServletResponse newres = (HttpServletResponse) res;
 
             newres.setHeader(SystemConstant.REQUEST_ID_HEADER,
-                    (String) MDC.get(SystemConstant.REQUESTIDKEY));
+                             (String) MDC.get(SystemConstant.REQUESTIDKEY));
+
+            MDC.put(SystemConstant.HOST_NAME,
+                    newreq.getLocalName() + "/" + newreq.getLocalAddr() + ":" + newreq
+                            .getLocalPort());
 
             String useragent = newreq.getHeader(SystemConstant.USER_AGENT_HEADER);
             if (StringUtils.isNotBlank(useragent))
@@ -122,6 +126,7 @@ public class WebFilter implements Filter
         MDC.put(SystemConstant.HTTP_URI, SystemConstant.DEFAULT_LOG_VALUE);
         MDC.put(SystemConstant.RANGE_HEADER_KEY, SystemConstant.DEFAULT_LOG_VALUE);
         MDC.put(SystemConstant.USER_LOGIN_STATUS, SystemConstant.DEFAULT_LOG_VALUE);
+        MDC.put(SystemConstant.HOST_NAME, SystemConstant.DEFAULT_LOG_VALUE);
     }
 
     @Override

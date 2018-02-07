@@ -20,6 +20,8 @@ public class SystemConstant
 
     public static final String USER_LOGIN_STATUS = "user_login_status";
 
+    public static final String HOST_NAME = "host_name";
+
     public static final String CONSUMED_TIME = "consumed-time";
 
     public static final String REMOTE_ADDR = "remote-addr";
