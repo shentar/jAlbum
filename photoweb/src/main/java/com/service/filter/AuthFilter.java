@@ -3,6 +3,7 @@ package com.service.filter;
 import com.utils.conf.AppConfig;
 import com.utils.sys.SystemConstant;
 import com.utils.sys.SystemProperties;
+import com.utils.web.GenerateHTML;
 import com.utils.web.HeadUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -185,9 +186,9 @@ public class AuthFilter extends AbstractFilter
                     + "<a href=\"#\" id=\"login\"><input type=\"button\" onclick=\"chref()\" "
                     + "value=\"Login\"/></a><script>function chref(){var content = "
                     + "document.getElementById(\"txt\").value;"
-                    + "window.location.replace('logon?token='+content" + (StringUtils
-                    .isBlank(origUri) ? "" : "+'&origuri=" + origUri + "'") + ");}</script>"
-                    + "</body></html>";
+                    + "window.location.replace('logon?token='+content" + (
+                    StringUtils.isBlank(origUri) ? "" : "+'&origuri=" + origUri + "'")
+                    + ");}</script>" + GenerateHTML.getGAStr() + "</body></html>";
             httpres.setHeader("Content-type", "text/html;charset=UTF-8");
             httpres.getWriter().write(hh);
             httpres.getWriter().close();
