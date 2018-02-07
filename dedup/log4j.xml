@@ -12,7 +12,7 @@
     <param name="File" value="./log/jAlbum_access.log"/>
     <param name="DatePattern" value="'.'yyyy-MM-dd'.log'"/>
     <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="[%d{yyyy-MM-dd HH:mm:ss.SSS\}] [%t %X{requestid} %X{http-status} %X{is_mobile} %X{user_login_status} %X{consumed-time} %X{remote-addr} %X{host_name}% %X{http-uri} %X{filename} %X{range} %X{user-agent}]%n"/>
+      <param name="ConversionPattern" value="[%d{yyyy-MM-dd HH:mm:ss.SSS\}] [%t %X{requestid} %X{http-status} %X{is_mobile} %X{user_login_status} %X{consumed-time} %X{remote-addr} | %X{host_name} %X{http-uri} %X{filename} %X{range} %X{user-agent}]%n"/>
     </layout>
   </appender>
   <logger name="com.utils.web.AccessLogger" additivity="false">

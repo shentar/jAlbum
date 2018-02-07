@@ -54,7 +54,7 @@ public class WebFilter implements Filter
                              (String) MDC.get(SystemConstant.REQUESTIDKEY));
 
             MDC.put(SystemConstant.HOST_NAME,
-                    newreq.getLocalName() + "/" + newreq.getLocalAddr() + ":" + newreq
+                    newreq.getHeader("Host") + "/" + newreq.getLocalAddr() + ":" + newreq
                             .getLocalPort());
 
             String useragent = newreq.getHeader(SystemConstant.USER_AGENT_HEADER);
