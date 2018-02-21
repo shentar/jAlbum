@@ -40,6 +40,7 @@ edit the jalbum.xml
     <maxpicsperonepage>60</maxpicsperonepage>
     <hashalog>MD5</hashalog>
     <accessAuth>true</accessAuth>
+    <GoogleAnalyticsID></GoogleAnalyticsID>    
     <inputdir>
         <dir>D:\\</dir>
         <dir>C:\\</dir>
@@ -87,6 +88,7 @@ edit the jalbum.xml
 ***threadcount*** specify the size of thread pool.<br/>
 ***hashalog*** specify the file HASH fingerprint Algorithm. The common algorithms are: SHA-256, MD5, SHA-1. You can find the stand algorithm names in [MessageDigest Algorithms](https://docs.oracle.com/javase/8/docs/technotes/guides/security/StandardNames.html#MessageDigest).<br/>
 ***accessAuth*** specifie whether public access is allowed.<br/>
+***GoogleAnalyticsID***  specifie the Google Analytics service ID to track all the internet  accesses.<br/>
 ***thumbnaildir*** specify the folder which to store the thumbnail to.<br/>
 ***s3*** specify the Amazon S3 backup info such as bucketname, ak, sk and useHttps.<br/>
 ***HuaweiOBS*** specify the Huawei Cloud OBS backup info such as access endpoint, bucketname, ak, sk and useHttps.<br/>
