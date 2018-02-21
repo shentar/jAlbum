@@ -27,10 +27,15 @@ public class ToolMain
 
     public static void scanfiles()
     {
-        try
+        synchronized (ToolMain.class)
         {
-            if (firstRun)
+            try
             {
+                if (!firstRun)
+                {
+                    return;
+                }
+
                 firstRun = false;
                 List<String> excludeDirs = AppConfig.getInstance().getExcludedir();
 
@@ -57,10 +62,35 @@ public class ToolMain
                 metaDataStore.scanAllRecords(excludeDirs);
                 logger.warn("end to scan the base table.");
             }
+            catch (Throwable th)
+            {
+                logger.error("caught: ", th);
+            }
         }
-        catch (Throwable th)
+    }
+
+    public static void scanMetaTableForBackup()
+    {
+        synchronized (ToolMain.class)
         {
-            logger.error("caught: ", th);
+            try
+            {
+                if (!firstRun)
+                {
+                    return;
+                }
+
+                List<String> excludeDirs = AppConfig.getInstance().getExcludedir();
+                logger.warn("start to scan the base table one time after the program start.");
+                PerformanceStatistics.getInstance().reset();
+                logger.warn("the exclude dirs are: " + excludeDirs);
+                metaDataStore.scanAllRecords(excludeDirs, true);
+                logger.warn("end to scan the base table.");
+            }
+            catch (Throwable th)
+            {
+                logger.error("caught: ", th);
+            }
         }
     }
 

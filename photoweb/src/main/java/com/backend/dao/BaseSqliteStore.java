@@ -117,7 +117,7 @@ public class BaseSqliteStore extends AbstractRecordsStore
             RefreshFlag.getInstance().getAndSet(true);
             if (fi.getStatus() == PicStatus.EXIST)
             {
-                SyncTool.submitSyncTask(fi);
+                // SyncTool.submitSyncTask(fi);
                 FaceRecService.getInstance().detactFaces(fi);
             }
             FileTools.submitAnThumbnailTask(fi);
@@ -328,6 +328,11 @@ public class BaseSqliteStore extends AbstractRecordsStore
 
     public void scanAllRecords(List<String> excludeDirs)
     {
+        scanAllRecords(excludeDirs, false);
+    }
+
+    public void scanAllRecords(List<String> excludeDirs, boolean needSyncS3)
+    {
         lock.readLock().lock();
         ResultSet res = null;
         PreparedStatement prep = null;
@@ -348,7 +353,11 @@ public class BaseSqliteStore extends AbstractRecordsStore
                 if (status == PicStatus.NOTCHANGED && fi.getStatus() == PicStatus.EXIST)
                 {
                     // 检查同步S3。
-                    SyncTool.submitSyncTask(fi);
+                    if (needSyncS3)
+                    {
+                        SyncTool.submitSyncTask(fi);
+                    }
+
                     FaceRecService.getInstance().detactFaces(fi);
                     if (ThumbnailManager.checkTheThumbnailExist(fi.getHash256()))
                     {

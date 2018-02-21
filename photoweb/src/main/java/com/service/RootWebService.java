@@ -61,6 +61,35 @@ public class RootWebService extends HttpServlet
     }
 
     @GET
+    @Path("/syncnow")
+    public Response syncNow(@Context HttpServletRequest req, @Context HttpServletResponse res)
+    {
+        String message;
+        ResponseBuilder builder;
+
+        if (!HeadUtils.isSuperLogin() && !HeadUtils.isLocalLogin())
+        {
+            message = "Only Local login or Administrator login allowed to do this!";
+            builder = Response.status(403);
+            builder.entity(message);
+        }
+        else
+        {
+            if (BackendScanner.getInstance().scheduleOneBackupTask())
+            {
+                message = "The Sync task was submitted successfully.";
+            }
+            else
+            {
+                message = "The Sync task is in progress!";
+            }
+            builder = Response.ok(message);
+        }
+
+        return builder.build();
+    }
+
+    @GET
     @Path("/favicon.ico")
     public Response getFavicon(@Context HttpServletRequest req,
                                @Context HttpServletResponse response)
