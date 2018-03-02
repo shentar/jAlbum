@@ -19,7 +19,7 @@ mvn install
 ```
 The build target files are store in the jAlbum/distribute folder.
 
-You can also get the release package in this web page: [jAlbum release](http://codefine.co/2837.html)
+You can also get the release package in this web page: [jAlbum release](https://shentar.github.io/2018/02/11/jalbum/#%E8%BD%AF%E4%BB%B6%E5%8C%85%E4%B8%8B%E8%BD%BD)
 
 ## start
 >### 0. Configure the jalbum.xml file.
@@ -123,5 +123,5 @@ After you enable access authentication, you need to get the token before you can
 Login with superToken, allowing you to hide photos or videos, normal tokens can only view the album.<br/>
 
 ## screenshot
-[jAlbum Screenshot](http://codefine.co/2837.html)
+[jAlbum Screenshot](https://shentar.github.io/2018/02/11/jalbum/)
 
