@@ -274,24 +274,20 @@ public class HeadUtils
 
     public static boolean isSuperLogin()
     {
-        Object o = SystemProperties.get(SystemConstant.USER_LOGIN_STATUS);
-        if (o != null && o instanceof LoginStatus)
+        if (!AppConfig.getInstance().needAccessAuth())
         {
-            return o.equals(LoginStatus.SuperLogin);
+            return true;
         }
 
-        return false;
+        Object o = SystemProperties.get(SystemConstant.USER_LOGIN_STATUS);
+        return o != null && o instanceof LoginStatus && o.equals(LoginStatus.SuperLogin);
+
     }
 
     public static boolean isLocalLogin()
     {
         Object o = SystemProperties.get(SystemConstant.USER_LOGIN_STATUS);
-        if (o != null && o instanceof LoginStatus)
-        {
-            return o.equals(LoginStatus.LocalLoin);
-        }
-
-        return false;
+        return o != null && o instanceof LoginStatus && o.equals(LoginStatus.LocalLoin);
     }
 
     public synchronized static String getCookieName()
