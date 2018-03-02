@@ -123,5 +123,5 @@ After you enable access authentication, you need to get the token before you can
 Login with superToken, allowing you to hide photos or videos, normal tokens can only view the album.<br/>
 
 ## screenshot
-[jAlbum Screenshot](https://shentar.github.io/2018/02/11/jalbum/)
+[jAlbum Screenshot](https://shentar.github.io/2018/02/11/jalbum/#%E6%88%AA%E5%9B%BE)
 
