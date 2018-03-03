@@ -1,3 +1,8 @@
+jAlbum_0.3.0
+1、支持使用Google Analytics跟踪访问记录；
+2、解决若干已知bug。
+
+
 jAlbum_0.2.9
 1、支持备份数据到Huawei Cloud OBS对象存储。
 
