@@ -1,1 +1,1 @@
-See https://github.com/shentar/jAlbum for details.
+See https://shentar.github.io/2018/02/11/jalbum/ for details.
