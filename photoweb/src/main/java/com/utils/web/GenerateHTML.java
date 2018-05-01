@@ -664,11 +664,13 @@ public class GenerateHTML
                             + "deg); transform-origin: 50% 50% 0px;\"";
                 }
             }
+            String title =
+                    String.format(" title=\"size: %d&#13;path: %s\" ", f.getSize(), f.getPath());
 
             img += " src = \"/photos/" + f.getHash256() + "?content=true&size=" + size + (isFace
                                                                                           ? "isface=true"
                                                                                           : "")
-                    + "\">";
+                    + "\"" + title + ">";
             img += "</img>";
 
             if (isVideo && !HeadUtils.isVideo())
