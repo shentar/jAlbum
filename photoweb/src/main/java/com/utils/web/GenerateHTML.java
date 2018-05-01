@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.HEAD;
+import java.text.DecimalFormat;
 import java.util.*;
 import java.util.Map.Entry;
 
@@ -664,8 +665,10 @@ public class GenerateHTML
                             + "deg); transform-origin: 50% 50% 0px;\"";
                 }
             }
-            String title =
-                    String.format(" title=\"size: %d&#13;path: %s\" ", f.getSize(), f.getPath());
+
+            DecimalFormat digitFormat = new DecimalFormat("###,###");
+            String title = String.format(" title=\"size: %s&#13;path: %s\" ",
+                                         digitFormat.format(f.getSize()), f.getPath());
 
             img += " src = \"/photos/" + f.getHash256() + "?content=true&size=" + size + (isFace
                                                                                           ? "isface=true"
