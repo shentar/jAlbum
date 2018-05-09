@@ -1,5 +1,6 @@
 package com.utils.conf;
 
+import com.utils.sys.SystemConstant;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.configuration.reloading.FileChangedReloadingStrategy;
@@ -381,5 +382,10 @@ public class AppConfig
     public int getFacerConcurrentThreads()
     {
         return config.getInt("Facer.threadperbucket", 20);
+    }
+
+    public int getMaxExpireAge()
+    {
+        return config.getInt("expiretime", SystemConstant.MAX_EXPIRE_AGE);
     }
 }

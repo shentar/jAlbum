@@ -49,7 +49,7 @@ public class HeadUtils
         return isFaces != null && isFaces;
     }
 
-    public static boolean isIOS()
+    private static boolean isIOS()
     {
         Boolean ismobile = (Boolean) SystemProperties.get(SystemConstant.IS_IOS);
         return ismobile != null && ismobile;
@@ -320,7 +320,7 @@ public class HeadUtils
         {
             // 登录成功跳转到主页
             Cookie c = new Cookie(getCookieName(), (String) s);
-            c.setMaxAge(3600 * 24 * 30);
+            c.setMaxAge(AppConfig.getInstance().getMaxExpireAge());
             response.addCookie(c);
         }
     }
