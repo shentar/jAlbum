@@ -16,19 +16,19 @@ public abstract class BackupedFilesDao extends AbstractRecordsStore
 
     protected abstract String getBackupedTableName();
 
-    public void checkAndaddOneRecords(String hashStr, String eTag, String objkey)
+    public boolean checkAndaddOneRecords(String hashStr, String eTag, String objkey)
     {
         if (StringUtils.isBlank(hashStr))
         {
             logger.warn("the input hashstr is blank.");
-            return;
+            return false;
         }
 
-        PreparedStatement prep;
-        ResultSet res;
+        PreparedStatement prep = null;
+        ResultSet res = null;
+        lock.writeLock().lock();
         try
         {
-            lock.readLock().lock();
             prep = conn.prepareStatement(
                     "select * from " + getBackupedTableName() + " where hashstr=?;");
             prep.setString(1, hashStr);
@@ -37,26 +37,28 @@ public abstract class BackupedFilesDao extends AbstractRecordsStore
             if (res.next())
             {
                 logger.warn("the file is already backuped: [{}:{}:{}]", hashStr, eTag, objkey);
-                closeResource(prep, res);
-                lock.readLock().unlock();
-                return;
+                return false;
             }
-            lock.readLock().unlock();
             closeResource(prep, res);
+            res = null;
 
-            lock.writeLock().lock();
             prep = conn.prepareStatement(
                     "insert into " + getBackupedTableName() + " values(?,?,?);");
             prep.setString(1, hashStr);
             prep.setString(2, eTag);
             prep.setString(3, objkey);
             prep.execute();
-            lock.writeLock().unlock();
-            closeResource(prep, res);
+            return true;
         }
         catch (SQLException e)
         {
             logger.error("caught: " + hashStr, e);
+            return false;
+        }
+        finally
+        {
+            closeResource(prep, res);
+            lock.writeLock().unlock();
         }
     }
 

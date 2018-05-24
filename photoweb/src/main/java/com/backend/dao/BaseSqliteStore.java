@@ -504,7 +504,6 @@ public class BaseSqliteStore extends AbstractRecordsStore
         PreparedStatement prep = null;
         try
         {
-            Thread.sleep(1500);
             lock.writeLock().lock();
             if (isPath)
             {

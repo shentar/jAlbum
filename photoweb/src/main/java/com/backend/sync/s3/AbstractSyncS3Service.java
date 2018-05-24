@@ -101,10 +101,13 @@ public abstract class AbstractSyncS3Service
             {
                 // 使用jalbum提取的指纹计算得到的etag来做key，而不是使用真实的文件的etag。
                 allobjs.put(fi.getHash256().toUpperCase(), o);
-                backedUpSize.addAndGet(o.getContentLength());
-                getBackupedFileDao()
+                // 注意此处，有可能两个线程同时上传同一张照片，但是文件不同。此时可能导致总存量计算不正确。
+                if (getBackupedFileDao()
                         .checkAndaddOneRecords(fi.getHash256().toUpperCase(), o.getETag(),
-                                               o.getKey());
+                                               o.getKey()))
+                {
+                    backedUpSize.addAndGet(o.getContentLength());
+                }
             }
             else
             {
@@ -214,8 +217,11 @@ public abstract class AbstractSyncS3Service
                     }
 
                     logger.warn("the file is in s3 but not in the local table: {}", o);
-                    getBackupedFileDao().checkAndaddOneRecords(hashStr, o.getETag(), o.getKey());
-                    allobjs.put(hashStr, o);
+                    if (getBackupedFileDao()
+                            .checkAndaddOneRecords(hashStr, o.getETag(), o.getKey()))
+                    {
+                        allobjs.put(hashStr, o);
+                    }
                 }
 
                 if (sc.isListingComplete())

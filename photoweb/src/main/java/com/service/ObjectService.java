@@ -324,7 +324,7 @@ public class ObjectService
 
     @DELETE
     public Response deletePhotoData(@Context HttpServletRequest req,
-            @Context HttpServletResponse response) throws IOException
+                                    @Context HttpServletResponse response) throws IOException
     {
 
         logger.warn("try to delete the photo: " + id);
@@ -337,18 +337,27 @@ public class ObjectService
         }
         else
         {
-            BaseSqliteStore.getInstance().setPhotoToBeHiden(id, false);
-            UniqPhotosStore.getInstance().deleteRecordByID(id);
-            FaceTableDao.getInstance().deleteOneFile(id);
+            try
+            {
+                // 延迟1.5s下发删除请求，前端刷新页面时需要依赖此条记录。盲等前端刷新玩页面后再行删除。
+                Thread.sleep(1500);
+                BaseSqliteStore.getInstance().setPhotoToBeHiden(id, false);
+                UniqPhotosStore.getInstance().deleteRecordByID(id);
+                FaceTableDao.getInstance().deleteOneFile(id);
 
-            /*
-             * if (fnext!= null && !fnext.isEmpty()) { // 刷新整个页面。 String
-             * bodyContent = GenerateHTML.generateSinglePhoto(fnext.get(0));
-             * builder.header("Content-type", "text/html");
-             * builder.entity(bodyContent); logger.info("the page is {}",
-             * bodyContent); }
-             */
-            logger.warn("deleted the photo: " + id);
+                /*
+                 * if (fnext!= null && !fnext.isEmpty()) { // 刷新整个页面。 String
+                 * bodyContent = GenerateHTML.generateSinglePhoto(fnext.get(0));
+                 * builder.header("Content-type", "text/html");
+                 * builder.entity(bodyContent); logger.info("the page is {}",
+                 * bodyContent); }
+                 */
+                logger.warn("deleted the photo: " + id);
+            }
+            catch (Exception e)
+            {
+                logger.warn("caught by, ", e);
+            }
         }
 
         return builder.build();
