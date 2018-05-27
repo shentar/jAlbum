@@ -30,7 +30,7 @@ public abstract class AbstractSyncS3Service
 
     private Map<String, StorageObject> allobjs = new ConcurrentHashMap<>();
 
-    private boolean isInit = false;
+    private volatile boolean isInit = false;
 
     private AtomicLong backedUpSize = new AtomicLong();
 
@@ -81,26 +81,30 @@ public abstract class AbstractSyncS3Service
                 return;
             }
 
-            if (fi == null || checkAlreadyBackuped(fi))
+            S3Object so = null;
+            synchronized (this)
             {
-                return;
+                if (fi == null || checkAlreadyBackuped(fi))
+                {
+                    return;
+                }
+
+                so = new S3Object();
+                so.setKey(genObjectKey(fi));
+                so.setDataInputFile(new File(fi.getPath()));
+                so.setContentLength(fi.getSize());
+                so.addMetadata(Constants.REST_METADATA_PREFIX + "type",
+                               HeadUtils.getFileType(fi.getPath()).name());
+                allobjs.put(fi.getHash256().toUpperCase(), so);
             }
 
-            S3Object so = new S3Object();
-            so.setKey(genObjectKey(fi));
-            so.setDataInputFile(new File(fi.getPath()));
-            so.setContentLength(fi.getSize());
-            so.addMetadata(Constants.REST_METADATA_PREFIX + "type",
-                           HeadUtils.getFileType(fi.getPath()).name());
-
             S3Object o = s3service.putObject(getBucketName(), so);
-
             failedTimes.set(0);
+
             if (StringUtils.equalsIgnoreCase(o.getETag(), fi.getHash256()) || MediaTool
                     .isVideo(fi.getPath()))
             {
                 // 使用jalbum提取的指纹计算得到的etag来做key，而不是使用真实的文件的etag。
-                allobjs.put(fi.getHash256().toUpperCase(), o);
                 // 注意此处，有可能两个线程同时上传同一张照片，但是文件不同。此时可能导致总存量计算不正确。
                 if (getBackupedFileDao()
                         .checkAndaddOneRecords(fi.getHash256().toUpperCase(), o.getETag(),
