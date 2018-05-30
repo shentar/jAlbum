@@ -81,7 +81,7 @@ public abstract class AbstractSyncS3Service
                 return;
             }
 
-            S3Object so = null;
+            S3Object so;
             synchronized (this)
             {
                 if (fi == null || checkAlreadyBackuped(fi))
@@ -94,11 +94,20 @@ public abstract class AbstractSyncS3Service
                 so.setDataInputFile(new File(fi.getPath()));
                 so.setContentLength(fi.getSize());
                 so.addMetadata(Constants.REST_METADATA_PREFIX + "type",
-                               HeadUtils.getFileType(fi.getPath()).name());
+                        HeadUtils.getFileType(fi.getPath()).name());
                 allobjs.put(fi.getHash256().toUpperCase(), so);
             }
 
-            S3Object o = s3service.putObject(getBucketName(), so);
+            S3Object o;
+            try
+            {
+                o = s3service.putObject(getBucketName(), so);
+            }
+            catch (Exception e)
+            {
+                allobjs.remove(fi.getHash256().toLowerCase());
+                throw e;
+            }
             failedTimes.set(0);
 
             if (StringUtils.equalsIgnoreCase(o.getETag(), fi.getHash256()) || MediaTool
@@ -108,7 +117,7 @@ public abstract class AbstractSyncS3Service
                 // 注意此处，有可能两个线程同时上传同一张照片，但是文件不同。此时可能导致总存量计算不正确。
                 if (getBackupedFileDao()
                         .checkAndaddOneRecords(fi.getHash256().toUpperCase(), o.getETag(),
-                                               o.getKey()))
+                                o.getKey()))
                 {
                     backedUpSize.addAndGet(o.getContentLength());
                 }
@@ -116,6 +125,7 @@ public abstract class AbstractSyncS3Service
             else
             {
                 logger.warn("the object etag is not equals file info is: {}", fi);
+                allobjs.remove(fi.getHash256().toLowerCase());
             }
             logger.warn("upload the object successfully: {}", o);
             logger.warn("the size of all object in s3 is: space size: {}, object count: [{}]",
