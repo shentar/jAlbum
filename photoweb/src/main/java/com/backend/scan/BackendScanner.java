@@ -105,23 +105,22 @@ public class BackendScanner
     {
         boolean isFirstTime = scanallTaskFuture == null && facerScanTaskFuture == null
                 && watchServiceRestartTaskFuture == null;
-        boolean isDone = !isFirstTime && scanallTaskFuture.isDone() && facerScanTaskFuture.isDone()
-                && watchServiceRestartTaskFuture.isDone();
+        boolean isDone = scanallTaskFuture != null && scanallTaskFuture.isDone()
+                && facerScanTaskFuture != null && facerScanTaskFuture.isDone()
+                && watchServiceRestartTaskFuture != null && watchServiceRestartTaskFuture.isDone();
 
         if (isFirstTime || isDone)
         {
             ToolMain.setFirstRun(true);
             logger.warn("start a new Scan Task: isFirstTime {}, isDone {}.", isFirstTime, isDone);
-            isFirstTime = false;
             scanallTaskFuture = threadPool.submit(scanallTask);
             facerScanTaskFuture = threadPool.submit(facerScanTask);
             watchServiceRestartTaskFuture = threadPool.submit(watchServiceRestartTask);
-            logger.warn("scheduled a new Scan Task: isFirstTime {}, isDone {}.", isFirstTime,
-                        isDone);
+            logger.warn("scheduled a new Scan Task.");
             return true;
         }
 
-        logger.warn("the scan task is already scheduled: isFirstTime {}, isDone {}.", false, false);
+        logger.warn("the scan task is already scheduled.");
 
         return false;
     }
