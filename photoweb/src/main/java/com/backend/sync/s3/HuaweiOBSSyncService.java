@@ -32,8 +32,8 @@ public class HuaweiOBSSyncService extends AbstractSyncS3Service
         jets3tproperties.setProperty("httpclient.socket-timeout-ms", "" + 60000);
         jets3tproperties
                 .setProperty("s3service.s3-endpoint", AppConfig.getInstance().getHWOBSEndPoint());
-        jets3tproperties
-                .setProperty("s3service.https-only", "" + AppConfig.getInstance().useHuaweiOBSHTTPS());
+        jets3tproperties.setProperty("s3service.https-only",
+                                     "" + AppConfig.getInstance().useHuaweiOBSHTTPS());
 
         if (AppConfig.getInstance().isHWProxyConfiged())
         {
@@ -52,7 +52,7 @@ public class HuaweiOBSSyncService extends AbstractSyncS3Service
     }
 
     @Override
-    protected S3Service generateS3Service()
+    protected RestS3Service generateS3Service()
     {
         return new RestS3Service(new AWSCredentials(getAk(), getSk()), "jAlbum 0.2.2", null,
                                  getJets3tProperties());

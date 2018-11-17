@@ -6,6 +6,7 @@ import com.backend.PicStatus;
 import com.backend.facer.FaceRecService;
 import com.backend.scan.FileTools;
 import com.backend.scan.RefreshFlag;
+import com.backend.sync.s3.HuaweiOBSSyncService;
 import com.backend.sync.s3.SyncTool;
 import com.utils.conf.AppConfig;
 import com.utils.media.MediaTool;
@@ -373,6 +374,23 @@ public class BaseSqliteStore extends AbstractRecordsStore
                     fi.setStatus(status);
                     updatePhotoInfo(fi);
                     PerformanceStatistics.getInstance().addOneFile(true);
+                }
+
+                if (needSyncS3 && fi.getStatus() == PicStatus.NOT_EXIST)
+                {
+                    if (HuaweiOBSSyncService.getInstance().objectExist(fi))
+                    {
+                        // 从远端云存储上面找回数据。
+                        logger.warn(
+                                "the local file is not exist, but can fetch it from the cloud storage: {}",
+                                fi);
+                    }
+                    else
+                    {
+                        logger.warn(
+                                "the local file not exist, cloud storage file also not exist. fi: {}",
+                                fi);
+                    }
                 }
             }
             PerformanceStatistics.getInstance().printPerformanceLog(System.currentTimeMillis());

@@ -1,5 +1,6 @@
 package com.backend;
 
+import java.io.File;
 import java.sql.Date;
 
 public class FileInfo
@@ -150,5 +151,10 @@ public class FileInfo
     public void setFtype(FileType ftype)
     {
         this.ftype = ftype;
+    }
+
+    public boolean exist()
+    {
+        return new File(this.getPath()).isFile();
     }
 }

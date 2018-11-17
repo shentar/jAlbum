@@ -5,16 +5,16 @@ import com.backend.dao.BackupedFilesDao;
 import com.utils.conf.AppConfig;
 import com.utils.media.MediaTool;
 import com.utils.web.HeadUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.jets3t.service.Constants;
-import org.jets3t.service.S3Service;
-import org.jets3t.service.StorageObjectsChunk;
+import org.jets3t.service.*;
+import org.jets3t.service.impl.rest.httpclient.RestS3Service;
 import org.jets3t.service.model.S3Object;
 import org.jets3t.service.model.StorageObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
+import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -34,7 +34,7 @@ public abstract class AbstractSyncS3Service
 
     private AtomicLong backedUpSize = new AtomicLong();
 
-    private S3Service s3service = null;
+    private RestS3Service s3service = null;
 
     private AtomicInteger failedTimes = new AtomicInteger(0);
 
@@ -68,6 +68,125 @@ public abstract class AbstractSyncS3Service
         }
     }
 
+    public void restoreObject(FileInfo fi)
+    {
+
+    }
+
+    public boolean downloadObject(FileInfo fi)
+    {
+
+        if (fi == null)
+        {
+            return false;
+        }
+
+        if (fi.exist())
+        {
+            logger.warn("the file is already exist: {}", fi);
+            return false;
+        }
+
+        try
+        {
+            S3Object so = s3service.getObject(getBucketName(), genObjectKey(fi));
+            if (!MediaTool.isVideo(fi.getPath()))
+            {
+                if (!StringUtils.equalsIgnoreCase(so.getETag(), fi.getHash256()))
+                {
+                    logger.warn("some error file: {}, s3object: {}", fi, so);
+                }
+            }
+
+            if (so.getContentLength() != 0)
+            {
+                writeToFile(fi, so);
+                return true;
+            }
+            else
+            {
+                logger.warn("an empty s3Object, file: {}, s3object: {}", fi, so);
+            }
+
+
+        }
+        catch (Exception e)
+        {
+            logger.warn("caused by: ", e);
+            delayRetry();
+        }
+
+        return false;
+    }
+
+    public boolean objectExist(FileInfo fi)
+    {
+        if (fi == null)
+        {
+            return false;
+        }
+        try
+        {
+            StorageObject so = s3service.getObjectDetails(getBucketName(), genObjectKey(fi));
+            return true;
+        }
+        catch (ServiceException e)
+        {
+            if (404 == e.getResponseCode() || "NoSuchKey".equals(e.getErrorCode()) || "NoSuchBucket"
+                    .equals(e.getErrorCode()))
+            {
+                return false;
+            }
+
+            if ("AccessDenied".equals(e.getErrorCode()))
+            {
+                logger.warn("403 forbidden, fi: {}", fi);
+                return true;
+            }
+
+            logger.warn("caused by: ", e);
+        }
+        return false;
+    }
+
+    private void writeToFile(FileInfo fi, S3Object so) throws ServiceException, IOException
+    {
+        InputStream in = null;
+        OutputStream ou = null;
+        try
+        {
+            in = so.getDataInputStream();
+            ou = new FileOutputStream(fi.getPath());
+            IOUtils.copy(in, ou, 1024 * 16);
+        }
+        finally
+        {
+            try
+            {
+                if (in != null)
+                {
+                    in.close();
+                }
+            }
+            catch (Exception e)
+            {
+                logger.warn("caused by: ", e);
+            }
+
+            try
+            {
+                if (ou != null)
+                {
+                    ou.close();
+                }
+            }
+            catch (Exception e)
+            {
+                logger.warn("caused by: ", e);
+            }
+        }
+    }
+
     public void uploadObject(FileInfo fi)
     {
         try
@@ -94,7 +213,7 @@ public abstract class AbstractSyncS3Service
                 so.setDataInputFile(new File(fi.getPath()));
                 so.setContentLength(fi.getSize());
                 so.addMetadata(Constants.REST_METADATA_PREFIX + "type",
-                        HeadUtils.getFileType(fi.getPath()).name());
+                               HeadUtils.getFileType(fi.getPath()).name());
                 allobjs.put(fi.getHash256().toUpperCase(), so);
             }
 
@@ -117,7 +236,7 @@ public abstract class AbstractSyncS3Service
                 // 注意此处，有可能两个线程同时上传同一张照片，但是文件不同。此时可能导致总存量计算不正确。
                 if (getBackupedFileDao()
                         .checkAndaddOneRecords(fi.getHash256().toUpperCase(), o.getETag(),
-                                o.getKey()))
+                                               o.getKey()))
                 {
                     backedUpSize.addAndGet(o.getContentLength());
                 }
@@ -262,7 +381,7 @@ public abstract class AbstractSyncS3Service
 
     protected abstract String getBucketName();
 
-    protected abstract S3Service generateS3Service();
+    protected abstract RestS3Service generateS3Service();
 
     protected abstract BackupedFilesDao getBackupedFileDao();
 }

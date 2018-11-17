@@ -57,7 +57,7 @@ public class AWSS3SyncService extends AbstractSyncS3Service
     }
 
     @Override
-    protected S3Service generateS3Service()
+    protected RestS3Service generateS3Service()
     {
         return new RestS3Service(new AWSCredentials(getAk(), getSk()), "jAlbum 0.2.2", null,
                                  getJets3tProperties());
