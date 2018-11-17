@@ -27,6 +27,8 @@ public class SpecialListener implements ServletContextListener
 
     private static final int HOUR_TO_BACKUP = 22;
 
+    private static int lastBackUpDay = -1;
+
     static
     {
         DOMConfigurator.configureAndWatch("log4j.xml", 6000);
@@ -58,12 +60,14 @@ public class SpecialListener implements ServletContextListener
         {
             public void run()
             {
-                if (Calendar.getInstance().get(Calendar.HOUR_OF_DAY) == HOUR_TO_BACKUP)
+                if (Calendar.getInstance().get(Calendar.DAY_OF_YEAR) != lastBackUpDay
+                        && Calendar.getInstance().get(Calendar.HOUR_OF_DAY) == HOUR_TO_BACKUP)
                 {
                     BackendScanner.getInstance().scheduleOneTask();
+                    lastBackUpDay = Calendar.getInstance().get(Calendar.DAY_OF_YEAR);
                 }
             }
-        }, 10, 5 * 60, TimeUnit.SECONDS);
+        }, 10, 59 * 60, TimeUnit.SECONDS);
 
 
         // 5秒检查是否需要刷新数据表。
