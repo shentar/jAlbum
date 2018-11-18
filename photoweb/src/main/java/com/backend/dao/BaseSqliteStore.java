@@ -378,19 +378,19 @@ public class BaseSqliteStore extends AbstractRecordsStore
 
                 if (needSyncS3 && fi.getStatus() == PicStatus.NOT_EXIST)
                 {
-                    if (HuaweiOBSSyncService.getInstance().objectExist(fi))
-                    {
-                        // 从远端云存储上面找回数据。
-                        logger.warn(
-                                "the local file is not exist, but can fetch it from the cloud storage: {}",
-                                fi);
-                    }
-                    else
-                    {
-                        logger.warn(
-                                "the local file not exist, cloud storage file also not exist. fi: {}",
-                                fi);
-                    }
+                    //  if (HuaweiOBSSyncService.getInstance().objectExist(fi))
+                    //  {
+                    // 从远端云存储上面找回数据。
+                    logger.info(
+                            "the local file is not exist. please fetch it from the cloud storage: {}",
+                            fi);
+                    // }
+                    // else
+                    // {
+                    //     logger.warn(
+                    //             "the local file not exist, cloud storage file also not exist. fi: {}",
+                    //             fi);
+                    // }
                 }
             }
             PerformanceStatistics.getInstance().printPerformanceLog(System.currentTimeMillis());
