@@ -187,6 +187,11 @@ public class AppConfig
         return config.getInt("maxpicsperonepage", defaultValue);
     }
 
+    public boolean isAutoBackUp()
+    {
+        return config.getBoolean("autobackup", false);
+    }
+
     // config for AWS S3.
     public String getS3AK()
     {

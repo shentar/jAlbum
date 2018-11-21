@@ -8,6 +8,7 @@ import java.util.concurrent.TimeUnit;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
+import com.utils.conf.AppConfig;
 import org.apache.log4j.xml.DOMConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,8 +40,14 @@ public class SpecialListener implements ServletContextListener
     public void contextDestroyed(ServletContextEvent arg0)
     {
         logger.warn("began to stop the web service.");
-        fFreshAllData.cancel(true);
-        fBackupScanTask.cancel(true);
+        if (fFreshAllData != null)
+        {
+            fFreshAllData.cancel(true);
+        }
+        if (fBackupScanTask != null)
+        {
+            fBackupScanTask.cancel(true);
+        }
         FileTools.threadPool.shutdownNow();
         FileTools.threadPool4Thumbnail.shutdownNow();
         logger.warn("stopped the web service");
@@ -59,19 +66,24 @@ public class SpecialListener implements ServletContextListener
         BackendScanner.getInstance().scheduleOneTask();
 
         // 每天备份数据到远端云存储。
-        fBackupScanTask = new ScheduledThreadPoolExecutor(1).scheduleWithFixedDelay(new Runnable()
-        {
-            public void run()
-            {
-                if (Calendar.getInstance().get(Calendar.DAY_OF_YEAR) != lastBackUpDay
-                        && Calendar.getInstance().get(Calendar.HOUR_OF_DAY) == HOUR_TO_BACKUP)
-                {
-                    BackendScanner.getInstance().scheduleOneBackupTask();
-                    lastBackUpDay = Calendar.getInstance().get(Calendar.DAY_OF_YEAR);
-                }
-            }
-        }, 300, 59 * 60, TimeUnit.SECONDS);
 
+        if (AppConfig.getInstance().isAutoBackUp())
+        {
+            fBackupScanTask =
+                    new ScheduledThreadPoolExecutor(1).scheduleWithFixedDelay(new Runnable()
+                    {
+                        public void run()
+                        {
+                            if (Calendar.getInstance().get(Calendar.DAY_OF_YEAR) != lastBackUpDay
+                                    && Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
+                                    == HOUR_TO_BACKUP)
+                            {
+                                BackendScanner.getInstance().scheduleOneBackupTask();
+                                lastBackUpDay = Calendar.getInstance().get(Calendar.DAY_OF_YEAR);
+                            }
+                        }
+                    }, 300, 59 * 60, TimeUnit.SECONDS);
+        }
 
         // 5秒检查是否需要刷新数据表。
         fFreshAllData = new ScheduledThreadPoolExecutor(1).scheduleWithFixedDelay(new Runnable()
