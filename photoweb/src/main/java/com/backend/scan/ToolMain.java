@@ -201,6 +201,7 @@ public class ToolMain
                     fullPath = VideoTransCodingTool.checkAndConvertToMP4(fullPath);
                     if (StringUtils.isBlank(fullPath))
                     {
+                        logger.warn("convert failed: {}", f.getCanonicalPath());
                         return;
                     }
                 }
