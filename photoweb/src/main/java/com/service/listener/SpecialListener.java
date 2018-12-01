@@ -66,7 +66,6 @@ public class SpecialListener implements ServletContextListener
         BackendScanner.getInstance().scheduleOneTask();
 
         // 每天备份数据到远端云存储。
-
         if (AppConfig.getInstance().isAutoBackUp())
         {
             fBackupScanTask =

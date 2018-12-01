@@ -6,12 +6,15 @@ import com.backend.dao.BaseSqliteStore;
 import com.utils.conf.AppConfig;
 import com.utils.media.FileSHA256Caculater;
 import com.utils.media.MediaTool;
+import com.utils.media.VideoTransCodingTool;
 import com.utils.sys.PerformanceStatistics;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -157,54 +160,78 @@ public class ToolMain
 
     public static void checkOneFile(File f)
     {
+        if (f == null)
+        {
+            return;
+        }
+
         try
         {
-            boolean isCare = false;
-            for (String s : AppConfig.getInstance().getFileSuffix())
+            synchronized (f.getCanonicalPath().intern())
             {
-                if (f.getName().toLowerCase().endsWith(s))
-                {
-                    if (!FileTools.checkFileLengthValid(f.getCanonicalPath()))
-                    {
-                        logger.info("the size is too small or too big. "
-                                            + "it maybe not a normal photo file: " + f);
-                        break;
-                    }
-
-                    if (PicStatus.EXIST == metaDataStore.checkIfAlreadyExist(f))
-                    {
-                        break;
-                    }
-
-                    isCare = true;
-
-                    FileInfo fi = MediaTool.genFileInfo(f.getCanonicalPath());
-                    if (fi == null)
-                    {
-                        logger.warn("error file" + f.getCanonicalPath());
-                        return;
-                    }
-
-                    if (!MediaTool.isVideo(f.getCanonicalPath()))
-                    {
-                        fi.setHash256(FileSHA256Caculater.calFileSha256(f));
-                    }
-                    else
-                    {
-                        // 视频文件通常比较大，采用提取的特征值代替整文件计算MD5值
-                        fi.setHash256(FileSHA256Caculater.calFileSha256(fi.getExtrInfo()));
-                    }
-
-                    metaDataStore.insertOneRecord(fi);
-                    break;
-                }
+                doCheckOneFile(f);
             }
-            PerformanceStatistics.getInstance().addOneFile(isCare);
         }
         catch (Exception e)
         {
             logger.error("caught: ", e);
         }
+    }
+
+    private static void doCheckOneFile(File f) throws IOException, NoSuchAlgorithmException
+    {
+        boolean isCare = false;
+        for (String s : AppConfig.getInstance().getFileSuffix())
+        {
+            String fullPath = f.getCanonicalPath();
+            if (f.getName().toLowerCase().endsWith(s))
+            {
+                if (!FileTools.checkFileLengthValid(fullPath))
+                {
+                    logger.info("the size is too small or too big. "
+                                        + "it maybe not a normal photo file: " + f);
+                    break;
+                }
+
+                isCare = true;
+
+                // 将mov，mkv，avi文件转码为mp4文件。
+                if (VideoTransCodingTool.needConvert(fullPath))
+                {
+                    fullPath = VideoTransCodingTool.checkAndConvertToMP4(fullPath);
+                    if (StringUtils.isBlank(fullPath))
+                    {
+                        return;
+                    }
+                }
+
+                if (PicStatus.EXIST == metaDataStore.checkIfAlreadyExist(new File(fullPath)))
+                {
+                    break;
+                }
+
+                FileInfo fi = MediaTool.genFileInfo(fullPath);
+                if (fi == null)
+                {
+                    logger.warn("error file" + fullPath);
+                    return;
+                }
+
+                if (!MediaTool.isVideo(fullPath))
+                {
+                    fi.setHash256(FileSHA256Caculater.calFileSha256(new File(fullPath)));
+                }
+                else
+                {
+                    // 视频文件通常比较大，采用提取的特征值代替整文件计算MD5值
+                    fi.setHash256(FileSHA256Caculater.calFileSha256(fi.getExtrInfo()));
+                }
+
+                metaDataStore.insertOneRecord(fi);
+                break;
+            }
+        }
+        PerformanceStatistics.getInstance().addOneFile(isCare);
     }
 
     public static void setFirstRun(boolean firstRun)

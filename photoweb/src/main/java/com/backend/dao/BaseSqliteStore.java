@@ -458,6 +458,27 @@ public class BaseSqliteStore extends AbstractRecordsStore
             return;
         }
 
+        boolean deleteFile = false;
+        // 以此来识别文件和文件夹。防止误删名称重叠的记录。
+        // 删除IMG_0122.MOV时，不至于误删IMG_0122.MOV.mp4
+        if (!StringUtils.endsWith(dir, File.separator))
+        {
+            for (String suffix : AppConfig.getInstance().getFileSuffix())
+            {
+                if (StringUtils.endsWithIgnoreCase(dir, suffix))
+                {
+                    deleteFile = true;
+                    break;
+                }
+            }
+
+            if (!deleteFile)
+            {
+                dir = dir + File.separator;
+            }
+        }
+
+
         PreparedStatement prep = null;
         ResultSet res = null;
         boolean needDel = false;
@@ -492,10 +513,17 @@ public class BaseSqliteStore extends AbstractRecordsStore
         try
         {
             lock.writeLock().lock();
-            prep = conn.prepareStatement("update files set deleted=? where path like ?;");
+            if (deleteFile)
+            {
+                prep = conn.prepareStatement("update files set deleted=? where path=?;");
+            }
+            else
+            {
+                prep = conn.prepareStatement("update files set deleted=? where path like ?;");
+            }
+
             prep.setString(1, PicStatus.NOT_EXIST.name());
             prep.setString(2, dir + "%");
-
             prep.execute();
             RefreshFlag.getInstance().getAndSet(true);
             logger.warn("end to delete the items in the folder: {}", dir);
