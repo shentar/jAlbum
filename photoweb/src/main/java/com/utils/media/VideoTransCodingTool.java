@@ -70,7 +70,7 @@ public class VideoTransCodingTool
             }
 
             File fin = new File(fpath);
-            if (fin.renameTo(bakfile) && fdstTmp.renameTo(fdst))
+            if (fdstTmp.renameTo(fdst) && fin.renameTo(bakfile))
             {
                 return dstFpath;
             }
