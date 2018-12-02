@@ -57,8 +57,8 @@ public class VideoTransCodingTool
             FFmpegBuilder fFmpegBuilder = fFmpeg.builder();
             fFmpegBuilder.addInput(fpath).addOutput(dstFpathTmp).setVideoCodec("copy")
                     .setAudioCodec("copy").setFormat("mp4")
-                    .addExtraArgs("-map_metadata:s:a", "0:s:a", "-map_metadata", "0:g",
-                                  "-map_metadata:s:v", "0:s:v").done();
+                    .addExtraArgs("-c:a", "aac", "-map_metadata:s:a", "0:s:a", "-map_metadata",
+                                  "0:g", "-map_metadata:s:v", "0:s:v").done();
             fFmpeg.run(fFmpegBuilder, null);
             logger.warn("convert the file [{}] to [{}] successfully.", fpath, dstFpathTmp);
 
