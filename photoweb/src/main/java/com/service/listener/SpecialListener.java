@@ -65,24 +65,23 @@ public class SpecialListener implements ServletContextListener
         // 启动时默认同步全盘一次。
         BackendScanner.getInstance().scheduleOneTask();
 
-        // 每天备份数据到远端云存储。
-        if (AppConfig.getInstance().isAutoBackUp())
+
+        fBackupScanTask = new ScheduledThreadPoolExecutor(1).scheduleWithFixedDelay(new Runnable()
         {
-            fBackupScanTask =
-                    new ScheduledThreadPoolExecutor(1).scheduleWithFixedDelay(new Runnable()
+            public void run()
+            {
+                if (Calendar.getInstance().get(Calendar.DAY_OF_YEAR) != lastBackUpDay
+                        && Calendar.getInstance().get(Calendar.HOUR_OF_DAY) == HOUR_TO_BACKUP)
+                {        // 每天备份数据到远端云存储。
+                    if (AppConfig.getInstance().isAutoBackUp())
                     {
-                        public void run()
-                        {
-                            if (Calendar.getInstance().get(Calendar.DAY_OF_YEAR) != lastBackUpDay
-                                    && Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
-                                    == HOUR_TO_BACKUP)
-                            {
-                                BackendScanner.getInstance().scheduleOneBackupTask();
-                                lastBackUpDay = Calendar.getInstance().get(Calendar.DAY_OF_YEAR);
-                            }
-                        }
-                    }, 300, 59 * 60, TimeUnit.SECONDS);
-        }
+                        BackendScanner.getInstance().scheduleOneBackupTask();
+                        lastBackUpDay = Calendar.getInstance().get(Calendar.DAY_OF_YEAR);
+                    }
+                }
+            }
+        }, 300, 59 * 60, TimeUnit.SECONDS);
+
 
         // 5秒检查是否需要刷新数据表。
         fFreshAllData = new ScheduledThreadPoolExecutor(1).scheduleWithFixedDelay(new Runnable()
