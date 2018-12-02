@@ -1,5 +1,7 @@
 package com.service;
 
+import com.backend.dao.BackupedFilesDao;
+import com.backend.dao.BaseSqliteStore;
 import com.backend.dao.FaceTableDao;
 import com.backend.dao.UniqPhotosStore;
 import com.backend.facer.Face;
@@ -30,6 +32,34 @@ public class RootWebService extends HttpServlet
     private static final Logger logger = LoggerFactory.getLogger(RootWebService.class);
 
     private static final long serialVersionUID = -7748065720779404006L;
+
+    @GET
+    @Path("/statistics")
+    public Response statistics(@Context HttpServletRequest req, @Context HttpServletResponse res)
+    {
+        String message;
+        ResponseBuilder builder;
+
+        if (!HeadUtils.isSuperLogin() && !HeadUtils.isLocalLogin())
+        {
+            message = "Only Local login or Administrator login allowed to do this!";
+            builder = Response.status(403);
+            builder.entity(message);
+        }
+        else
+        {
+            long allfilecount =
+                    BaseSqliteStore.getInstance().countTables(BaseSqliteStore.tableName);
+            long allphotocount =
+                    UniqPhotosStore.getInstance().countTables(UniqPhotosStore.tableName);
+            long allvideocount = UniqPhotosStore.getInstance().getVideoCount();
+            message = "Files count: " + allfilecount + "\r\n" + "Unique Media files count: "
+                    + allphotocount + "\r\n" + "Video Count:" + allvideocount + "\r\n";
+            builder = Response.ok(message);
+        }
+
+        return builder.build();
+    }
 
     @GET
     @Path("/flushnow")
