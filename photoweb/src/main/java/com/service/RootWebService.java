@@ -53,8 +53,8 @@ public class RootWebService extends HttpServlet
             long allphotocount =
                     UniqPhotosStore.getInstance().countTables(UniqPhotosStore.tableName);
             long allvideocount = UniqPhotosStore.getInstance().getVideoCount();
-            message = "Files count: " + allfilecount + "\r\n" + "Unique Media files count: "
-                    + allphotocount + "\r\n" + "Video Count:" + allvideocount + "\r\n";
+            message = "Files count: " + allfilecount + "<br/>\r\n" + "Unique Media files count: "
+                    + allphotocount + "<br/>\r\n" + "Video Count: " + allvideocount + "<br/>\r\n";
             builder = Response.ok(message);
         }
 
