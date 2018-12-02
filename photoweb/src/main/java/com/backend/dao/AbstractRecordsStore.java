@@ -150,4 +150,31 @@ public class AbstractRecordsStore
             }
         }
     }
+
+    public long countTables(String table)
+    {
+        ResultSet res = null;
+        PreparedStatement prep = null;
+        try
+        {
+            lock.readLock().lock();
+            prep = conn.prepareStatement("select count(1) from " + table + ";");
+            res = prep.executeQuery();
+            if (res.next())
+            {
+                return res.getLong(1);
+            }
+        }
+        catch (Exception e)
+        {
+            logger.error("caught: ", e);
+        }
+        finally
+        {
+            closeResource(prep, res);
+            lock.readLock().unlock();
+        }
+
+        return -1;
+    }
 }

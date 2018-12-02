@@ -16,6 +16,8 @@ import java.util.*;
 
 public class UniqPhotosStore extends AbstractRecordsStore
 {
+    public static final String tableName = "uniqphotos1";
+
     private static final Logger logger = LoggerFactory.getLogger(UniqPhotosStore.class);
 
     private static UniqPhotosStore instance = new UniqPhotosStore();
@@ -364,5 +366,33 @@ public class UniqPhotosStore extends AbstractRecordsStore
             closeResource(prep, null);
             lock.writeLock().unlock();
         }
+    }
+
+    public long getVideoCount()
+    {
+        PreparedStatement prep = null;
+        ResultSet res = null;
+        try
+        {
+            lock.writeLock().lock();
+            prep = conn.prepareStatement("select count(1) from uniqphotos1 where ftype=?;");
+            prep.setInt(1, FileType.VIDEO.ordinal());
+            res = prep.executeQuery();
+            if (res.next())
+            {
+                return res.getLong(1);
+            }
+        }
+        catch (Exception e)
+        {
+            logger.error("caught: ", e);
+        }
+        finally
+        {
+            closeResource(prep, null);
+            lock.writeLock().unlock();
+        }
+
+        return -1;
     }
 }

@@ -26,9 +26,12 @@ import java.util.List;
 
 public class BaseSqliteStore extends AbstractRecordsStore
 {
+    public static final String tableName = "files";
+
     private static final Logger logger = LoggerFactory.getLogger(BaseSqliteStore.class);
 
     private static BaseSqliteStore instance = new BaseSqliteStore();
+
 
     private BaseSqliteStore()
     {
