@@ -63,26 +63,7 @@ public class FaceRecService
                         return;
                     }
 
-                    logger.warn("start to detect one file {}", fi);
-                    List<Face> ls = FaceDetectClient.detectFace(fi);
-                    if (ls == null || ls.isEmpty())
-                    {
-                        FaceTableDao.getInstance().addEmptyRecords(fi);
-                        return;
-                    }
-
-                    boolean isSucc = true;
-                    for (Face f : ls)
-                    {
-                        isSucc = isSucc && (FaceSetManager.getInstance()
-                                .addFaceToSet(f.getFacetoken()));
-                    }
-
-                    if (isSucc)
-                    {
-                        FaceTableDao.getInstance().addRecords(ls);
-                        checkFaces(ls);
-                    }
+                    detectOnePic(fi);
                 }
                 catch (Exception e)
                 {
@@ -92,10 +73,39 @@ public class FaceRecService
                 {
                     GlobalLockBaseOnString.getInstance(GlobalLockBaseOnString.FACE_DETECT_LOCK)
                             .done(fi.getHash256());
-                    logger.warn("end to detect the file {}", fi);
                 }
             }
         });
+    }
+
+    private void detectOnePic(FileInfo fi)
+    {
+        try
+        {
+            logger.warn("start to detect one file {}", fi);
+            List<Face> ls = FaceDetectClient.detectFace(fi);
+            if (ls == null || ls.isEmpty())
+            {
+                FaceTableDao.getInstance().addEmptyRecords(fi);
+                return;
+            }
+
+            boolean isSucc = true;
+            for (Face f : ls)
+            {
+                isSucc = isSucc && (FaceSetManager.getInstance().addFaceToSet(f.getFacetoken()));
+            }
+
+            if (isSucc)
+            {
+                FaceTableDao.getInstance().addRecords(ls);
+                checkFaces(ls);
+            }
+        }
+        finally
+        {
+            logger.warn("end to detect the file {}", fi);
+        }
     }
 
     public void checkAllFacesID()
