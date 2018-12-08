@@ -65,7 +65,7 @@ public class FaceRecService
 
                     detectOnePic(fi);
                 }
-                catch (Exception e)
+                catch (Throwable e)
                 {
                     logger.warn("caused by: ", e);
                 }
@@ -86,6 +86,7 @@ public class FaceRecService
             List<Face> ls = FaceDetectClient.detectFace(fi);
             if (ls == null || ls.isEmpty())
             {
+                logger.warn("Face list is empty, {}", fi);
                 FaceTableDao.getInstance().addEmptyRecords(fi);
                 return;
             }
@@ -93,11 +94,13 @@ public class FaceRecService
             boolean isSucc = true;
             for (Face f : ls)
             {
+                logger.warn("face add to face set, face: {}, fi: {}", f, fi);
                 isSucc = isSucc && (FaceSetManager.getInstance().addFaceToSet(f.getFacetoken()));
             }
 
             if (isSucc)
             {
+                logger.warn("add records: fi: {}", fi);
                 FaceTableDao.getInstance().addRecords(ls);
                 checkFaces(ls);
             }
