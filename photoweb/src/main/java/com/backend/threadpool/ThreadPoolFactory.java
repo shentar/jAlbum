@@ -66,10 +66,10 @@ public class ThreadPoolFactory
             runningTasks = 0;
         }
 
-        StringBuilder sb = new StringBuilder("\t\t" + type + ": ");
-        sb.append("runningJobs: \t\t").append(runningTasks);
-        sb.append("waitedJobs: \t\t").append(waitedTasks);
-        sb.append("completedJobs: \t\t").append(completedTasks);
+        StringBuilder sb = new StringBuilder("&emsp;&emsp;&emsp;&emsp;" + type + ": ");
+        sb.append("runningJobs: &emsp;&emsp;&emsp;&emsp;").append(runningTasks);
+        sb.append("waitedJobs: &emsp;&emsp;&emsp;&emsp;").append(waitedTasks);
+        sb.append("completedJobs: &emsp;&emsp;&emsp;&emsp;").append(completedTasks);
         sb.append("<br/>");
         return sb;
     }
