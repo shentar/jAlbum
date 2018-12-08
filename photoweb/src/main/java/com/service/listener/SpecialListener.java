@@ -1,22 +1,20 @@
 package com.service.listener;
 
-import java.util.Calendar;
-import java.util.concurrent.Future;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
-
+import com.backend.dao.SqliteConnManger;
+import com.backend.scan.BackendScanner;
+import com.backend.scan.FileTools;
+import com.backend.scan.FreshAllData;
 import com.utils.conf.AppConfig;
 import org.apache.log4j.xml.DOMConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.backend.dao.SqliteConnManger;
-import com.backend.scan.BackendScanner;
-import com.backend.scan.FileTools;
-import com.backend.scan.FreshAllData;
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
+import java.util.Calendar;
+import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 public class SpecialListener implements ServletContextListener
 {

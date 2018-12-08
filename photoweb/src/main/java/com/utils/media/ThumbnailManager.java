@@ -1,20 +1,19 @@
 package com.utils.media;
 
-import java.io.File;
-import java.io.IOException;
-
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.backend.entity.FileInfo;
 import com.backend.dao.BaseSqliteStore;
+import com.backend.entity.FileInfo;
 import com.backend.facer.Face;
 import com.backend.facer.FaceRecService;
 import com.backend.facer.FacerUtils;
 import com.utils.conf.AppConfig;
 import com.utils.sys.GlobalLockBaseOnString;
 import com.utils.web.HeadUtils;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.IOException;
 
 public class ThumbnailManager
 {

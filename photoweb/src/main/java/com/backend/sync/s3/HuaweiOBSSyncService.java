@@ -4,7 +4,6 @@ import com.backend.dao.BackupedFilesDao;
 import com.backend.dao.HuaweiOBSBackupedFilesDao;
 import com.utils.conf.AppConfig;
 import org.jets3t.service.Jets3tProperties;
-import org.jets3t.service.S3Service;
 import org.jets3t.service.impl.rest.httpclient.RestS3Service;
 import org.jets3t.service.security.AWSCredentials;
 

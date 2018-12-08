@@ -1,11 +1,10 @@
 package com.service.filter;
 
-import java.util.concurrent.CopyOnWriteArraySet;
-
-import org.apache.commons.lang.StringUtils;
-
 import com.backend.dao.GlobalConfDao;
 import com.utils.sys.SystemConstant;
+import org.apache.commons.lang.StringUtils;
+
+import java.util.concurrent.CopyOnWriteArraySet;
 
 public class TokenCache
 {

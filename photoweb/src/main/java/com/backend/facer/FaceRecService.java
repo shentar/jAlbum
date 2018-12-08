@@ -1,7 +1,7 @@
 package com.backend.facer;
 
-import com.backend.entity.FileInfo;
 import com.backend.dao.FaceTableDao;
+import com.backend.entity.FileInfo;
 import com.backend.threadpool.ThreadPoolFactory;
 import com.utils.conf.AppConfig;
 import com.utils.media.MediaTool;

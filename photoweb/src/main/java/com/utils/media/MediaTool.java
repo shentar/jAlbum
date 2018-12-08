@@ -1,10 +1,9 @@
 package com.utils.media;
 
-import org.apache.commons.lang.StringUtils;
-
 import com.backend.entity.FileInfo;
 import com.backend.entity.FileType;
 import com.utils.web.HeadUtils;
+import org.apache.commons.lang.StringUtils;
 
 public class MediaTool
 {

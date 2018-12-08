@@ -14,7 +14,7 @@ public abstract class BackupedFilesDao extends AbstractRecordsStore
 {
     private static final Logger logger = LoggerFactory.getLogger(BackupedFilesDao.class);
 
-    protected abstract String getBackupedTableName();
+    public abstract String getBackupedTableName();
 
     public boolean isBackup(String hashStr)
     {

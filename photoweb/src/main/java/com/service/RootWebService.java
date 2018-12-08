@@ -6,6 +6,7 @@ import com.backend.dao.FaceTableDao;
 import com.backend.dao.UniqPhotosStore;
 import com.backend.facer.Face;
 import com.backend.scan.BackendScanner;
+import com.backend.sync.s3.S3ServiceFactory;
 import com.backend.threadpool.ThreadPoolFactory;
 import com.utils.web.GenerateHTML;
 import com.utils.web.HeadUtils;
@@ -38,14 +39,12 @@ public class RootWebService extends HttpServlet
     @Path("/statistics")
     public Response statistics(@Context HttpServletRequest req, @Context HttpServletResponse res)
     {
-        String message;
         ResponseBuilder builder;
 
         if (!HeadUtils.isSuperLogin() && !HeadUtils.isLocalLogin())
         {
-            message = "Only Local login or Administrator login allowed to do this!";
             builder = Response.status(403);
-            builder.entity(message);
+            builder.entity("Only Local login or Administrator login allowed to do this!");
         }
         else
         {
@@ -54,10 +53,19 @@ public class RootWebService extends HttpServlet
             long allphotocount =
                     UniqPhotosStore.getInstance().countTables(UniqPhotosStore.tableName);
             long allvideocount = UniqPhotosStore.getInstance().getVideoCount();
-            message = "Files count: " + allfilecount + "<br/>\r\n" + "Unique Media files count: "
-                    + allphotocount + "<br/>\r\n" + "Video Count: " + allvideocount + "<br/>\r\n";
-            message += ThreadPoolFactory.runningJobStatistics();
-            builder = Response.ok(message);
+            StringBuilder sb = new StringBuilder("Files count: " + allfilecount + "<br/>\r\n"
+                                                         + "Unique Media files count: \t\t\t\t"
+                                                         + allphotocount + "<br/>\r\n"
+                                                         + "Video Count: \t\t\t\t" + allvideocount
+                                                         + "<br/>\r\n");
+            BackupedFilesDao bd = S3ServiceFactory.getBackUpDao();
+            if (bd != null)
+            {
+                long allBackedCount = bd.countTables(bd.getBackupedTableName());
+                sb.append("Backup Count: \t\t\t\t").append(allBackedCount).append("<br/>");
+            }
+            sb.append(ThreadPoolFactory.runningJobStatistics());
+            builder = Response.ok(sb.toString());
         }
 
         return builder.build();

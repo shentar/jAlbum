@@ -1,8 +1,8 @@
 package com.backend.scan;
 
+import com.backend.dao.BaseSqliteStore;
 import com.backend.entity.FileInfo;
 import com.backend.entity.PicStatus;
-import com.backend.dao.BaseSqliteStore;
 import com.utils.conf.AppConfig;
 import com.utils.media.FileSHA256Caculater;
 import com.utils.media.MediaTool;

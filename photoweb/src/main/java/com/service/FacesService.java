@@ -1,7 +1,13 @@
 package com.service;
 
-import java.io.IOException;
-import java.util.List;
+import com.backend.dao.FaceTableDao;
+import com.backend.dao.UniqPhotosStore;
+import com.backend.facer.Face;
+import com.backend.facer.FaceRecService;
+import com.utils.sys.SystemConstant;
+import com.utils.sys.SystemProperties;
+import com.utils.web.GenerateHTML;
+import com.utils.web.HeadUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -9,19 +15,11 @@ import javax.ws.rs.GET;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
-
-import com.backend.dao.FaceTableDao;
-import com.backend.dao.UniqPhotosStore;
-import com.backend.facer.Face;
+import java.io.IOException;
+import java.util.List;
 
 // import org.slf4j.Logger;
 // import org.slf4j.LoggerFactory;
-
-import com.backend.facer.FaceRecService;
-import com.utils.sys.SystemConstant;
-import com.utils.sys.SystemProperties;
-import com.utils.web.GenerateHTML;
-import com.utils.web.HeadUtils;
 
 public class FacesService
 {

@@ -1,11 +1,11 @@
 package com.backend.sync.s3;
 
-import java.io.File;
-import java.util.concurrent.ExecutorService;
-
 import com.backend.entity.FileInfo;
 import com.backend.threadpool.ThreadPoolFactory;
 import com.utils.conf.AppConfig;
+
+import java.io.File;
+import java.util.concurrent.ExecutorService;
 
 public class SyncTool
 {

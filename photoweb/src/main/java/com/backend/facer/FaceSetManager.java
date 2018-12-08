@@ -1,16 +1,15 @@
 package com.backend.facer;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
+import com.backend.dao.FaceTableDao;
+import com.utils.conf.AppConfig;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.backend.dao.FaceTableDao;
-import com.utils.conf.AppConfig;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 public class FaceSetManager
 {

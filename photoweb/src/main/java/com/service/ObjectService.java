@@ -1,15 +1,21 @@
 package com.service;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URLEncoder;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import com.backend.dao.BaseSqliteStore;
+import com.backend.dao.FaceTableDao;
+import com.backend.dao.UniqPhotosStore;
+import com.backend.entity.FileInfo;
+import com.backend.scan.FileTools;
+import com.service.io.RangesFileInputStream;
+import com.utils.media.MediaTool;
+import com.utils.media.ThumbnailManager;
+import com.utils.sys.SystemConstant;
+import com.utils.web.GenerateHTML;
+import com.utils.web.HeadUtils;
+import com.utils.web.Range;
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.MDC;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -19,24 +25,12 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.MDC;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.backend.entity.FileInfo;
-import com.backend.dao.BaseSqliteStore;
-import com.backend.dao.FaceTableDao;
-import com.backend.dao.UniqPhotosStore;
-import com.backend.scan.FileTools;
-import com.service.io.RangesFileInputStream;
-import com.utils.media.MediaTool;
-import com.utils.media.ThumbnailManager;
-import com.utils.sys.SystemConstant;
-import com.utils.web.GenerateHTML;
-import com.utils.web.HeadUtils;
-import com.utils.web.Range;
+import java.io.*;
+import java.net.URLEncoder;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Produces(value = { "text/html", "application/octet-stream" })
 public class ObjectService
