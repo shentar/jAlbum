@@ -297,8 +297,12 @@ public abstract class AbstractSyncS3Service
         s3service = generateS3Service();
 
         logger.warn("start to init sync srvice. try to get the object list.");
-
         getBackupedFileDao().checkAndCreateTable();
+        isInit = true;
+        logger.warn(
+                "init successfully! the size of all object in s3 is: space size: {}, object count: [{}]",
+                String.format("%4.3fGB", ((float) backedUpSize.get()) / (1024 * 1024 * 1024)),
+                backedUpCount.get());
 
         /*
          StorageObjectsChunk sc;
