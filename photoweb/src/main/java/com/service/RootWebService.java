@@ -53,19 +53,23 @@ public class RootWebService extends HttpServlet
             long allphotocount =
                     UniqPhotosStore.getInstance().countTables(UniqPhotosStore.tableName);
             long allvideocount = UniqPhotosStore.getInstance().getVideoCount();
-            StringBuilder sb = new StringBuilder(
-                    "Files count: &emsp;&emsp;&emsp;&emsp;" + allfilecount + "<br/>\r\n"
-                            + "Unique Media files count: &emsp;&emsp;&emsp;&emsp;" + allphotocount
-                            + "<br/>\r\n" + "Video Count: &emsp;&emsp;&emsp;&emsp;" + allvideocount
-                            + "<br/>\r\n");
+
+            StringBuilder sb = new StringBuilder("<table border=\"0\">");
+            sb.append("<tr><td>Files count:</td><td>").append(allfilecount)
+                    .append("</td><td></td><td></td><td></td></tr>");
+            sb.append("<tr><td>Unique Media files count:</td><td>").append(allphotocount)
+                    .append("</td><td></td><td></td><td></td></tr>");
+            sb.append("<tr><td>Video Count:</td><td>").append(allvideocount)
+                    .append("</td><td></td><td></td><td></td></tr>");
             BackupedFilesDao bd = S3ServiceFactory.getBackUpDao();
             if (bd != null)
             {
                 long allBackedCount = bd.countTables(bd.getBackupedTableName());
-                sb.append("Backup Count: &emsp;&emsp;&emsp;&emsp;").append(allBackedCount)
-                        .append("<br/>");
+                sb.append("<tr><td>Backup Count:</td><td>").append(allBackedCount)
+                        .append("</td><td></td><td></td><td></td></tr>");
             }
             sb.append(ThreadPoolFactory.runningJobStatistics());
+            sb.append("</table>");
             builder = Response.ok(sb.toString());
         }
 

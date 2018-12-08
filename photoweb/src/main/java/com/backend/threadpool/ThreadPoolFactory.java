@@ -44,13 +44,13 @@ public class ThreadPoolFactory
     public static String runningJobStatistics()
     {
         StringBuilder sb = new StringBuilder();
-        sb.append("Running jobs: <br/>");
-
+        sb.append("<tr><td>Running jobs:</td><td></td><td></td><td></td><td></td></tr>");
+        sb.append(
+                "<tr><td></td><td></td><td>runningJobs</td><td>waitingJobs</td><td>completedJobs</td></tr>");
         for (Map.Entry<String, ThreadPoolExecutor> en : factory.entrySet())
         {
             sb.append(getOnePooolInfo(en.getKey()));
         }
-        sb.append("<br/>");
         return sb.toString();
     }
 
@@ -66,11 +66,11 @@ public class ThreadPoolFactory
             runningTasks = 0;
         }
 
-        StringBuilder sb = new StringBuilder("&emsp;&emsp;&emsp;&emsp;" + type + ": ");
-        sb.append("runningJobs: &emsp;&emsp;&emsp;&emsp;").append(runningTasks);
-        sb.append("waitedJobs: &emsp;&emsp;&emsp;&emsp;").append(waitedTasks);
-        sb.append("completedJobs: &emsp;&emsp;&emsp;&emsp;").append(completedTasks);
-        sb.append("<br/>");
+        StringBuilder sb = new StringBuilder("<tr><td></td><td>" + type + "</td>");
+        sb.append("<td>").append(runningTasks).append("</td>");
+        sb.append("<td>").append(waitedTasks).append("</td>");
+        sb.append("<td>").append(completedTasks).append("</td>");
+        sb.append("</tr>");
         return sb;
     }
 
