@@ -25,7 +25,7 @@ import org.apache.log4j.MDC;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.backend.FileInfo;
+import com.backend.entity.FileInfo;
 import com.backend.dao.BaseSqliteStore;
 import com.backend.dao.FaceTableDao;
 import com.backend.dao.UniqPhotosStore;

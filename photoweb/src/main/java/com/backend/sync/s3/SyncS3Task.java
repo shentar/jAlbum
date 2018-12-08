@@ -1,7 +1,6 @@
 package com.backend.sync.s3;
 
-import com.backend.FileInfo;
-import com.utils.conf.AppConfig;
+import com.backend.entity.FileInfo;
 
 public class SyncS3Task implements Runnable
 {

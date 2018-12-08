@@ -7,7 +7,7 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.backend.FileInfo;
+import com.backend.entity.FileInfo;
 import com.backend.dao.BaseSqliteStore;
 import com.backend.facer.Face;
 import com.backend.facer.FaceRecService;

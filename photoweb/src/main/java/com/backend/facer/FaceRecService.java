@@ -1,7 +1,8 @@
 package com.backend.facer;
 
-import com.backend.FileInfo;
+import com.backend.entity.FileInfo;
 import com.backend.dao.FaceTableDao;
+import com.backend.threadpool.ThreadPoolFactory;
 import com.utils.conf.AppConfig;
 import com.utils.media.MediaTool;
 import com.utils.media.ThumbnailManager;
@@ -13,14 +14,13 @@ import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class FaceRecService
 {
     private static final Logger logger = LoggerFactory.getLogger(FaceRecService.class);
 
     private static final ExecutorService threadPool =
-            Executors.newFixedThreadPool(AppConfig.getInstance().getFacerConcurrentThreads());
+            ThreadPoolFactory.getThreadPool(ThreadPoolFactory.FACE_REC_SERVICE);
 
     private static class ServiceHolder
     {

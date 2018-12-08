@@ -6,6 +6,7 @@ import com.backend.dao.FaceTableDao;
 import com.backend.dao.UniqPhotosStore;
 import com.backend.facer.Face;
 import com.backend.scan.BackendScanner;
+import com.backend.threadpool.ThreadPoolFactory;
 import com.utils.web.GenerateHTML;
 import com.utils.web.HeadUtils;
 import org.apache.commons.lang.StringUtils;
@@ -55,6 +56,7 @@ public class RootWebService extends HttpServlet
             long allvideocount = UniqPhotosStore.getInstance().getVideoCount();
             message = "Files count: " + allfilecount + "<br/>\r\n" + "Unique Media files count: "
                     + allphotocount + "<br/>\r\n" + "Video Count: " + allvideocount + "<br/>\r\n";
+            message += ThreadPoolFactory.runningJobStatistics();
             builder = Response.ok(message);
         }
 

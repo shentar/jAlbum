@@ -2,15 +2,16 @@ package com.backend.sync.s3;
 
 import java.io.File;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
-import com.backend.FileInfo;
+import com.backend.entity.FileInfo;
+import com.backend.threadpool.ThreadPoolFactory;
 import com.utils.conf.AppConfig;
 
 public class SyncTool
 {
     private static final ExecutorService threadPool =
-            Executors.newFixedThreadPool(AppConfig.getInstance().getS3ConcurrentThreads());
+            ThreadPoolFactory.getThreadPool(ThreadPoolFactory.SYNC_TOOL);
+
 
     public static void submitSyncTask(FileInfo fi)
     {

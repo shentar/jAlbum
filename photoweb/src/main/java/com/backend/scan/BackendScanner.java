@@ -3,6 +3,7 @@ package com.backend.scan;
 import com.backend.dirwathch.DirWatchService;
 import com.backend.facer.FaceRecService;
 import com.backend.facer.FaceSetManager;
+import com.backend.threadpool.ThreadPoolFactory;
 import com.utils.conf.AppConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,7 +18,8 @@ public class BackendScanner
 
     private static final BackendScanner instance = new BackendScanner();
 
-    private final ExecutorService threadPool = Executors.newFixedThreadPool(3);
+    private final ExecutorService threadPool =
+            ThreadPoolFactory.getThreadPool(ThreadPoolFactory.BACKEND_SCANNER);
 
     private Runnable scanallTask = new Runnable()
     {

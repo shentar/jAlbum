@@ -1,7 +1,7 @@
 package com.backend.dao;
 
-import com.backend.FileInfo;
-import com.backend.FileType;
+import com.backend.entity.FileInfo;
+import com.backend.entity.FileType;
 import com.backend.scan.RefreshFlag;
 import com.utils.web.HeadUtils;
 import org.apache.commons.lang.StringUtils;

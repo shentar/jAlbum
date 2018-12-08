@@ -1,6 +1,6 @@
 package com.backend.facer;
 
-import com.backend.FileInfo;
+import com.backend.entity.FileInfo;
 
 public class Face
 {

@@ -1,6 +1,6 @@
 package com.utils.web;
 
-import com.backend.FileInfo;
+import com.backend.entity.FileInfo;
 import com.backend.dao.DateRecords;
 import com.backend.dao.DateTableDao;
 import com.backend.dao.UniqPhotosStore;
@@ -11,7 +11,6 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ws.rs.HEAD;
 import java.text.DecimalFormat;
 import java.util.*;
 import java.util.Map.Entry;

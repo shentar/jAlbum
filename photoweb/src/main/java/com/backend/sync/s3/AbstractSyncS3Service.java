@@ -1,6 +1,6 @@
 package com.backend.sync.s3;
 
-import com.backend.FileInfo;
+import com.backend.entity.FileInfo;
 import com.backend.dao.BackupedFilesDao;
 import com.utils.conf.AppConfig;
 import com.utils.media.MediaTool;

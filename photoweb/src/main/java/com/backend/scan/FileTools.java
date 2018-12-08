@@ -1,7 +1,8 @@
 package com.backend.scan;
 
-import com.backend.FileInfo;
-import com.backend.PicStatus;
+import com.backend.entity.FileInfo;
+import com.backend.entity.PicStatus;
+import com.backend.threadpool.ThreadPoolFactory;
 import com.utils.conf.AppConfig;
 import com.utils.media.ExifCreator;
 import com.utils.media.ThumbnailManager;
@@ -23,17 +24,17 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class FileTools
 {
     private static final Logger logger = LoggerFactory.getLogger(FileTools.class);
 
-    public static final ExecutorService threadPool = Executors
-            .newFixedThreadPool(AppConfig.getInstance().getThreadCount());
+    public static final ExecutorService threadPool =
+            ThreadPoolFactory.getThreadPool(ThreadPoolFactory.FILE_TOOL);
 
     // 对于树莓派等系统，最多只能2个线程同时计算缩略图。
-    public static final ExecutorService threadPool4Thumbnail = Executors.newFixedThreadPool(2);
+    public static final ExecutorService threadPool4Thumbnail =
+            ThreadPoolFactory.getThreadPool(ThreadPoolFactory.THREAD_POOL_4THUMBNAIL);
 
     public static void readShortFileContent(byte[] buffer, File f) throws IOException
     {
@@ -127,43 +128,43 @@ public class FileTools
 
         switch (fi.getStatus())
         {
-        case EXIST:
-            if (!checkFileExist(fi.getPath()))
-            {
-                return PicStatus.NOT_EXIST;
-            }
+            case EXIST:
+                if (!checkFileExist(fi.getPath()))
+                {
+                    return PicStatus.NOT_EXIST;
+                }
 
-            if (!checkFileLengthValid(fi.getPath()))
-            {
-                return PicStatus.ERRORFILE;
-            }
+                if (!checkFileLengthValid(fi.getPath()))
+                {
+                    return PicStatus.ERRORFILE;
+                }
 
-            if (checkExclude(fi, excludeDirs))
-            {
-                return PicStatus.ERRORFILE;
-            }
+                if (checkExclude(fi, excludeDirs))
+                {
+                    return PicStatus.ERRORFILE;
+                }
 
-            if (checkFileChanged(fi))
-            {
-                return PicStatus.ERRORFILE;
-            }
-            break;
-        case ERRORFILE:
-        case NOT_EXIST:
-            if (checkFileExist(fi.getPath()) && checkFileLengthValid(fi.getPath())
-                    && !checkExclude(fi, excludeDirs) && !checkFileChanged(fi))
-            {
-                return PicStatus.EXIST;
-            }
-            break;
-        case HIDDEN:
-            if (checkFileChanged(fi))
-            {
-                // TODO 已经被隐藏的文件被覆盖成其他文件或者已经删除。
-            }
-            break;
-        default:
-            return PicStatus.NOTCHANGED;
+                if (checkFileChanged(fi))
+                {
+                    return PicStatus.ERRORFILE;
+                }
+                break;
+            case ERRORFILE:
+            case NOT_EXIST:
+                if (checkFileExist(fi.getPath()) && checkFileLengthValid(fi.getPath())
+                        && !checkExclude(fi, excludeDirs) && !checkFileChanged(fi))
+                {
+                    return PicStatus.EXIST;
+                }
+                break;
+            case HIDDEN:
+                if (checkFileChanged(fi))
+                {
+                    // TODO 已经被隐藏的文件被覆盖成其他文件或者已经删除。
+                }
+                break;
+            default:
+                return PicStatus.NOTCHANGED;
         }
 
         return PicStatus.NOTCHANGED;
@@ -196,8 +197,8 @@ public class FileTools
             return -1;
         }
         Path path = FileSystems.getDefault().getPath(f.getParent(), f.getName());
-        BasicFileAttributes attrs = Files.readAttributes(path, BasicFileAttributes.class,
-                                                         LinkOption.NOFOLLOW_LINKS);
+        BasicFileAttributes attrs =
+                Files.readAttributes(path, BasicFileAttributes.class, LinkOption.NOFOLLOW_LINKS);
         long timetmp = attrs.lastModifiedTime().toMillis();
         logger.debug("the timetmp is: lastModify[{}], creation[{}], fileLastModify[{}]",
                      attrs.lastModifiedTime(), attrs.creationTime(), new Date(f.lastModified()));
@@ -236,8 +237,8 @@ public class FileTools
 
             Rectangle rect_des = new Rectangle(new Dimension(swidth, sheight));
 
-            BufferedImage res = new BufferedImage(rect_des.width, rect_des.height,
-                                                  BufferedImage.TYPE_INT_RGB);
+            BufferedImage res =
+                    new BufferedImage(rect_des.width, rect_des.height, BufferedImage.TYPE_INT_RGB);
             Graphics2D g2 = res.createGraphics();
 
             g2.translate((rect_des.width - src_width) / 2, (rect_des.height - src_height) / 2);

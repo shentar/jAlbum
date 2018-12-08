@@ -1,6 +1,6 @@
 package com.backend.dao;
 
-import com.backend.FileInfo;
+import com.backend.entity.FileInfo;
 import com.backend.facer.Face;
 import com.backend.facer.FacerUtils;
 import org.apache.commons.lang.StringUtils;

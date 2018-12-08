@@ -1,7 +1,7 @@
 package com.utils.web;
 
-import com.backend.FileInfo;
-import com.backend.FileType;
+import com.backend.entity.FileInfo;
+import com.backend.entity.FileType;
 import com.backend.dao.GlobalConfDao;
 import com.service.filter.LoginStatus;
 import com.utils.conf.AppConfig;

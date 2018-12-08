@@ -1,12 +1,11 @@
 package com.backend.dao;
 
-import com.backend.FileInfo;
-import com.backend.FileType;
-import com.backend.PicStatus;
+import com.backend.entity.FileInfo;
+import com.backend.entity.FileType;
+import com.backend.entity.PicStatus;
 import com.backend.facer.FaceRecService;
 import com.backend.scan.FileTools;
 import com.backend.scan.RefreshFlag;
-import com.backend.sync.s3.HuaweiOBSSyncService;
 import com.backend.sync.s3.SyncTool;
 import com.utils.conf.AppConfig;
 import com.utils.media.MediaTool;

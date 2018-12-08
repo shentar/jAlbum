@@ -1,8 +1,8 @@
 package com.utils.media;
 
-import com.backend.FileInfo;
-import com.backend.FileType;
-import com.backend.PicStatus;
+import com.backend.entity.FileInfo;
+import com.backend.entity.FileType;
+import com.backend.entity.PicStatus;
 import com.backend.scan.FileTools;
 import net.bramp.ffmpeg.FFprobe;
 import net.bramp.ffmpeg.probe.FFmpegFormat;
