@@ -14,7 +14,7 @@ public class HuaweiOBSBackupedFilesDao extends BackupedFilesDao
         return instance;
     }
 
-    protected String getBackupedTableName()
+    public String getBackupedTableName()
     {
         return "hwbackupded";
     }

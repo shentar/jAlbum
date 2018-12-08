@@ -14,7 +14,7 @@ public class AWSBackupedFilesDao extends BackupedFilesDao
         return instance;
     }
 
-    protected String getBackupedTableName()
+    public String getBackupedTableName()
     {
         return "backupded";
     }
