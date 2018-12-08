@@ -20,14 +20,10 @@ public class SyncS3Task implements Runnable
             return;
         }
 
-        if (AppConfig.getInstance().isS3Configed())
+        AbstractSyncS3Service syncS3Service = S3ServiceFactory.getBackUpService();
+        if (syncS3Service != null)
         {
-            AWSS3SyncService.getInstance().uploadObject(fi);
-        }
-
-        if (AppConfig.getInstance().isHuaweiOBSConfiged())
-        {
-            HuaweiOBSSyncService.getInstance().uploadObject(fi);
+            syncS3Service.uploadObject(fi);
         }
     }
 }

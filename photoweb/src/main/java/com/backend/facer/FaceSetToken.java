@@ -28,7 +28,7 @@ public class FaceSetToken
 
     private int facecount = -1;
 
-    boolean isInit = false;
+    private volatile boolean isInit = false;
 
     private FaceSetToken()
     {
@@ -37,6 +37,7 @@ public class FaceSetToken
 
     public static FaceSetToken getInstance()
     {
+        instance.init();
         return instance;
     }
 
@@ -66,8 +67,8 @@ public class FaceSetToken
                 else
                 {
                     currentFaceSetID = 0;
-                    GlobalConfDao.getInstance().setConf(CURRENT_FACESETID_CONF_KEY,
-                                                        currentFaceSetID + "");
+                    GlobalConfDao.getInstance()
+                            .setConf(CURRENT_FACESETID_CONF_KEY, currentFaceSetID + "");
                 }
             }
 
@@ -104,8 +105,6 @@ public class FaceSetToken
 
     public synchronized String acquireFaceSetID()
     {
-        init();
-
         while (facecount >= 1000)
         {
             refreshFaceCount();
@@ -196,7 +195,6 @@ public class FaceSetToken
 
     public String getCurrentSN()
     {
-        init();
         if (currentFaceSetID == -1)
         {
             return getLastSNFromConfTable();

@@ -16,7 +16,7 @@ public abstract class BackupedFilesDao extends AbstractRecordsStore
 
     protected abstract String getBackupedTableName();
 
-    public boolean checkAndaddOneRecords(String hashStr, String eTag, String objkey)
+    public boolean isBackup(String hashStr)
     {
         if (StringUtils.isBlank(hashStr))
         {
@@ -36,19 +36,12 @@ public abstract class BackupedFilesDao extends AbstractRecordsStore
 
             if (res.next())
             {
-                logger.warn("the file is already backuped: [{}:{}:{}]", hashStr, eTag, objkey);
+                return true;
+            }
+            else
+            {
                 return false;
             }
-            closeResource(prep, res);
-            res = null;
-
-            prep = conn.prepareStatement(
-                    "insert into " + getBackupedTableName() + " values(?,?,?);");
-            prep.setString(1, hashStr);
-            prep.setString(2, eTag);
-            prep.setString(3, objkey);
-            prep.execute();
-            return true;
         }
         catch (SQLException e)
         {
@@ -58,6 +51,41 @@ public abstract class BackupedFilesDao extends AbstractRecordsStore
         finally
         {
             closeResource(prep, res);
+            lock.writeLock().unlock();
+        }
+    }
+
+    public boolean addOneRecords(String hashStr, String eTag, String objkey)
+    {
+        if (StringUtils.isBlank(hashStr))
+        {
+            logger.warn("the input hashstr is blank.");
+            return false;
+        }
+
+        PreparedStatement prep = null;
+        lock.writeLock().lock();
+        try
+        {
+            prep = conn.prepareStatement(
+                    "insert into " + getBackupedTableName() + " values(?,?,?);");
+            prep.setString(1, hashStr);
+            prep.setString(2, eTag);
+            prep.setString(3, objkey);
+            prep.execute();
+            logger.warn(
+                    "add one backup the file record successfully: [hashstr: {}, etag: {}, objectkey: {}]",
+                    hashStr, eTag, objkey);
+            return true;
+        }
+        catch (SQLException e)
+        {
+            logger.error("caught: " + hashStr, e);
+            return false;
+        }
+        finally
+        {
+            closeResource(prep, null);
             lock.writeLock().unlock();
         }
     }

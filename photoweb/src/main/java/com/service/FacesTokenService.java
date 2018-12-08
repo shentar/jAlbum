@@ -40,7 +40,7 @@ public class FacesTokenService
 
     @GET
     public Response getFaceContent(@Context HttpServletRequest req,
-            @Context HttpServletResponse response) throws IOException
+                                   @Context HttpServletResponse response) throws IOException
     {
         ResponseBuilder builder = Response.status(200);
 
@@ -52,7 +52,7 @@ public class FacesTokenService
             {
                 is = new BufferedInputStream(new FileInputStream(faceThumbnail));
                 builder.header("Content-type",
-                        HeadUtils.getContentType(faceThumbnail.getCanonicalPath()));
+                               HeadUtils.getContentType(faceThumbnail.getCanonicalPath()));
                 logger.info("use the thumbnail: {}", faceThumbnail);
             }
             else
@@ -62,9 +62,10 @@ public class FacesTokenService
                 {
                     is = new BufferedInputStream(new FileInputStream(face.getFi().getPath()));
                     builder.header("Content-type",
-                            HeadUtils.getContentType(face.getFi().getPath()));
+                                   HeadUtils.getContentType(face.getFi().getPath()));
                     logger.info("use the face file: {}", face);
-                    ThumbnailManager.checkAndGenFaceThumbnail(face);
+                    // performance
+                    // ThumbnailManager.checkAndGenFaceThumbnail(face);
                 }
             }
 

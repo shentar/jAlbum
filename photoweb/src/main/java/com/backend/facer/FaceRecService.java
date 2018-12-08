@@ -19,10 +19,8 @@ public class FaceRecService
 {
     private static final Logger logger = LoggerFactory.getLogger(FaceRecService.class);
 
-    private static final ExecutorService threadPool = Executors
-            .newFixedThreadPool(AppConfig.getInstance().getFacerConcurrentThreads());
-
-    private boolean isInit = false;
+    private static final ExecutorService threadPool =
+            Executors.newFixedThreadPool(AppConfig.getInstance().getFacerConcurrentThreads());
 
     private static class ServiceHolder
     {
@@ -76,8 +74,8 @@ public class FaceRecService
                     boolean isSucc = true;
                     for (Face f : ls)
                     {
-                        isSucc = isSucc
-                                && (FaceSetManager.getInstance().addFaceToSet(f.getFacetoken()));
+                        isSucc = isSucc && (FaceSetManager.getInstance()
+                                .addFaceToSet(f.getFacetoken()));
                     }
 
                     if (isSucc)
@@ -94,6 +92,7 @@ public class FaceRecService
                 {
                     GlobalLockBaseOnString.getInstance(GlobalLockBaseOnString.FACE_DETECT_LOCK)
                             .done(fi.getHash256());
+                    logger.warn("end to detect the file {}", fi);
                 }
             }
         });
