@@ -85,9 +85,7 @@ public class ThreadPoolFactory
             @Override
             public Thread newThread(Runnable r)
             {
-                Thread th = new Thread(r);
-                th.setName(namePrefix + "_" + index.incrementAndGet());
-                return new Thread(r);
+                return new Thread(r, namePrefix + "_" + index.incrementAndGet());
             }
         });
     }
