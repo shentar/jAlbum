@@ -6,6 +6,7 @@ import com.utils.sys.SystemConstant;
 import net.bramp.ffmpeg.FFmpeg;
 import net.bramp.ffmpeg.builder.FFmpegBuilder;
 import net.bramp.ffmpeg.builder.FFmpegBuilder.Verbosity;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -116,7 +117,7 @@ public class ThumbnailGenerator
     }
 
     public static boolean createThumbnail(FileInfo fi, String thumbnailPath, int w, int h,
-            boolean force)
+                                          boolean force)
     {
         String filePath = fi.getPath();
         if (MediaTool.isVideo(filePath))
@@ -130,7 +131,7 @@ public class ThumbnailGenerator
     }
 
     private static boolean generateThumbnailForVideo(FileInfo fi, String thumbnailPath, int w,
-            int h, boolean force)
+                                                     int h, boolean force)
     {
         try
         {
@@ -154,19 +155,20 @@ public class ThumbnailGenerator
                     if ((width * 1.0) / w > (height * 1.0) / h)
                     {
                         h = Integer.parseInt(new java.text.DecimalFormat("0")
-                                .format(height * w / (width * 1.0)));
+                                                     .format(height * w / (width * 1.0)));
 
                     }
                     else
                     {
                         w = Integer.parseInt(new java.text.DecimalFormat("0")
-                                .format(width * h / (height * 1.0)));
+                                                     .format(width * h / (height * 1.0)));
                     }
                 }
             }
 
-            FFmpegBuilder target = builder.addOutput(thumbnailPath).setFormat("image2")
-                    .setVideoResolution(w, h).setFrames(1).done();
+            FFmpegBuilder target =
+                    builder.addOutput(thumbnailPath).setFormat("image2").setVideoResolution(w, h)
+                            .setFrames(1).done();
             // builder.set
             FFmpeg ffmpeg = new FFmpeg();
             ffmpeg.run(target, null);
@@ -188,7 +190,7 @@ public class ThumbnailGenerator
     }
 
     private static boolean generateThumbnailForPic(String fpath, String thumbnailPath, int w, int h,
-            boolean force)
+                                                   boolean force)
     {
         try
         {
@@ -216,7 +218,7 @@ public class ThumbnailGenerator
     }
 
     public static boolean createFaceThumbnail(Object origFile, String suffix, String pos,
-            String tmpFile)
+                                              String tmpFile)
     {
         if (StringUtils.isBlank(pos) || StringUtils.isBlank(suffix) || origFile == null
                 || StringUtils.isBlank(tmpFile))
@@ -286,7 +288,7 @@ public class ThumbnailGenerator
             if (!genFaceThumbnail(suffix, tmpFile, iis, newRect == null ? rect : newRect))
             {
                 logger.warn("generate the face thumbnail failed: {}", origFile);
-                return false;
+                return copyTheOrigFile(origFile, tmpFile);
             }
 
             return true;
@@ -313,8 +315,34 @@ public class ThumbnailGenerator
         return false;
     }
 
+    private static boolean copyTheOrigFile(Object origFile, String tmpFile) throws IOException
+    {
+        if (origFile instanceof byte[])
+        {
+            FileUtils.writeByteArrayToFile(new File(tmpFile), (byte[]) origFile);
+        }
+        else if (origFile instanceof File)
+        {
+            FileUtils.copyFile((File) origFile, new File(tmpFile));
+        }
+        else if (origFile instanceof InputStream)
+        {
+            FileUtils.copyInputStreamToFile((InputStream) origFile, new File(tmpFile));
+        }
+        else if (origFile instanceof String)
+        {
+            FileUtils.copyFile(new File((String) origFile), new File(tmpFile));
+        }
+        else
+        {
+            logger.warn("unknown type of input file: {}", origFile);
+            return false;
+        }
+        return true;
+    }
+
     private static boolean genFaceThumbnail(String suffix, String tmpFile, ImageInputStream iis,
-            Rectangle newRect)
+                                            Rectangle newRect)
     {
         try
         {
@@ -342,7 +370,7 @@ public class ThumbnailGenerator
         }
 
         return new Rectangle((int) (rect.getX() - addInterval), (int) (rect.getY() - addInterval),
-                (int) (rect.getWidth() + 2 * addInterval),
-                (int) (rect.getHeight() + 2 * addInterval));
+                             (int) (rect.getWidth() + 2 * addInterval),
+                             (int) (rect.getHeight() + 2 * addInterval));
     }
 }
