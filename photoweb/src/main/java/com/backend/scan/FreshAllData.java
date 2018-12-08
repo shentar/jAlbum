@@ -1,14 +1,13 @@
 package com.backend.scan;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.backend.dao.DateTableDao;
 import com.backend.dao.FaceTableDao;
 import com.backend.dao.UniqPhotosStore;
 import com.backend.dirwathch.DirWatchService;
 import com.backend.facer.FaceSetManager;
 import com.utils.conf.AppConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class FreshAllData
 {

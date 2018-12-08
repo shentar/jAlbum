@@ -1,27 +1,19 @@
 package com.backend.dirwathch;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.ClosedWatchServiceException;
-import java.nio.file.FileSystems;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardWatchEventKinds;
-import java.nio.file.WatchEvent;
-import java.nio.file.WatchEvent.Kind;
-import java.nio.file.WatchKey;
-import java.nio.file.WatchService;
-import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
-
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.backend.dao.BaseSqliteStore;
 import com.backend.scan.FileTools;
 import com.backend.scan.ToolMain;
 import com.utils.conf.AppConfig;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.*;
+import java.nio.file.WatchEvent.Kind;
+import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class DirWatchService
 {

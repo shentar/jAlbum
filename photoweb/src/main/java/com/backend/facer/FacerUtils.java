@@ -1,14 +1,12 @@
 package com.backend.facer;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
-
+import com.backend.entity.FileInfo;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.utils.conf.AppConfig;
+import com.utils.media.ThumbnailGenerator;
+import com.utils.media.ThumbnailManager;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
@@ -32,13 +30,14 @@ import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.backend.entity.FileInfo;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.utils.conf.AppConfig;
-import com.utils.media.ThumbnailGenerator;
-import com.utils.media.ThumbnailManager;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class FacerUtils
 {

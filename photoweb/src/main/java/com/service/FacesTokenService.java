@@ -1,10 +1,16 @@
 package com.service;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import com.backend.dao.FaceTableDao;
+import com.backend.entity.FileInfo;
+import com.backend.facer.Face;
+import com.utils.media.ThumbnailManager;
+import com.utils.sys.SystemConstant;
+import com.utils.sys.SystemProperties;
+import com.utils.web.GenerateHTML;
+import com.utils.web.HeadUtils;
+import org.apache.log4j.MDC;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -12,19 +18,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
-
-import org.apache.log4j.MDC;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.backend.entity.FileInfo;
-import com.backend.dao.FaceTableDao;
-import com.backend.facer.Face;
-import com.utils.media.ThumbnailManager;
-import com.utils.sys.SystemConstant;
-import com.utils.sys.SystemProperties;
-import com.utils.web.GenerateHTML;
-import com.utils.web.HeadUtils;
+import java.io.*;
 
 public class FacesTokenService
 {

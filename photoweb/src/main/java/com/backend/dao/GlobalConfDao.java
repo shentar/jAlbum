@@ -1,11 +1,11 @@
 package com.backend.dao;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 
 public class GlobalConfDao extends AbstractRecordsStore
 {
