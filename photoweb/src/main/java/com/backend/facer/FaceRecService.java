@@ -101,6 +101,10 @@ public class FaceRecService
                 FaceTableDao.getInstance().addRecords(ls);
                 checkFaces(ls);
             }
+            else
+            {
+                logger.warn("add face to face set failed: {}, faces: {}", fi, ls);
+            }
         }
         finally
         {
