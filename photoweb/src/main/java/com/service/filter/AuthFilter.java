@@ -186,7 +186,7 @@ public class AuthFilter extends AbstractFilter
                     + "document.getElementById(\"txt\").value;"
                     + "window.location.replace('logon?token='+content" + (
                     StringUtils.isBlank(origUri) ? "" : "+'&origuri=" + origUri + "'")
-                    + ");}</script>" + GenerateHTML.getGAStr() + (HeadUtils.isAPK()
+                    + ");}</script>" + GenerateHTML.getGAStr() + (!HeadUtils.isAPK()
                                                                   ? "<br/><br/><a href=\"/album.apk\">下载Android客户端</a>"
                                                                   : "") + "</body></html>";
             httpres.setHeader("Content-type", "text/html;charset=UTF-8");
