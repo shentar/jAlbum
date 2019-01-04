@@ -37,6 +37,12 @@ public class HeadUtils
         return ismobile != null && ismobile;
     }
 
+    public static boolean isAPK()
+    {
+        Boolean isapk = (Boolean) SystemProperties.get(SystemConstant.IS_ANDROID_APK_KEY);
+        return isapk != null && isapk;
+    }
+
     public static boolean isFaces()
     {
         Boolean isFaces = (Boolean) SystemProperties.get(SystemConstant.IS_FACES_KEY);
@@ -65,6 +71,7 @@ public class HeadUtils
     {
         boolean isMobile = false;
         boolean isIOS = false;
+        boolean isAndroidAPK = false;
         if (StringUtils.isNotBlank(ua))
         {
             ua = ua.toLowerCase();
@@ -79,10 +86,16 @@ public class HeadUtils
             {
                 isIOS = true;
             }
+
+            if (ua.contains("jAlbum_android_apk_client"))
+            {
+                isAndroidAPK = true;
+            }
         }
 
         SystemProperties.add(SystemConstant.IS_MOBILE_KEY, isMobile);
         SystemProperties.add(SystemConstant.IS_IOS, isIOS);
+        SystemProperties.add(SystemConstant.IS_ANDROID_APK_KEY, isAndroidAPK);
     }
 
     public static void setExpiredTime(ResponseBuilder builder)

@@ -10,6 +10,8 @@ public class SystemConstant
 
     public static final String IS_MOBILE_KEY = "is_mobile";
 
+    public static final String IS_ANDROID_APK_KEY = "is_android_apk";
+
     public static final String IS_FACES_KEY = "is_faces";
 
     public static final String IS_NO_FACES_KEY = "is_nofaces";

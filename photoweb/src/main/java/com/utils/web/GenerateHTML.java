@@ -426,7 +426,7 @@ public class GenerateHTML
 
     private static String getHtmlFoot()
     {
-        return getGAStr() + "</body></html>";
+        return genDownloadAPK() + getGAStr() + "</body></html>";
     }
 
     public static String generateSinglePhoto(FileInfo f, boolean isBackToMonth)
@@ -1270,6 +1270,19 @@ public class GenerateHTML
         {
             return "";
         }
+    }
+
+    public static String genDownloadAPK()
+    {
+        if (!HeadUtils.isAPK())
+        {
+            return "<br/><br/><table style=\"text-align: center;\" width=\"100%\" height=\"100%\" "
+                    + "border=\"0\" bordercolor=\"#000000\">"
+                    + "<tr><td width=\"100%\" height=\"100%\" bordercolor=\"#000000\">"
+                    + "<a href=\"/album.apk\">下载Android客户端</a>" + "</td></tr></table>";
+        }
+
+        return "";
     }
 
 }
