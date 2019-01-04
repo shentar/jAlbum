@@ -87,7 +87,7 @@ public class HeadUtils
                 isIOS = true;
             }
 
-            if (ua.contains("jAlbum_android_apk_client"))
+            if (ua.contains("jalbum_android_apk_client"))
             {
                 isAndroidAPK = true;
             }
