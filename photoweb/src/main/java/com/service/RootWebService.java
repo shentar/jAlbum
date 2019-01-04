@@ -159,6 +159,29 @@ public class RootWebService extends HttpServlet
     }
 
     @GET
+    @Path("/album.apk")
+    public Response getAPK(@Context HttpServletRequest req, @Context HttpServletResponse response)
+    {
+        logger.debug("getAPK in!");
+        ResponseBuilder builder = Response.ok();
+        try
+        {
+            FileInputStream fp =
+                    new FileInputStream(new File("client" + File.separator + "album.apk"));
+            builder.entity(fp);
+            builder.header("Content-type", "application/vnd.android.package-archive");
+            HeadUtils.setExpiredTime(builder);
+            logger.debug("getAPK out!");
+        }
+        catch (Exception e)
+        {
+            logger.error("catch some exception.", e);
+        }
+
+        return builder.build();
+    }
+
+    @GET
     @Path("/js/{file}")
     public Response getJSFile(@PathParam("file") String file, @Context HttpServletRequest req,
                               @Context HttpServletResponse response)

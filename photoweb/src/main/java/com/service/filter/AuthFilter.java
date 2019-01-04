@@ -46,7 +46,7 @@ public class AuthFilter extends AbstractFilter
 
         String uri = httpreq.getRequestURI();
 
-        if (StringUtils.equals("/favicon.ico", uri))
+        if (StringUtils.equals("/favicon.ico", uri) || StringUtils.equals("/album.apk", uri))
         {
             return true;
         }
@@ -59,105 +59,104 @@ public class AuthFilter extends AbstractFilter
 
         switch (uri)
         {
-        case "/logon":
-            // 登录成功，则设置cookies，并返回原入口页。
-            if (StringUtils.isNotBlank(token) && TokenCache.getInstance().isSupper(token))
-            {
-                loginStatus = LoginStatus.SuperLogin;
-                redirectLocation = (origUri == null ? "/" : origUri);
-                SystemProperties.add(SystemConstant.COOKIE_CONTENT, token);
-                HeadUtils.refreshCookie(httpres);
-            }
-            else if (StringUtils.isNotBlank(token) && TokenCache.getInstance().contains(token))
-            {
-                loginStatus = LoginStatus.TokenLoin;
-                redirectLocation = (origUri == null ? "/" : origUri);
-                SystemProperties.add(SystemConstant.COOKIE_CONTENT, token);
-                HeadUtils.refreshCookie(httpres);
-            }
-            else
-            {
-                logger.warn("token error: " + token);
-                loginStatus = LoginStatus.TokenError;
-                redirectLocation = "/login" + (StringUtils.isBlank(origUri) ?
-                        "" :
-                        "?" + ORIGINAL_URI_KEY + "=" + origUri);
-            }
-            break;
-
-        case "/login":
-            loginStatus = LoginStatus.WaitLogin;
-            break;
-
-        default:
-            if (cookies == null || cookies.length == 0)
-            {
-                loginStatus = LoginStatus.Unlogin;
-                redirectLocation =
-                        "/login" + "?" + ORIGINAL_URI_KEY + "=" + httpreq.getRequestURI();
-            }
-            else
-            {
-                // 正确登录，则跳转主页，并刷新过期时间。
-                // 登录信息过期，或者cookies不对，则删除cookies，并跳转到登录页面。
-                for (Cookie c : cookies)
+            case "/logon":
+                // 登录成功，则设置cookies，并返回原入口页。
+                if (StringUtils.isNotBlank(token) && TokenCache.getInstance().isSupper(token))
                 {
-                    if (StringUtils.equalsIgnoreCase(HeadUtils.getCookieName(), c.getName()))
-                    {
-                        token = c.getValue();
-                        if (TokenCache.getInstance().isSupper(token))
-                        {
-                            SystemProperties.add(SystemConstant.COOKIE_CONTENT, token);
-                            loginStatus = LoginStatus.SuperLogin;
-                            break;
-                        }
-
-                        if (TokenCache.getInstance().contains(token))
-                        {
-                            SystemProperties.add(SystemConstant.COOKIE_CONTENT, token);
-                            loginStatus = LoginStatus.CookiesLoin;
-                            break;
-                        }
-                    }
+                    loginStatus = LoginStatus.SuperLogin;
+                    redirectLocation = (origUri == null ? "/" : origUri);
+                    SystemProperties.add(SystemConstant.COOKIE_CONTENT, token);
+                    HeadUtils.refreshCookie(httpres);
                 }
-
-                if (loginStatus.equals(LoginStatus.Unlogin))
+                else if (StringUtils.isNotBlank(token) && TokenCache.getInstance().contains(token))
                 {
-                    logger.warn("cookies login error: " + token);
-                    loginStatus = LoginStatus.CookiesError;
+                    loginStatus = LoginStatus.TokenLoin;
+                    redirectLocation = (origUri == null ? "/" : origUri);
+                    SystemProperties.add(SystemConstant.COOKIE_CONTENT, token);
+                    HeadUtils.refreshCookie(httpres);
+                }
+                else
+                {
+                    logger.warn("token error: " + token);
+                    loginStatus = LoginStatus.TokenError;
+                    redirectLocation = "/login" + (StringUtils.isBlank(origUri) ? "" : "?"
+                            + ORIGINAL_URI_KEY + "=" + origUri);
+                }
+                break;
+
+            case "/login":
+                loginStatus = LoginStatus.WaitLogin;
+                break;
+
+            default:
+                if (cookies == null || cookies.length == 0)
+                {
+                    loginStatus = LoginStatus.Unlogin;
                     redirectLocation =
                             "/login" + "?" + ORIGINAL_URI_KEY + "=" + httpreq.getRequestURI();
                 }
-            }
+                else
+                {
+                    // 正确登录，则跳转主页，并刷新过期时间。
+                    // 登录信息过期，或者cookies不对，则删除cookies，并跳转到登录页面。
+                    for (Cookie c : cookies)
+                    {
+                        if (StringUtils.equalsIgnoreCase(HeadUtils.getCookieName(), c.getName()))
+                        {
+                            token = c.getValue();
+                            if (TokenCache.getInstance().isSupper(token))
+                            {
+                                SystemProperties.add(SystemConstant.COOKIE_CONTENT, token);
+                                loginStatus = LoginStatus.SuperLogin;
+                                break;
+                            }
+
+                            if (TokenCache.getInstance().contains(token))
+                            {
+                                SystemProperties.add(SystemConstant.COOKIE_CONTENT, token);
+                                loginStatus = LoginStatus.CookiesLoin;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (loginStatus.equals(LoginStatus.Unlogin))
+                    {
+                        logger.warn("cookies login error: " + token);
+                        loginStatus = LoginStatus.CookiesError;
+                        redirectLocation =
+                                "/login" + "?" + ORIGINAL_URI_KEY + "=" + httpreq.getRequestURI();
+                    }
+                }
         }
 
         SystemProperties.add(SystemConstant.USER_LOGIN_STATUS, loginStatus);
         boolean passed = false;
         switch (loginStatus)
         {
-        case WaitLogin:
-            displayLogin(httpres, httpreq);
-            break;
-        case SuperLogin:
-        case TokenLoin:
-        case CookiesLoin:
-            passed = true;
-            break;
-        case CookiesError:
-            for (Cookie ctmp : cookies)
-            {
-                if (StringUtils.equalsIgnoreCase(ctmp.getName(), HeadUtils.getCookieName()))
+            case WaitLogin:
+                displayLogin(httpres, httpreq);
+                break;
+            case SuperLogin:
+            case TokenLoin:
+            case CookiesLoin:
+                passed = true;
+                break;
+            case CookiesError:
+                for (Cookie ctmp : cookies)
                 {
-                    ctmp.setMaxAge(0);
-                    httpres.addCookie(ctmp);
+                    if (StringUtils.equalsIgnoreCase(ctmp.getName(), HeadUtils.getCookieName()))
+                    {
+                        ctmp.setMaxAge(0);
+                        httpres.addCookie(ctmp);
+                    }
                 }
-            }
-        case TokenError:
-        case Unlogin:
-            break;
+            case TokenError:
+            case Unlogin:
+                break;
 
-        default:
-            break;
+            default:
+                break;
         }
 
         if (StringUtils.isNotBlank(redirectLocation))
@@ -187,7 +186,8 @@ public class AuthFilter extends AbstractFilter
                     + "document.getElementById(\"txt\").value;"
                     + "window.location.replace('logon?token='+content" + (
                     StringUtils.isBlank(origUri) ? "" : "+'&origuri=" + origUri + "'")
-                    + ");}</script>" + GenerateHTML.getGAStr() + "</body></html>";
+                    + ");}</script>" + GenerateHTML.getGAStr()
+                    + "<br/><br/><a href=\"/album.apk\">下载Android客户端</a></body></html>";
             httpres.setHeader("Content-type", "text/html;charset=UTF-8");
             httpres.getWriter().write(hh);
             httpres.getWriter().close();
