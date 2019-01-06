@@ -2,9 +2,7 @@ package jalbum.com.myapplication;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.webkit.WebSettings;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
+import android.webkit.*;
 
 public class MainActivity extends AppCompatActivity
 {
@@ -18,6 +16,7 @@ public class MainActivity extends AppCompatActivity
         webView = new WebView(this);
         setContentView(webView);
 
+        CookieManager.getInstance().setAcceptCookie(true);
         webView.loadUrl("http://photo.codefine.site:2148");
         WebSettings webSettings = webView.getSettings();
         webSettings.setSupportZoom(true);
@@ -28,6 +27,7 @@ public class MainActivity extends AppCompatActivity
 
         webSettings.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
         webSettings.setLoadWithOverviewMode(true);
+        webSettings.setUserAgentString("jAlbum_android_apk_client");
 
         webView.setWebViewClient(new WebViewClient()
         {
@@ -54,11 +54,12 @@ public class MainActivity extends AppCompatActivity
 
     protected void onDestroy()
     {
+
         if (webView != null)
         {
             webView.stopLoading();
             webView.clearHistory();
-            webView.clearCache(true);
+            webView.clearCache(false);
             webView.loadUrl("about:blank");
             webView.pauseTimers();
             webView = null;
