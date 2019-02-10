@@ -294,7 +294,6 @@ public class HeadUtils
 
         Object o = SystemProperties.get(SystemConstant.USER_LOGIN_STATUS);
         return o != null && o instanceof LoginStatus && o.equals(LoginStatus.SuperLogin);
-
     }
 
     public static boolean isLocalLogin()
