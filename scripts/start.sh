@@ -1,13 +1,11 @@
 #!/bin/bash
 
 cmd="${1}"
-[ -z "${cmd}" ] && usage
-
 DIR="$(cd "$(dirname "$0")" && pwd )"
 cd "${DIR}"
-sf=$(filename $0)
+sf=$(basename $0)
 pidfile="/var/run/jalbum.pid"
-pid=`cat ${pidfile} 2>/dev/null`
+pid=$(cat ${pidfile} 2>/dev/null)
 
 usage()
 {
