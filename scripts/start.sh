@@ -1,14 +1,19 @@
 #!/bin/bash
 
 cmd="${1}"
-[ -z "${cmd}" ] && exit 1
+[ -z "${cmd}" ] && usage
 
 DIR="$(cd "$(dirname "$0")" && pwd )"
 cd "${DIR}"
-
+sf=$(filename $0)
 pidfile="/var/run/jalbum.pid"
-
 pid=`cat ${pidfile}` 2>/dev/null
+
+usage()
+{
+    echo "Usage: ${sf} [start|stop|status|restart]"
+    exit 1
+}
 
 running()
 {
