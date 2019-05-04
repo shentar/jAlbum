@@ -75,6 +75,9 @@ case ${cmd} in
         stopnow
         startup
         ;;
+    *)
+        usage
+        ;;
 esac
 
 exit 0
