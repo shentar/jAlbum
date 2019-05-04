@@ -32,7 +32,7 @@ startup()
     else
         java -Xms512M -Xmx512M ${JAVA_OPTS} -jar start.jar > log/jstdout.txt 2>&1 &
         ret=$?
-        disown $!
+        disown $! >/dev/null 2>&1
         echo $! > "${pidfile}"
         if [ ${ret} -ne 0 ]
         then
