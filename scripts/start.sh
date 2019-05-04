@@ -24,12 +24,10 @@ startup()
 	    then 
 		    echo "already running"
 		else
-            (java -Xms512M -Xmx512M -Xdebug -Xrunjdwp:transport=dt_socket,address=4321,server=y,suspend=n -jar start.jar > log/jstdout.txt 2>&1 &)
+            java -Xms512M -Xmx512M -Xdebug -Xrunjdwp:transport=dt_socket,address=4321,server=y,suspend=n -jar start.jar > log/jstdout.txt 2>&1 &
             ret=$?
-            echo $pid
-            echo $$ > "${pidfile}"
-            echo $$
-		    if [ $? -ne 0 ]
+            echo $! > "${pidfile}"
+		    if [ ${ret} -ne 0 ]
 		    then
 			    echo "start failed"
 		    else
@@ -44,6 +42,8 @@ stopnow()
 		if [ $? -eq 0 ]
 		then
 			kill -9 ${pid}
+            rm -f "${pidfile}" >/dev/null 2>&1
+            echo "stopped"
 		else
 			echo "not running"
 		fi
@@ -59,6 +59,7 @@ case ${cmd} in
 			echo "running"
 		else
 			echo "not running"
+            rm -f "${pidfile}" >/dev/null 2>&1
 		fi
 		;;
 	start)
