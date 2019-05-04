@@ -29,7 +29,7 @@
                 <include name="log4j.xml"/>
             </fileset>
             <fileset dir="${scripts.dir}">
-                <include name="start.sh"/>
+                <include name="jalbum.sh"/>
                 <include name="start.bat"/>
                 <include name="readme.txt"/>
             </fileset>
