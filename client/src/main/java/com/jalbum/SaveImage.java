@@ -18,10 +18,10 @@ import java.util.Date;
  */
 public class SaveImage extends AsyncTask<String, Void, String>
 {
+    private static final String TMP_EXT_STR = "._bak";
     private String cookies;
     private String imgurl = "";
     private Context context;
-    private static final String TMP_EXT_STR = "._bak";
 
     public SaveImage(Context context, String imgurl, String cookies)
     {
@@ -64,7 +64,7 @@ public class SaveImage extends AsyncTask<String, Void, String>
                 file = new File(sdcard + "/DCIM/Download/" + filename);
 
                 BufferedOutputStream outStream =
-                        new BufferedOutputStream(new FileOutputStream(file));
+                    new BufferedOutputStream(new FileOutputStream(file));
                 while ((len = inputStream.read(buffer)) != -1)
                 {
                     outStream.write(buffer, 0, len);
@@ -74,7 +74,7 @@ public class SaveImage extends AsyncTask<String, Void, String>
                 if (StringUtils.endsWith(filename, TMP_EXT_STR))
                 {
                     String finalFilename = StringUtils
-                            .substring(filename, 0, filename.length() - TMP_EXT_STR.length());
+                        .substring(filename, 0, filename.length() - TMP_EXT_STR.length());
                     File finalFile = new File(sdcard + "/DCIM/Download/" + finalFilename);
                     if (!file.renameTo(finalFile))
                     {
