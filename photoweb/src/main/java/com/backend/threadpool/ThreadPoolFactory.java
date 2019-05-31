@@ -18,7 +18,7 @@ public class ThreadPoolFactory
 
     public static final String FILE_TOOL = "FileTool";
 
-    public static final String THREAD_POOL_4THUMBNAIL = "ThreadPool4Thumbnail";
+    public static final String THREAD_POOL_4THUMBNAIL = "Thumbnail";
 
     public static final String FACE_REC_SERVICE = "FaceRecService";
 
@@ -33,7 +33,7 @@ public class ThreadPoolFactory
         // 对于树莓派等系统，最多只能2个线程同时计算缩略图。
         factory.put(THREAD_POOL_4THUMBNAIL, genOnePool(THREAD_POOL_4THUMBNAIL, 2));
         factory.put(FACE_REC_SERVICE, genOnePool(FACE_REC_SERVICE, AppConfig.getInstance()
-                .getFacerConcurrentThreads()));
+            .getFacerConcurrentThreads()));
     }
 
     public static ThreadPoolExecutor getThreadPool(String type)
@@ -45,8 +45,7 @@ public class ThreadPoolFactory
     {
         StringBuilder sb = new StringBuilder();
         sb.append("<table border=\"1\">");
-        sb.append(
-                "<tr><td>Job Status</td><td>runningJobs</td><td>waitingJobs</td><td>completedJobs</td></tr>");
+        sb.append("<tr><td>Job Status</td><td>running</td><td>waiting</td><td>completed</td></tr>");
         for (Map.Entry<String, ThreadPoolExecutor> en : factory.entrySet())
         {
             sb.append(getOnePooolInfo(en.getKey()));
