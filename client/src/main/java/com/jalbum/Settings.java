@@ -1,17 +1,18 @@
 package com.jalbum;
 
-import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.webkit.WebView;
 import android.widget.PopupWindow;
+import org.apache.commons.lang3.StringUtils;
 
 public class Settings extends PopupWindow
 {
     public static final int IMAGE_VIEW_POPUPWINDOW = 5;
-    private Context context;
+    private MainActivity context;
     private View settings = null;
 
-    public Settings(Context context, int width, int height)
+    public Settings(MainActivity context, int width, int height)
     {
         super(context);
         this.context = context;
@@ -33,4 +34,62 @@ public class Settings extends PopupWindow
     {
         return this.settings.findViewById(id);
     }
+
+    public void loadStatistics(View v)
+    {
+        loadReq(v, "statistics");
+    }
+
+    private void loadReq(View v, String act)
+    {
+        if (v instanceof WebView)
+        {
+            String url = getUrl();
+            if (url == null)
+            {
+                return;
+            }
+            ((WebView) v).loadUrl(url + "/" + act);
+        }
+    }
+
+    public void loadStatistics()
+    {
+        loadReq("statistics");
+    }
+
+    public void syncNow()
+    {
+        loadReq("syncnow");
+    }
+
+
+    public void flushNow()
+    {
+        loadReq("flushnow");
+    }
+
+    private synchronized void loadReq(String act)
+    {
+        String url = getUrl();
+        if (url == null)
+        {
+            return;
+        }
+        WebView view = (WebView) getView(R.id.statistics);
+        view.loadUrl(url + "/" + act);
+    }
+
+
+    private String getUrl()
+    {
+        String url = context.getBasedUrl();
+        if (StringUtils.isBlank(url) || StringUtils.equalsIgnoreCase(url, MainActivity.DEFAULT_URL))
+        {
+            return null;
+        }
+        return url;
+    }
+
+
 }

@@ -1,17 +1,13 @@
 package com.jalbum;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.net.http.SslError;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.view.Display;
-import android.view.Gravity;
-import android.view.View;
-import android.view.WindowManager;
-import android.webkit.CookieManager;
-import android.webkit.WebSettings;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
+import android.view.*;
+import android.webkit.*;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -19,7 +15,7 @@ import org.apache.commons.lang3.StringUtils;
 
 public class MainActivity extends AppCompatActivity
 {
-    public static final String DEFAULT_URL = "https://shentar.github.io/2018/02/11/jalbum/";
+    static final String DEFAULT_URL = "https://shentar.github.io/2018/02/11/jalbum/";
     private JalbumWebView webView = null;
     private String cookies = null;
     private SharedPreferences preferences = null;
@@ -31,6 +27,7 @@ public class MainActivity extends AppCompatActivity
         return (int) (dpValue * scale + 0.5f);
     }
 
+    @SuppressLint("SetJavaScriptEnabled")
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -68,6 +65,11 @@ public class MainActivity extends AppCompatActivity
                 cookies = cookieManager.getCookie(url);
                 super.onPageFinished(view, url);
             }
+
+            public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error)
+            {
+                handler.proceed();
+            }
         });
 
         webView.setOnLongClickListener(new View.OnLongClickListener()
@@ -88,11 +90,9 @@ public class MainActivity extends AppCompatActivity
                 }
 
                 final String imgurl = result.getExtra();
-                final ItemLongClickedPopWindow itemLongClickedPopWindow =
-                    new ItemLongClickedPopWindow(MainActivity.this,
-                                                 ItemLongClickedPopWindow.IMAGE_VIEW_POPUPWINDOW,
-                                                 dip2px(MainActivity.this, 120),
-                                                 dip2px(MainActivity.this, 40));
+                final PopWindow itemLongClickedPopWindow =
+                    new PopWindow(MainActivity.this, PopWindow.IMAGE_VIEW_POPUPWINDOW,
+                                  dip2px(MainActivity.this, 120), dip2px(MainActivity.this, 40));
                 itemLongClickedPopWindow
                     .showAtLocation(v, Gravity.START | Gravity.TOP, (int) webView.getDownX(),
                                     (int) webView.getDownY());
@@ -116,6 +116,11 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
+        initSettings();
+    }
+
+    private void initSettings()
+    {
         preferences.registerOnSharedPreferenceChangeListener(
             new SharedPreferences.OnSharedPreferenceChangeListener()
             {
@@ -128,8 +133,9 @@ public class MainActivity extends AppCompatActivity
                     }
                 }
             });
-        settings = new Settings(MainActivity.this, getScreenWidth(MainActivity.this),
-                                getScreenHeight(MainActivity.this) / 2);
+
+        settings = new Settings(this, getScreenWidth(MainActivity.this),
+                                getScreenHeight(MainActivity.this));
         settings.getView(R.id.button_logout_logout).setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -142,6 +148,27 @@ public class MainActivity extends AppCompatActivity
                 settings.dismiss();
             }
         });
+
+        settings.getView(R.id.button_flush_now).setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                settings.flushNow();
+            }
+        });
+
+        settings.getView(R.id.button_backup_now).setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                settings.syncNow();
+            }
+        });
+
+
+        initStatistics();
 
         settings.getView(R.id.button_go).setOnClickListener(new View.OnClickListener()
         {
@@ -181,6 +208,7 @@ public class MainActivity extends AppCompatActivity
                 editor.putString("url", url);
                 editor.apply();
                 settings.dismiss();
+                loadContent();
             }
         });
 
@@ -200,15 +228,45 @@ public class MainActivity extends AppCompatActivity
                         EditText editText = (EditText) settings.getView(R.id.url_edit_text);
                         String oldUrl = preferences.getString("url", DEFAULT_URL);
                         editText.setText(oldUrl);
+                        settings.loadStatistics();
                     }
                 }
             }
         });
     }
 
+    @SuppressLint({"ClickableViewAccessibility", "SetJavaScriptEnabled"})
+    private void initStatistics()
+    {
+        WebView statisticsView = (WebView) settings.getView(R.id.statistics);
+        /* WebSettings web = statisticsView.getSettings();
+        // web.setJavaScriptEnabled(true);
+        web.setSupportZoom(true);
+        // web.setBuiltInZoomControls(true);
+        web.setUseWideViewPort(true);
+        // web.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
+        web.setLoadWithOverviewMode(true);*/
+        statisticsView.setOnTouchListener(new View.OnTouchListener()
+        {
+            @Override
+            public boolean onTouch(View v, MotionEvent event)
+            {
+                settings.loadStatistics(v);
+                return true;
+            }
+        });
+    }
+
     private void loadContent()
     {
+        webView.clearHistory();
+        webView.clearAnimation();
+        webView.onPause();
+        webView.pauseTimers();
+        webView.stopLoading();
         webView.loadUrl(preferences.getString("url", "http://photo.codefine.site:2148"));
+        webView.resumeTimers();
+        webView.onResume();
     }
 
     public void onBackPressed()
@@ -242,8 +300,12 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    public String getBasedUrl()
+    {
+        return preferences.getString("url", DEFAULT_URL);
+    }
 
-    //ªÒ»°∆¡ƒªµƒøÌ∂»
+    //Ëé∑ÂèñÂ±èÂπïÁöÑÂÆΩÂ∫¶
     public static int getScreenWidth(Context context)
     {
         WindowManager manager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
@@ -251,7 +313,7 @@ public class MainActivity extends AppCompatActivity
         return display.getWidth();
     }
 
-    //ªÒ»°∆¡ƒªµƒ∏ﬂ∂»
+    //Ëé∑ÂèñÂ±èÂπïÁöÑÈ´òÂ∫¶
     public static int getScreenHeight(Context context)
     {
         WindowManager manager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
