@@ -219,6 +219,7 @@ public class MainActivity extends AppCompatActivity
             public void onClick(View v)
             {
                 loadContent();
+                settings.dismiss();
             }
         });
 
@@ -249,13 +250,6 @@ public class MainActivity extends AppCompatActivity
     private void initStatistics()
     {
         WebView statisticsView = (WebView) settings.getView(R.id.statistics);
-        /* WebSettings web = statisticsView.getSettings();
-        // web.setJavaScriptEnabled(true);
-        web.setSupportZoom(true);
-        // web.setBuiltInZoomControls(true);
-        web.setUseWideViewPort(true);
-        // web.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
-        web.setLoadWithOverviewMode(true);*/
         statisticsView.setOnTouchListener(new View.OnTouchListener()
         {
             @Override
