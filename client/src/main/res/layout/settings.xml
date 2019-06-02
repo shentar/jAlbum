@@ -63,7 +63,7 @@
                   android:paddingRight="0dp"
                   android:paddingStart="0dp"
                   android:paddingTop="0dp"
-                  android:orientation="horizontal"
+                  android:orientation="vertical"
                   android:layout_weight="3"
                   android:layout_gravity="center_vertical"
                   android:gravity="top|fill_horizontal"
@@ -81,7 +81,7 @@
                       android:paddingRight="0dp"
                       android:paddingStart="0dp"
                       android:paddingTop="0dp"
-                      android:orientation="vertical"
+                      android:orientation="horizontal"
                       android:layout_weight="1"
                       android:layout_gravity="center_vertical"
                       android:gravity="top|center_horizontal">
@@ -119,7 +119,7 @@
                       android:paddingRight="0dp"
                       android:paddingStart="0dp"
                       android:paddingTop="0dp"
-                      android:orientation="vertical"
+                      android:orientation="horizontal"
                       android:layout_weight="1"
                       android:layout_gravity="center_vertical|center_horizontal"
                       android:gravity="top|center_horizontal">
@@ -129,6 +129,15 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="注销"
+                    android:textColor="@android:color/black"
+                    android:textSize="20sp"
+                    android:layout_weight="1"/>
+
+            <Button
+                    android:id="@+id/button_refresh"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="刷新"
                     android:textColor="@android:color/black"
                     android:textSize="20sp"
                     android:layout_weight="1"/>

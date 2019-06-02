@@ -212,6 +212,16 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
+        // 刷新按钮重新加载主页。
+        settings.getView(R.id.button_refresh).setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                loadContent();
+            }
+        });
+
         loadContent();
 
         Button button = findViewById(R.id.setting_buttion);
