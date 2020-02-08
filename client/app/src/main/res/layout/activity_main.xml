@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".MainActivity"
+        android:visibility="visible"
+        android:background="@android:color/background_light"
+        android:id="@+id/main_activity">
+
+    <FrameLayout
+            android:id="@+id/jalbum_view_frame"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_constraintBottom_toTopOf="@+id/setting_buttion">
+
+        <com.jalbum.JalbumWebView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/web_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintTop_toTopOf="parent">
+        </com.jalbum.JalbumWebView>
+    </FrameLayout>
+
+    <Button
+            android:text="@string/settings"
+            android:layout_width="wrap_content"
+            android:id="@+id/setting_buttion"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginEnd="8dp"
+            style="@style/Widget.AppCompat.Button"/>
+
+</android.support.constraint.ConstraintLayout>

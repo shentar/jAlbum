@@ -10,6 +10,7 @@ input {
     width: 50px;
     height: 26px;
     border-radius: 6px;
+    border-style: unset;
 }
 
 a {

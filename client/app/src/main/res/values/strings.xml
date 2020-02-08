@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">相册</string>
+    <string name="settings">设置</string>
+    <string name="saveimg">保存图片</string>
+    <string name="statistics_string">相册统计信息</string>
+    <string name="ok">确定</string>
+    <string name="refresh">刷新</string>
+    <string name="log_out">注销</string>
+    <string name="backup_now">立即备份</string>
+    <string name="sync_now">立即同步</string>
+    <string name="input_urls">请输入相册地址</string>
+    <string name="urls">URL地址:</string>
+</resources>
