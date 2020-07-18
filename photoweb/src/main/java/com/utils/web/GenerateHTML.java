@@ -612,7 +612,7 @@ public class GenerateHTML
              * "deg); transform-origin: 50% 50% 0px;\""; }
              */
 
-            video += " controls=\"controls\" autoplay=\"autoplay\">";
+            video += " controls=\"controls\" autoplay=\"autoplay\" webkit-playsinline=\"true\">";
 
             video += "<source";
             video += " src = \"/photos/" + f.getHash256() + "?content=true&size=" + size + "\""

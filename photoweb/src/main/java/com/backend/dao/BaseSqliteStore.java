@@ -199,8 +199,8 @@ public class BaseSqliteStore extends AbstractRecordsStore
                 FileInfo oldfi = getFileInfoFromTable(res);
 
                 long fileTime = FileTools.getFileCreateTime(f);
-                if (oldfi.getSize() == f.length() && oldfi.getcTime() != null
-                        && oldfi.getcTime().getTime() == fileTime)
+                if (oldfi.getSize() == f.length() /*&& oldfi.getcTime() != null
+                        && oldfi.getcTime().getTime() == fileTime*/)
                 {
                     logger.info("the file is exist: " + f);
                     checkPhotoTime(oldfi);
