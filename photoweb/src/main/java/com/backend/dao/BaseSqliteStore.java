@@ -4,6 +4,7 @@ import com.backend.entity.FileInfo;
 import com.backend.entity.FileType;
 import com.backend.entity.PicStatus;
 import com.backend.facer.FaceRecService;
+import com.backend.facer.FaceRecServiceFactory;
 import com.backend.scan.FileTools;
 import com.backend.scan.RefreshFlag;
 import com.backend.sync.s3.SyncTool;
@@ -121,7 +122,7 @@ public class BaseSqliteStore extends AbstractRecordsStore
             if (fi.getStatus() == PicStatus.EXIST)
             {
                 // SyncTool.submitSyncTask(fi);
-                FaceRecService.getInstance().detactFaces(fi);
+                FaceRecServiceFactory.getFaceRecService().detectFaces(fi);
             }
             FileTools.submitAnThumbnailTask(fi);
 
@@ -361,7 +362,7 @@ public class BaseSqliteStore extends AbstractRecordsStore
                         SyncTool.submitSyncTask(fi);
                     }
 
-                    FaceRecService.getInstance().detactFaces(fi);
+                    FaceRecServiceFactory.getFaceRecService().detectFaces(fi);
                     if (ThumbnailManager.checkTheThumbnailExist(fi.getHash256()))
                     {
                         PerformanceStatistics.getInstance().addOneFile(false);

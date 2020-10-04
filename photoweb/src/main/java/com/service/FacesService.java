@@ -4,6 +4,7 @@ import com.backend.dao.FaceTableDao;
 import com.backend.dao.UniqPhotosStore;
 import com.backend.facer.Face;
 import com.backend.facer.FaceRecService;
+import com.backend.facer.FaceRecServiceFactory;
 import com.utils.sys.SystemConstant;
 import com.utils.sys.SystemProperties;
 import com.utils.web.GenerateHTML;
@@ -43,7 +44,7 @@ public class FacesService
         if (id < 0)
         {
             return b.entity(GenerateHTML.genFaceIndexPage(
-                    FaceRecService.getInstance().checkAndGetFaceidList(), getRowCount())).build();
+                    FaceRecServiceFactory.getFaceRecService().checkAndGetFaceidList(), getRowCount())).build();
         }
         else
         {
@@ -62,7 +63,7 @@ public class FacesService
 
             return b.entity(
                     GenerateHTML.genIndexPage(
-                            FaceRecService.getInstance().getSortedFaces(id,
+                            FaceRecServiceFactory.getFaceRecService().getSortedFaces(id,
                                     HeadUtils.judgeCountPerOnePage(req), true),
                             getRowCount(), true))
                     .build();

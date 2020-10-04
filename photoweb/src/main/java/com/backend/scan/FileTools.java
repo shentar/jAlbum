@@ -113,8 +113,8 @@ public class FileTools
         }
 
         File f = new File(fi.getPath());
-        return !(f.isFile() && fi.getcTime().getTime() == FileTools.getFileCreateTime(f)
-                && fi.getSize() == f.length());
+        return !(f.isFile() && /*fi.getcTime().getTime() == FileTools.getFileCreateTime(f)
+                &&*/ fi.getSize() == f.length());
     }
 
     public static PicStatus checkFileDeleted(final FileInfo fi, List<String> excludeDirs)

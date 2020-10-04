@@ -363,10 +363,12 @@ public class AppConfig
         return config.getString("Facer.sk", "");
     }
 
-    public boolean isFacerConfigured()
-    {
-        return StringUtils.isNotBlank(getApiKey()) && StringUtils.isNotBlank(getSecret());
-
+    public boolean isFacerConfigured() {
+        if (0 == getFacerServiceType()) {
+            return StringUtils.isNotBlank(getApiKey()) && StringUtils.isNotBlank(getSecret());
+        } else {
+            return config.getProperty("Facer.service_host") != null && config.getProperty("Facer.service_port") != null;
+        }
     }
 
     public boolean facerUseHttps()
@@ -392,5 +394,18 @@ public class AppConfig
     public int getMaxExpireAge()
     {
         return config.getInt("expiretime", SystemConstant.MAX_EXPIRE_AGE);
+    }
+
+    public String getFacerEndPoint() {
+        return config.getString("Facer.service_host", "api-cn.faceplusplus.com");
+    }
+
+    public int getFacerPort() {
+        return config.getInt("Facer.service_port", 443);
+    }
+
+    public int getFacerServiceType() {
+        // 0 for FACEPLUSPLUS
+        return config.getInt("Facer.service_type", 0);
     }
 }

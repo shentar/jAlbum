@@ -53,6 +53,10 @@ thumbnaildir specify the folder which to store the thumbnail to.
         <useHttps>false</useHttps>
   </HuaweiOBS>  
   <Facer>
+        <service_host></service_host>
+        <service_port></service_port>
+        <service_type></service_type>
+        <threadperbucket></threadperbucket>
         <ak></ak>
         <sk></sk>
   </Facer>

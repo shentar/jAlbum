@@ -4,6 +4,7 @@ import com.backend.dao.BaseSqliteStore;
 import com.backend.entity.FileInfo;
 import com.backend.facer.Face;
 import com.backend.facer.FaceRecService;
+import com.backend.facer.FaceRecServiceFactory;
 import com.backend.facer.FacerUtils;
 import com.utils.conf.AppConfig;
 import com.utils.sys.GlobalLockBaseOnString;
@@ -173,7 +174,7 @@ public class ThumbnailManager
             }
             else
             {
-                FaceRecService.getInstance().detactFaces(fi);
+                FaceRecServiceFactory.getFaceRecService().detectFaces(fi);
             }
         }
     }

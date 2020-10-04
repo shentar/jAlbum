@@ -2,6 +2,7 @@ package com.backend.scan;
 
 import com.backend.dirwathch.DirWatchService;
 import com.backend.facer.FaceRecService;
+import com.backend.facer.FaceRecServiceFactory;
 import com.backend.facer.FaceSetManager;
 import com.backend.threadpool.ThreadPoolFactory;
 import com.utils.conf.AppConfig;
@@ -61,8 +62,8 @@ public class BackendScanner
                 if (AppConfig.getInstance().isFacerConfigured())
                 {
                     FaceSetManager.getInstance().checkFaceSet();
-                    FaceRecService.getInstance().checkAllFacesID();
-                    FaceRecService.getInstance().checkAndGetFaceidList();
+                    FaceRecServiceFactory.getFaceRecService().checkAllFacesID();
+                    FaceRecServiceFactory.getFaceRecService().checkAndGetFaceidList();
                 }
             }
             catch (Throwable e)

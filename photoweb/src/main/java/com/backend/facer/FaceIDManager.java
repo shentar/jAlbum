@@ -13,7 +13,7 @@ public class FaceIDManager
 
     private static final String FACEID_CONF_STR = "maxfaceid";
 
-    private long faceid = -1;
+    private volatile long faceid = -1;
 
     private FaceIDManager()
     {
