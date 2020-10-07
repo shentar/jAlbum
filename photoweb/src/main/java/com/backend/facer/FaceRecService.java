@@ -208,4 +208,14 @@ public class FaceRecService implements FaceRecServiceInterface {
         return fflist;
     }
 
+
+    public boolean deleteOneFile(String id) {
+        logger.info("unimplemented now!");
+        return true;
+    }
+
+    public boolean deleteOneFaceId(long id) {
+        logger.info("unimplemented now!");
+        return true;
+    }
 }

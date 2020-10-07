@@ -41,7 +41,7 @@ public class FaceClient {
     private synchronized static void initHttpclient() {
         if (httpClient == null) {
             String endPoint = AppConfig.getInstance().getFacerEndPoint();
-            int port = AppConfig.getInstance().getFacerPort();
+            int port = AppConfig.getInstance().getFacerDetectPort();
             httpClient = createHttpClient(MAX_CONNECTION, MAX_CONNECTION / 2, MAX_CONNECTION / 2,
                     endPoint, port);
         }

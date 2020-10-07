@@ -367,7 +367,9 @@ public class AppConfig
         if (0 == getFacerServiceType()) {
             return StringUtils.isNotBlank(getApiKey()) && StringUtils.isNotBlank(getSecret());
         } else {
-            return config.getProperty("Facer.service_host") != null && config.getProperty("Facer.service_port") != null;
+            return config.getProperty("Facer.service_host") != null
+                    && config.getProperty("Facer.detect_port") != null
+                    && config.getProperty("Facer.search_port") != null;
         }
     }
 
@@ -400,12 +402,16 @@ public class AppConfig
         return config.getString("Facer.service_host", "api-cn.faceplusplus.com");
     }
 
-    public int getFacerPort() {
-        return config.getInt("Facer.service_port", 443);
-    }
-
     public int getFacerServiceType() {
         // 0 for FACEPLUSPLUS
         return config.getInt("Facer.service_type", 0);
+    }
+
+    public int getFacerDetectPort() {
+        return config.getInt("Facer.detect_port", 443);
+    }
+
+    public int getFacerSearchPort() {
+        return config.getInt("Facer.search_port", 12547);
     }
 }

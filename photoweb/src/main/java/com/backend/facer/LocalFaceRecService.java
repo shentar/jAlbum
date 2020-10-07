@@ -9,6 +9,7 @@ import com.utils.conf.AppConfig;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.BasicHttpEntity;
 import org.apache.http.util.EntityUtils;
@@ -38,7 +39,7 @@ public class LocalFaceRecService extends FaceRecService implements FaceRecServic
         try {
             String url = String.format("http://%s:%d/api/detect",
                     AppConfig.getInstance().getFacerEndPoint(),
-                    AppConfig.getInstance().getFacerPort());
+                    AppConfig.getInstance().getFacerDetectPort());
             HttpPut req = new HttpPut(url);
             BasicHttpEntity entity = new BasicHttpEntity();
             entity.setContent(new FileInputStream(new File(fi.getPath())));
@@ -158,7 +159,7 @@ public class LocalFaceRecService extends FaceRecService implements FaceRecServic
         try {
             String url = String.format("http://%s:%d/api/search?facetoken=%s&max-distance=%s",
                     AppConfig.getInstance().getFacerEndPoint(),
-                    /*AppConfig.getInstance().getFacerPort()*/12547,
+                    AppConfig.getInstance().getFacerSearchPort(),
                     f.getFacetoken(),
                     "0.36");
             HttpPut req = new HttpPut(url);
@@ -265,6 +266,51 @@ public class LocalFaceRecService extends FaceRecService implements FaceRecServic
                     response.close();
                 } catch (IOException e) {
                     logger.warn("some error, ", e);
+                }
+            }
+        }
+    }
+
+    public boolean deleteOneFile(String id) {
+        List<Face> faces = FaceTableDao.getInstance().getFaceByEtag(id);
+        if (faces == null) {
+            return false;
+        }
+
+        deleteFaces(faces);
+        return true;
+    }
+
+    public boolean deleteOneFaceId(long id) {
+        List<Face> faces = FaceTableDao.getInstance().getFacesByID(id, false);
+        if (faces == null) {
+            return false;
+        }
+
+        deleteFaces(faces);
+        return true;
+    }
+
+    private void deleteFaces(List<Face> faces) {
+        for (Face f : faces) {
+            String url = String.format("http://%s:%d/api/delete?facetoken=%s",
+                    AppConfig.getInstance().getFacerEndPoint(),
+                    AppConfig.getInstance().getFacerSearchPort(),
+                    f.getFacetoken());
+            HttpDelete req = new HttpDelete(url);
+            FaceClient.config(req);
+            CloseableHttpResponse response = null;
+            try {
+                response = FaceClient.getHttpClient().execute(req);
+            } catch (IOException e) {
+                logger.warn("some error, ", e);
+            } finally {
+                if (response != null) {
+                    try {
+                        response.close();
+                    } catch (IOException e) {
+                        logger.warn("some error, ", e);
+                    }
                 }
             }
         }

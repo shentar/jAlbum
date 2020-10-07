@@ -10,4 +10,6 @@ public interface FaceRecServiceInterface {
     void checkOneFace(Face f);
     List<Face> getSortedFaces(long fid, int count, boolean needFileInfo);
     List<Face> checkAndGetFaceidList();
+    boolean deleteOneFile(String id);
+    boolean deleteOneFaceId(long id);
 }

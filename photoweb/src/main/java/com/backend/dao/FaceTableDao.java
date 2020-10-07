@@ -565,33 +565,47 @@ public class FaceTableDao extends AbstractRecordsStore {
         }
     }
 
-    public Face getFaceByEtag(FileInfo f) {
-        if (f == null) {
+    public void deleteFacesByID(long faceID) {
+        PreparedStatement prep = null;
+        lock.writeLock().lock();
+        try {
+            prep = conn.prepareStatement("delete from faces where faceid=?;");
+            prep.setLong(1, faceID);
+            prep.execute();
+        } catch (Exception e) {
+            logger.warn("caused by: ", e);
+        } finally {
+            closeResource(prep, null);
+            lock.writeLock().unlock();
+        }
+    }
+
+    public List<Face> getFaceByEtag(String id) {
+        if (id == null) {
             return null;
         }
-
+        List<Face> faces = new ArrayList<>();
         PreparedStatement prep = null;
         ResultSet res = null;
         lock.readLock().lock();
         try {
             prep = conn.prepareStatement("select * from faces where etag=?;");
-            prep.setString(1, f.getHash256());
+            prep.setString(1, id);
 
             res = prep.executeQuery();
 
-            if (res.next()) {
+            while (res.next()) {
                 Face face = getFaceFromTableRecord(res);
-                face.setFi(f);
-                return face;
+                faces.add(face);
             }
 
-            return null;
         } catch (Exception e) {
             logger.warn("caused by: ", e);
+            return null;
         } finally {
             closeResource(prep, res);
             lock.readLock().unlock();
         }
-        return null;
+        return faces;
     }
 }
