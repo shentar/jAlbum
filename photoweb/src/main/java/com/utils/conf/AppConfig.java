@@ -16,18 +16,8 @@ public class AppConfig {
     private static final Logger logger = LoggerFactory.getLogger(AppConfig.class);
 
     private static final String configFilePath = "jalbum.xml";
-
-    private static XMLConfiguration config;
-
     private static final AppConfig instance = new AppConfig();
-
-    private AppConfig() {
-
-    }
-
-    public static AppConfig getInstance() {
-        return instance;
-    }
+    private static XMLConfiguration config;
 
     static {
         try {
@@ -38,6 +28,14 @@ public class AppConfig {
         } catch (ConfigurationException e) {
             logger.warn("caused: ", e);
         }
+    }
+
+    private AppConfig() {
+
+    }
+
+    public static AppConfig getInstance() {
+        return instance;
     }
 
     public String getVersion(String defaultver) {
@@ -147,6 +145,10 @@ public class AppConfig {
 
     public int getMaxCountOfPicInOnePage(int defaultValue) {
         return config.getInt("maxpicsperonepage", defaultValue);
+    }
+
+    public int getMobileMaxCountOfPicInOnePage(int defaultValue) {
+        return config.getInt("mobilemaxpicsperonepage", defaultValue);
     }
 
     public boolean isAutoBackUp() {

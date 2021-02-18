@@ -98,11 +98,9 @@ public class HeadUtils {
     }
 
     public static int getMaxCountOfOnePage() {
-        if (isMobile()) {
-            return 9;
-        } else {
-            return AppConfig.getInstance().getMaxCountOfPicInOnePage(25);
-        }
+        return isMobile() ?
+                AppConfig.getInstance().getMobileMaxCountOfPicInOnePage(25) :
+                AppConfig.getInstance().getMaxCountOfPicInOnePage(25);
     }
 
     public static String judgeMIME(String filePath) {
@@ -193,8 +191,10 @@ public class HeadUtils {
     public static int judgeCountPerOnePage(HttpServletRequest req) {
         int count = 0;
         int maxCount = AppConfig.getInstance().getMaxCountOfPicInOnePage(25);
+        int mobileMaxCount = AppConfig.getInstance().getMobileMaxCountOfPicInOnePage(25);
+
         if (req == null) {
-            return maxCount;
+            return isMobile() ? mobileMaxCount : maxCount;
         }
 
         String countStr = req.getParameter("count");
@@ -202,20 +202,17 @@ public class HeadUtils {
             count = Integer.parseInt(countStr);
         }
 
-        if (count == 0 || count > maxCount) {
+        if (count == 0) {
             count = maxCount;
         }
 
-        if (count > 90) {
-            if (HeadUtils.isMobile()) {
-                count = 90;
+        if (isMobile()) {
+            if (count > maxCount) {
+                count = maxCount;
             }
-        }
-
-        boolean isvideo = HeadUtils.isVideo();
-        if (isvideo) {
-            if (count > 24) {
-                count = 24;
+        } else {
+            if (count > mobileMaxCount) {
+                count = mobileMaxCount;
             }
         }
 
