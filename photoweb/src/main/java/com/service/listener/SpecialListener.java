@@ -16,8 +16,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-public class SpecialListener implements ServletContextListener
-{
+public class SpecialListener implements ServletContextListener {
     private static Logger logger = LoggerFactory.getLogger(SpecialListener.class);
 
     private static Future<?> fFreshAllData = null;
@@ -28,22 +27,18 @@ public class SpecialListener implements ServletContextListener
 
     private static int lastBackUpDay = -1;
 
-    static
-    {
+    static {
         DOMConfigurator.configureAndWatch("log4j.xml", 6000);
         SqliteConnManger.getInstance().init();
     }
 
     @Override
-    public void contextDestroyed(ServletContextEvent arg0)
-    {
+    public void contextDestroyed(ServletContextEvent arg0) {
         logger.warn("began to stop the web service.");
-        if (fFreshAllData != null)
-        {
+        if (fFreshAllData != null) {
             fFreshAllData.cancel(true);
         }
-        if (fBackupScanTask != null)
-        {
+        if (fBackupScanTask != null) {
             fBackupScanTask.cancel(true);
         }
         FileTools.threadPool.shutdownNow();
@@ -52,27 +47,21 @@ public class SpecialListener implements ServletContextListener
     }
 
     @Override
-    public void contextInitialized(ServletContextEvent arg0)
-    {
+    public void contextInitialized(ServletContextEvent arg0) {
         logger.warn("start!");
         startBackGroundTask();
     }
 
-    private void startBackGroundTask()
-    {
+    private void startBackGroundTask() {
         // 启动时默认同步全盘一次。
         BackendScanner.getInstance().scheduleOneTask();
 
 
-        fBackupScanTask = new ScheduledThreadPoolExecutor(1).scheduleWithFixedDelay(new Runnable()
-        {
-            public void run()
-            {
+        fBackupScanTask = new ScheduledThreadPoolExecutor(1).scheduleWithFixedDelay(new Runnable() {
+            public void run() {
                 if (Calendar.getInstance().get(Calendar.DAY_OF_YEAR) != lastBackUpDay
-                        && Calendar.getInstance().get(Calendar.HOUR_OF_DAY) == HOUR_TO_BACKUP)
-                {        // 每天备份数据到远端云存储。
-                    if (AppConfig.getInstance().isAutoBackUp())
-                    {
+                        && Calendar.getInstance().get(Calendar.HOUR_OF_DAY) == HOUR_TO_BACKUP) {        // 每天备份数据到远端云存储。
+                    if (AppConfig.getInstance().isAutoBackUp()) {
                         BackendScanner.getInstance().scheduleOneBackupTask();
                         lastBackUpDay = Calendar.getInstance().get(Calendar.DAY_OF_YEAR);
                     }
@@ -82,16 +71,11 @@ public class SpecialListener implements ServletContextListener
 
 
         // 5秒检查是否需要刷新数据表。
-        fFreshAllData = new ScheduledThreadPoolExecutor(1).scheduleWithFixedDelay(new Runnable()
-        {
-            public void run()
-            {
-                try
-                {
+        fFreshAllData = new ScheduledThreadPoolExecutor(1).scheduleWithFixedDelay(new Runnable() {
+            public void run() {
+                try {
                     FreshAllData.getInstance().freshAll();
-                }
-                catch (Throwable e)
-                {
+                } catch (Throwable e) {
                     logger.error("caught: ", e);
                 }
             }

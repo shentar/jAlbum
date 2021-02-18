@@ -16,29 +16,24 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-public class AuthFilter extends AbstractFilter
-{
+public class AuthFilter extends AbstractFilter {
     private static final Logger logger = LoggerFactory.getLogger(AuthFilter.class);
 
     private static final String ORIGINAL_URI_KEY = "origuri";
 
     @Override
-    public void init(FilterConfig arg0) throws ServletException
-    {
+    public void init(FilterConfig arg0) throws ServletException {
 
     }
 
     @Override
-    protected boolean doFilterInner(HttpServletRequest httpreq, HttpServletResponse httpres)
-    {
-        if (!AppConfig.getInstance().needAccessAuth())
-        {
+    protected boolean doFilterInner(HttpServletRequest httpreq, HttpServletResponse httpres) {
+        if (!AppConfig.getInstance().needAccessAuth()) {
             logger.info("no need to auth access!");
             return true;
         }
 
-        if (StringUtils.equals(httpreq.getRemoteAddr(), "127.0.0.1"))
-        {
+        if (StringUtils.equals(httpreq.getRemoteAddr(), "127.0.0.1")) {
             logger.info("login from local host.");
             SystemProperties.add(SystemConstant.USER_LOGIN_STATUS, LoginStatus.LocalLoin);
             return true;
@@ -46,8 +41,7 @@ public class AuthFilter extends AbstractFilter
 
         String uri = httpreq.getRequestURI();
 
-        if (StringUtils.equals("/favicon.ico", uri) || StringUtils.equals("/album.apk", uri))
-        {
+        if (StringUtils.equals("/favicon.ico", uri) || StringUtils.equals("/album.apk", uri)) {
             return true;
         }
 
@@ -57,26 +51,20 @@ public class AuthFilter extends AbstractFilter
         String redirectLocation = "";
         String token = httpreq.getParameter("token");
 
-        switch (uri)
-        {
+        switch (uri) {
             case "/logon":
                 // 登录成功，则设置cookies，并返回原入口页。
-                if (StringUtils.isNotBlank(token) && TokenCache.getInstance().isSupper(token))
-                {
+                if (StringUtils.isNotBlank(token) && TokenCache.getInstance().isSupper(token)) {
                     loginStatus = LoginStatus.SuperLogin;
                     redirectLocation = (origUri == null ? "/" : origUri);
                     SystemProperties.add(SystemConstant.COOKIE_CONTENT, token);
                     HeadUtils.refreshCookie(httpres);
-                }
-                else if (StringUtils.isNotBlank(token) && TokenCache.getInstance().contains(token))
-                {
+                } else if (StringUtils.isNotBlank(token) && TokenCache.getInstance().contains(token)) {
                     loginStatus = LoginStatus.TokenLoin;
                     redirectLocation = (origUri == null ? "/" : origUri);
                     SystemProperties.add(SystemConstant.COOKIE_CONTENT, token);
                     HeadUtils.refreshCookie(httpres);
-                }
-                else
-                {
+                } else {
                     logger.warn("token error: " + token);
                     loginStatus = LoginStatus.TokenError;
                     redirectLocation = "/login" + (StringUtils.isBlank(origUri) ? "" : "?"
@@ -89,30 +77,23 @@ public class AuthFilter extends AbstractFilter
                 break;
 
             default:
-                if (cookies == null || cookies.length == 0)
-                {
+                if (cookies == null || cookies.length == 0) {
                     loginStatus = LoginStatus.Unlogin;
                     redirectLocation =
                             "/login" + "?" + ORIGINAL_URI_KEY + "=" + httpreq.getRequestURI();
-                }
-                else
-                {
+                } else {
                     // 正确登录，则跳转主页，并刷新过期时间。
                     // 登录信息过期，或者cookies不对，则删除cookies，并跳转到登录页面。
-                    for (Cookie c : cookies)
-                    {
-                        if (StringUtils.equalsIgnoreCase(HeadUtils.getCookieName(), c.getName()))
-                        {
+                    for (Cookie c : cookies) {
+                        if (StringUtils.equalsIgnoreCase(HeadUtils.getCookieName(), c.getName())) {
                             token = c.getValue();
-                            if (TokenCache.getInstance().isSupper(token))
-                            {
+                            if (TokenCache.getInstance().isSupper(token)) {
                                 SystemProperties.add(SystemConstant.COOKIE_CONTENT, token);
                                 loginStatus = LoginStatus.SuperLogin;
                                 break;
                             }
 
-                            if (TokenCache.getInstance().contains(token))
-                            {
+                            if (TokenCache.getInstance().contains(token)) {
                                 SystemProperties.add(SystemConstant.COOKIE_CONTENT, token);
                                 loginStatus = LoginStatus.CookiesLoin;
                                 break;
@@ -120,8 +101,7 @@ public class AuthFilter extends AbstractFilter
                         }
                     }
 
-                    if (loginStatus.equals(LoginStatus.Unlogin))
-                    {
+                    if (loginStatus.equals(LoginStatus.Unlogin)) {
                         logger.warn("cookies login error: " + token);
                         loginStatus = LoginStatus.CookiesError;
                         redirectLocation =
@@ -132,8 +112,7 @@ public class AuthFilter extends AbstractFilter
 
         SystemProperties.add(SystemConstant.USER_LOGIN_STATUS, loginStatus);
         boolean passed = false;
-        switch (loginStatus)
-        {
+        switch (loginStatus) {
             case WaitLogin:
                 displayLogin(httpres, httpreq);
                 break;
@@ -143,10 +122,8 @@ public class AuthFilter extends AbstractFilter
                 passed = true;
                 break;
             case CookiesError:
-                for (Cookie ctmp : cookies)
-                {
-                    if (StringUtils.equalsIgnoreCase(ctmp.getName(), HeadUtils.getCookieName()))
-                    {
+                for (Cookie ctmp : cookies) {
+                    if (StringUtils.equalsIgnoreCase(ctmp.getName(), HeadUtils.getCookieName())) {
                         ctmp.setMaxAge(0);
                         httpres.addCookie(ctmp);
                     }
@@ -159,8 +136,7 @@ public class AuthFilter extends AbstractFilter
                 break;
         }
 
-        if (StringUtils.isNotBlank(redirectLocation))
-        {
+        if (StringUtils.isNotBlank(redirectLocation)) {
             goToUrl(httpres, redirectLocation);
             passed = false;
         }
@@ -168,11 +144,9 @@ public class AuthFilter extends AbstractFilter
         return passed;
     }
 
-    private void displayLogin(HttpServletResponse httpres, HttpServletRequest httpreq)
-    {
+    private void displayLogin(HttpServletResponse httpres, HttpServletRequest httpreq) {
         httpres.setStatus(200);
-        try
-        {
+        try {
             String origUri = httpreq.getParameter(ORIGINAL_URI_KEY);
             String hh = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" "
                     + "\"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">"
@@ -187,21 +161,18 @@ public class AuthFilter extends AbstractFilter
                     + "window.location.replace('logon?token='+content" + (
                     StringUtils.isBlank(origUri) ? "" : "+'&origuri=" + origUri + "'")
                     + ");}</script>" + GenerateHTML.getGAStr() + (!HeadUtils.isAPK()
-                                                                  ? "<br/><br/><a href=\"/album.apk\">下载Android客户端</a>"
-                                                                  : "") + "</body></html>";
+                    ? "<br/><br/><a href=\"/album.apk\">下载Android客户端</a>"
+                    : "") + "</body></html>";
             httpres.setHeader("Content-type", "text/html;charset=UTF-8");
             httpres.getWriter().write(hh);
             httpres.getWriter().close();
-        }
-        catch (IOException e)
-        {
+        } catch (IOException e) {
             logger.warn("error occured: ", e);
         }
 
     }
 
-    private void goToUrl(HttpServletResponse res, String location)
-    {
+    private void goToUrl(HttpServletResponse res, String location) {
         res.setHeader("Location", location);
         res.setStatus(307);
     }

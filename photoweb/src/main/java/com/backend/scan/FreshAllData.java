@@ -9,8 +9,7 @@ import com.utils.conf.AppConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class FreshAllData
-{
+public class FreshAllData {
     private static final Logger logger = LoggerFactory.getLogger(FreshAllData.class);
 
     private static final long IDLE_REFRESH_INTERVAL = AppConfig.getInstance()
@@ -27,21 +26,17 @@ public class FreshAllData
 
     private long lastFreshTime = System.currentTimeMillis();
 
-    private FreshAllData()
-    {
+    private FreshAllData() {
     }
 
-    public static FreshAllData getInstance()
-    {
+    public static FreshAllData getInstance() {
         return instance;
     }
 
-    public void freshAll()
-    {
+    public void freshAll() {
         boolean needFresh = RefreshFlag.getInstance().getAndSet(false);
 
-        if (needFresh)
-        {
+        if (needFresh) {
             lastEventTime = System.currentTimeMillis();
         }
 
@@ -49,15 +44,13 @@ public class FreshAllData
 
         if (firstTime || lastEventTime != 0
                 && (System.currentTimeMillis() - lastEventTime >= BUSY_REFRESH_INTERVAL
-                        || System.currentTimeMillis() - lastFreshTime >= IDLE_REFRESH_INTERVAL))
-        {
+                || System.currentTimeMillis() - lastFreshTime >= IDLE_REFRESH_INTERVAL)) {
             doRefresh();
             firstTime = false;
         }
     }
 
-    private void doRefresh()
-    {
+    private void doRefresh() {
         logger.info("start to refresh all tables: {}", this);
 
         // 剔除重复照片。
@@ -79,8 +72,7 @@ public class FreshAllData
         lastEventTime = 0;
     }
 
-    public String toString()
-    {
+    public String toString() {
         return String.format("[lastEventTime: %s, lastFreshTime: %s]", "" + lastEventTime,
                 "" + lastFreshTime);
     }

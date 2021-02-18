@@ -15,17 +15,21 @@ import javax.imageio.stream.ImageInputStream;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
-public class ExifCreator
-{
+public class ExifCreator {
 
     private static final Logger logger = LoggerFactory.getLogger(ExifCreator.class);
 
-    public static void addExifDate(String[] args) throws Exception
-    {
-        if (args.length != 3)
-        {
+    public static void addExifDate(String[] args) throws Exception {
+        if (args.length != 3) {
             logger.warn("Usage: java LLJTranTutorial <inputFile> <outputFile>");
             return;
         }
@@ -51,12 +55,10 @@ public class ExifCreator
 
         // Check llj for errors
         String msg = llj.getErrorMsg();
-        if (msg != null)
-        {
+        if (msg != null) {
             logger.warn("Error in LLJTran While Loading Image: " + msg);
             Exception e = llj.getException();
-            if (e != null)
-            {
+            if (e != null) {
                 logger.warn("Got an Exception, throwing it..");
                 throw e;
             }
@@ -67,8 +69,7 @@ public class ExifCreator
         // print a message and exit.
         @SuppressWarnings("rawtypes")
         AbstractImageInfo imageInfo = llj.getImageInfo();
-        if (imageInfo.getThumbnailLength() > 0)
-        {
+        if (imageInfo.getThumbnailLength() > 0) {
             logger.info("Image already has a Thumbnail. Exitting.." + args[0]);
             return;
             // System.exit(1);
@@ -76,8 +77,7 @@ public class ExifCreator
 
         // 3. If the Image does not have an Exif Header create a dummy Exif
         // Header
-        if (!(imageInfo instanceof Exif))
-        {
+        if (!(imageInfo instanceof Exif)) {
             logger.info("Adding a Dummy Exif Header");
             llj.addAppx(LLJTran.dummyExifHeader, 0, LLJTran.dummyExifHeader.length, true);
             imageInfo = llj.getImageInfo(); // This would have changed
@@ -97,8 +97,7 @@ public class ExifCreator
 
             int imageWidth = llj.getWidth();
             int imageHeight = llj.getHeight();
-            if (imageWidth > 0 && imageHeight > 0)
-            {
+            if (imageWidth > 0 && imageHeight > 0) {
                 entry = exif.getTagValue(Exif.EXIFIMAGEWIDTH, true);
                 if (entry != null)
                     entry.setValue(0, imageWidth);
@@ -133,8 +132,7 @@ public class ExifCreator
      * InputStream to a full size image. The full size image is read and scaled
      * to a Thumbnail size using Java API.
      */
-    private static byte[] getThumbnailImage(InputStream ip) throws IOException
-    {
+    private static byte[] getThumbnailImage(InputStream ip) throws IOException {
         ImageReader reader;
         ImageInputStream iis = ImageIO.createImageInputStream(ip);
         reader = ImageIO.getImageReaders(iis).next();
@@ -147,8 +145,7 @@ public class ExifCreator
         int t, longer, shorter;
         longer = image.getWidth();
         shorter = image.getHeight();
-        if (shorter > longer)
-        {
+        if (shorter > longer) {
             t = longer;
             longer = shorter;
             shorter = t;

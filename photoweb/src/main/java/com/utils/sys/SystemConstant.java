@@ -1,7 +1,6 @@
 package com.utils.sys;
 
-public class SystemConstant
-{
+public class SystemConstant {
     public static final String DEFAULT_LOG_VALUE = "-";
 
     public static final String REQUEST_ID_HEADER = "Request-ID";

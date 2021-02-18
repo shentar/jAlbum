@@ -25,29 +25,28 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 @Produces(value = {"text/html", "application/octet-stream"})
-public class RootWebService extends HttpServlet
-{
+public class RootWebService extends HttpServlet {
     private static final Logger logger = LoggerFactory.getLogger(RootWebService.class);
 
     private static final long serialVersionUID = -7748065720779404006L;
 
     @GET
     @Path("/statistics")
-    public Response statistics(@Context HttpServletRequest req, @Context HttpServletResponse res)
-    {
+    public Response statistics(@Context HttpServletRequest req, @Context HttpServletResponse res) {
         ResponseBuilder builder;
 
-        if (!HeadUtils.isSuperLogin() && !HeadUtils.isLocalLogin())
-        {
+        if (!HeadUtils.isSuperLogin() && !HeadUtils.isLocalLogin()) {
             builder = Response.status(403);
             builder.entity("Only Local login or Administrator login allowed to do this!");
-        }
-        else
-        {
+        } else {
             long allfilecount =
                     BaseSqliteStore.getInstance().countTables(BaseSqliteStore.tableName);
             long allphotocount =
@@ -60,8 +59,7 @@ public class RootWebService extends HttpServlet
                     .append("</td></tr>");
             sb.append("<tr><td>Video Count:</td><td>").append(allvideocount).append("</td></tr>");
             BackupedFilesDao bd = S3ServiceFactory.getBackUpDao();
-            if (bd != null)
-            {
+            if (bd != null) {
                 long allBackedCount = bd.countTables(bd.getBackupedTableName());
                 sb.append("<tr><td>Backup Count:</td><td>").append(allBackedCount)
                         .append("</td></tr>");
@@ -79,25 +77,18 @@ public class RootWebService extends HttpServlet
 
     @GET
     @Path("/flushnow")
-    public Response flushNow(@Context HttpServletRequest req, @Context HttpServletResponse res)
-    {
+    public Response flushNow(@Context HttpServletRequest req, @Context HttpServletResponse res) {
         String message;
         ResponseBuilder builder;
 
-        if (!HeadUtils.isSuperLogin() && !HeadUtils.isLocalLogin())
-        {
+        if (!HeadUtils.isSuperLogin() && !HeadUtils.isLocalLogin()) {
             message = "Only Local login or Administrator login allowed to do this!";
             builder = Response.status(403);
             builder.entity(message);
-        }
-        else
-        {
-            if (BackendScanner.getInstance().scheduleOneTask())
-            {
+        } else {
+            if (BackendScanner.getInstance().scheduleOneTask()) {
                 message = "The refresh task was submitted successfully.";
-            }
-            else
-            {
+            } else {
                 message = "The refresh task is in progress!";
             }
             builder = Response.ok(message);
@@ -108,25 +99,18 @@ public class RootWebService extends HttpServlet
 
     @GET
     @Path("/syncnow")
-    public Response syncNow(@Context HttpServletRequest req, @Context HttpServletResponse res)
-    {
+    public Response syncNow(@Context HttpServletRequest req, @Context HttpServletResponse res) {
         String message;
         ResponseBuilder builder;
 
-        if (!HeadUtils.isSuperLogin() && !HeadUtils.isLocalLogin())
-        {
+        if (!HeadUtils.isSuperLogin() && !HeadUtils.isLocalLogin()) {
             message = "Only Local login or Administrator login allowed to do this!";
             builder = Response.status(403);
             builder.entity(message);
-        }
-        else
-        {
-            if (BackendScanner.getInstance().scheduleOneBackupTask())
-            {
+        } else {
+            if (BackendScanner.getInstance().scheduleOneBackupTask()) {
                 message = "The Sync task was submitted successfully.";
-            }
-            else
-            {
+            } else {
                 message = "The Sync task is in progress!";
             }
             builder = Response.ok(message);
@@ -138,20 +122,16 @@ public class RootWebService extends HttpServlet
     @GET
     @Path("/favicon.ico")
     public Response getFavicon(@Context HttpServletRequest req,
-                               @Context HttpServletResponse response)
-    {
+                               @Context HttpServletResponse response) {
         logger.debug("getFavicon in!");
         ResponseBuilder builder = Response.ok();
-        try
-        {
+        try {
             FileInputStream fp = new FileInputStream(new File("favicon.ico"));
             builder.entity(fp);
             builder.header("Content-type", "image/x-icon");
             HeadUtils.setExpiredTime(builder);
             logger.debug("getFavicon out!");
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             logger.error("catch some exception.", e);
         }
 
@@ -160,21 +140,17 @@ public class RootWebService extends HttpServlet
 
     @GET
     @Path("/album.apk")
-    public Response getAPK(@Context HttpServletRequest req, @Context HttpServletResponse response)
-    {
+    public Response getAPK(@Context HttpServletRequest req, @Context HttpServletResponse response) {
         logger.debug("getAPK in!");
         ResponseBuilder builder = Response.ok();
-        try
-        {
+        try {
             FileInputStream fp =
                     new FileInputStream(new File("client" + File.separator + "album.apk"));
             builder.entity(fp);
             builder.header("Content-type", "application/vnd.android.package-archive");
             HeadUtils.setExpiredTime(builder);
             logger.debug("getAPK out!");
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             logger.error("catch some exception.", e);
         }
 
@@ -184,28 +160,21 @@ public class RootWebService extends HttpServlet
     @GET
     @Path("/js/{file}")
     public Response getJSFile(@PathParam("file") String file, @Context HttpServletRequest req,
-                              @Context HttpServletResponse response)
-    {
+                              @Context HttpServletResponse response) {
         logger.debug("get js file in!");
         ResponseBuilder builder = Response.ok();
-        try
-        {
+        try {
             File filepath = new File("js" + File.separator + file);
-            if (filepath.isFile())
-            {
+            if (filepath.isFile()) {
                 BufferedInputStream fp = new BufferedInputStream(new FileInputStream(filepath));
                 builder.entity(fp);
                 builder.header("Content-type", HeadUtils.judgeMIME(file));
                 HeadUtils.setExpiredTime(builder);
                 logger.debug("getFavicon out!");
-            }
-            else
-            {
+            } else {
                 builder.status(404);
             }
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             logger.error("catch some exception.", e);
         }
 
@@ -215,20 +184,16 @@ public class RootWebService extends HttpServlet
     @GET
     @Path("/")
     public Response getMsg(@Context HttpServletRequest req, @Context HttpServletResponse response)
-            throws IOException
-    {
+            throws IOException {
         ResponseBuilder builder = Response.status(200);
         String body = GenerateHTML.genIndexPage(getFileList(req),
-                                                (HeadUtils.isMobile() || HeadUtils.isVideo()) ? 3
-                                                                                              : 5,
-                                                true);
-        if (StringUtils.isNotBlank(body))
-        {
+                (HeadUtils.isMobile() || HeadUtils.isVideo()) ? 3
+                        : 5,
+                true);
+        if (StringUtils.isNotBlank(body)) {
             builder.entity(body);
             builder.header("Content-type", "text/html");
-        }
-        else
-        {
+        } else {
             builder.entity("404 not found!");
             builder.status(404);
         }
@@ -238,8 +203,7 @@ public class RootWebService extends HttpServlet
         return builder.build();
     }
 
-    private List<?> getFileList(HttpServletRequest req)
-    {
+    private List<?> getFileList(HttpServletRequest req) {
         List<?> lst;
 
         int count = HeadUtils.judgeCountPerOnePage(req);
@@ -247,46 +211,33 @@ public class RootWebService extends HttpServlet
         String prev = req.getParameter("prev");
         String id = null;
         boolean isnext = true;
-        if (StringUtils.isNotBlank(next))
-        {
+        if (StringUtils.isNotBlank(next)) {
             id = next;
-        }
-        else if (StringUtils.isNotBlank(prev))
-        {
+        } else if (StringUtils.isNotBlank(prev)) {
             id = prev;
             isnext = false;
         }
 
-        if (HeadUtils.isFaces())
-        {
+        if (HeadUtils.isFaces()) {
             lst = FaceTableDao.getInstance().getNextNineFileByHashStr(id, count, isnext);
-            if (lst != null)
-            {
-                for (Object f : lst)
-                {
+            if (lst != null) {
+                for (Object f : lst) {
                     ((Face) f).setFi(UniqPhotosStore.getInstance()
-                                             .getOneFileByHashStr(((Face) f).getEtag()));
+                            .getOneFileByHashStr(((Face) f).getEtag()));
                 }
             }
-        }
-        else if (HeadUtils.isNoFaces())
-        {
+        } else if (HeadUtils.isNoFaces()) {
             lst = FaceTableDao.getInstance().getNextNoFacesPics(id, count, isnext);
-            if (lst != null)
-            {
-                for (Object f : lst)
-                {
+            if (lst != null) {
+                for (Object f : lst) {
                     ((Face) f).setFi(UniqPhotosStore.getInstance()
-                                             .getOneFileByHashStr(((Face) f).getEtag()));
+                            .getOneFileByHashStr(((Face) f).getEtag()));
                 }
             }
-        }
-        else
-        {
+        } else {
             lst = UniqPhotosStore.getInstance()
                     .getNextNineFileByHashStr(id, count, isnext, HeadUtils.isVideo());
-            if ((lst == null || lst.isEmpty()) && id != null)
-            {
+            if ((lst == null || lst.isEmpty()) && id != null) {
                 lst = UniqPhotosStore.getInstance()
                         .getNextNineFileByHashStr(null, count, isnext, HeadUtils.isVideo());
             }
@@ -296,35 +247,26 @@ public class RootWebService extends HttpServlet
     }
 
     @Path("/faces/")
-    public Object getFaces()
-    {
+    public Object getFaces() {
         return new FacesService(-1);
     }
 
     @Path("/faces/{id}")
-    public Object getFaceFiles(@PathParam("id") String id)
-    {
-        try
-        {
+    public Object getFaceFiles(@PathParam("id") String id) {
+        try {
             long faceid = Long.parseLong(id);
             return new FacesService(faceid);
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             logger.warn("caused by: ", e);
         }
         return new ErrorResource();
     }
 
     @Path("/facetoken/{id}")
-    public Object getFace(@PathParam("id") String id)
-    {
-        if (StringUtils.isNotBlank(id))
-        {
+    public Object getFace(@PathParam("id") String id) {
+        if (StringUtils.isNotBlank(id)) {
             return new FacesTokenService(id);
-        }
-        else
-        {
+        } else {
             return new ErrorResource();
         }
     }
@@ -332,14 +274,10 @@ public class RootWebService extends HttpServlet
     @Path("/photos/{id}")
     public Object getPhoto(@PathParam("id") String id, @Context HttpServletRequest req,
                            @Context HttpServletResponse response, @Context HttpHeaders headers,
-                           InputStream body)
-    {
-        if (StringUtils.isNotBlank(id))
-        {
+                           InputStream body) {
+        if (StringUtils.isNotBlank(id)) {
             return new ObjectService(id);
-        }
-        else
-        {
+        } else {
             return new ErrorResource();
         }
     }
@@ -347,14 +285,10 @@ public class RootWebService extends HttpServlet
     @Path("/year/{year}")
     public Object getYearView(@PathParam("year") String year, @Context HttpServletRequest req,
                               @Context HttpServletResponse response, @Context HttpHeaders headers,
-                              InputStream body)
-    {
-        if (StringUtils.isNotBlank(year))
-        {
+                              InputStream body) {
+        if (StringUtils.isNotBlank(year)) {
             return new YearService(year);
-        }
-        else
-        {
+        } else {
             return new ErrorResource();
         }
     }
@@ -362,14 +296,10 @@ public class RootWebService extends HttpServlet
     @Path("/month/{month}")
     public Object getMonthView(@PathParam("month") String month, @Context HttpServletRequest req,
                                @Context HttpServletResponse response, @Context HttpHeaders headers,
-                               InputStream body)
-    {
-        if (StringUtils.isNotBlank(month) && month.length() == 6)
-        {
+                               InputStream body) {
+        if (StringUtils.isNotBlank(month) && month.length() == 6) {
             return new MonthService(month);
-        }
-        else
-        {
+        } else {
             return new ErrorResource();
         }
     }
@@ -377,14 +307,10 @@ public class RootWebService extends HttpServlet
     @Path("/day/{day}")
     public Object getDayView(@PathParam("day") String day, @Context HttpServletRequest req,
                              @Context HttpServletResponse response, @Context HttpHeaders headers,
-                             InputStream body)
-    {
-        if (StringUtils.isNotBlank(day) && day.length() == 8)
-        {
+                             InputStream body) {
+        if (StringUtils.isNotBlank(day) && day.length() == 8) {
             return new DayService(day);
-        }
-        else
-        {
+        } else {
             return new ErrorResource();
         }
     }

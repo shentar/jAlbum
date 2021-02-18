@@ -2,8 +2,7 @@ package com.utils.web;
 
 import java.util.Random;
 
-public class StringTools
-{
+public class StringTools {
     private static final String BASE = "abcdefghijklmnopqrstuvwxyz" + "0123456789"
             + "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
@@ -13,20 +12,16 @@ public class StringTools
 
     private static Random random = new Random();
 
-    public static String getRandomString(int length)
-    {
-        if (length < 0)
-        {
+    public static String getRandomString(int length) {
+        if (length < 0) {
             return "";
         }
 
         StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < length; i++)
-        {
+        for (int i = 0; i < length; i++) {
             int number;
 
-            synchronized (lock)
-            {
+            synchronized (lock) {
                 number = random.nextInt(BASE_LENGTH);
             }
 

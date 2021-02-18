@@ -15,53 +15,41 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import java.util.TreeMap;
 
-public class MonthService
-{
+public class MonthService {
     private static final Logger logger = LoggerFactory.getLogger(MonthService.class);
 
     private String month;
 
-    public MonthService(String month)
-    {
+    public MonthService(String month) {
         this.setMonth(month);
     }
 
     @GET
     public Response getMonthIndex(@Context HttpServletRequest req,
-            @Context HttpServletResponse response)
-    {
+                                  @Context HttpServletResponse response) {
         ResponseBuilder builder = Response.status(200);
         TreeMap<String, TreeMap<String, TreeMap<String, DateRecords>>> allrecords = DateTableDao
                 .getInstance().getAllDateRecord();
         String year = month.substring(0, 4);
         String smonth = month.substring(4, 6);
         TreeMap<String, TreeMap<String, DateRecords>> currentyear = allrecords.get(year);
-        if (currentyear == null || currentyear.isEmpty())
-        {
+        if (currentyear == null || currentyear.isEmpty()) {
             logger.info("there is no photos in this year: " + year);
             builder.status(404);
             builder.entity(GenerateHTML.generate404Notfound());
             return builder.build();
-        }
-        else
-        {
+        } else {
             String prevMonth = currentyear.lowerKey(smonth);
-            if (StringUtils.isNotBlank(prevMonth))
-            {
+            if (StringUtils.isNotBlank(prevMonth)) {
                 prevMonth = year + prevMonth;
-            }
-            else
-            {
+            } else {
                 prevMonth = null;
             }
 
             String nextMonth = currentyear.higherKey(smonth);
-            if (StringUtils.isNotBlank(nextMonth))
-            {
+            if (StringUtils.isNotBlank(nextMonth)) {
                 nextMonth = year + nextMonth;
-            }
-            else
-            {
+            } else {
                 nextMonth = null;
             }
 
@@ -71,13 +59,11 @@ public class MonthService
         }
     }
 
-    public String getMonth()
-    {
+    public String getMonth() {
         return month;
     }
 
-    public void setMonth(String month)
-    {
+    public void setMonth(String month) {
         this.month = month;
     }
 }

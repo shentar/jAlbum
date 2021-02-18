@@ -13,21 +13,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class FaceDetectClient
-{
+public class FaceDetectClient {
     private static final Logger logger = LoggerFactory.getLogger(FaceDetectClient.class);
 
-    public static List<Face> detectFace(FileInfo fi)
-    {
-        if (fi == null)
-        {
+    public static List<Face> detectFace(FileInfo fi) {
+        if (fi == null) {
             return null;
         }
 
         Map<String, Object> mp = new HashMap<>();
         Object file = FacerUtils.getFileForDetectFaces(fi);
-        if (file == null)
-        {
+        if (file == null) {
             logger.warn("can not get the file now.");
             return null;
         }
@@ -39,10 +35,8 @@ public class FaceDetectClient
         return parseDetectResult(fi, result);
     }
 
-    private static List<Face> parseDetectResult(FileInfo fi, String result)
-    {
-        if (StringUtils.isBlank(result))
-        {
+    private static List<Face> parseDetectResult(FileInfo fi, String result) {
+        if (StringUtils.isBlank(result)) {
             return null;
         }
 
@@ -50,59 +44,47 @@ public class FaceDetectClient
         JsonParser parser = new JsonParser();
         JsonObject jr = (JsonObject) parser.parse(result);
         JsonArray ja = jr.getAsJsonArray("faces");
-        if (ja == null || ja.size() == 0)
-        {
+        if (ja == null || ja.size() == 0) {
             return null;
         }
 
         List<Face> ls = new ArrayList<>();
-        for (int i = 0; i != ja.size(); i++)
-        {
+        for (int i = 0; i != ja.size(); i++) {
             JsonObject je = ja.get(i).getAsJsonObject();
             String token = je.get(FacerUtils.FACE_TOKEN).getAsString();
 
-            if (StringUtils.isNotBlank(token))
-            {
+            if (StringUtils.isNotBlank(token)) {
                 Face face = new Face();
                 face.setFi(fi);
                 face.setEtag(fi.getHash256());
                 face.setFacetoken(token);
 
                 JsonObject jo = je.getAsJsonObject("face_rectangle");
-                if (jo != null)
-                {
+                if (jo != null) {
                     face.setPos(String.format("%d,%d,%d,%d", jo.get("width").getAsInt(),
                             jo.get("height").getAsInt(), jo.get("left").getAsInt(),
                             jo.get("top").getAsInt()));
                 }
 
                 jo = je.getAsJsonObject("attributes");
-                if (jo != null)
-                {
+                if (jo != null) {
                     JsonObject age = jo.getAsJsonObject("age");
-                    if (age != null)
-                    {
+                    if (age != null) {
                         face.setAge(age.get("value").getAsString());
                     }
 
                     JsonObject facequality = jo.getAsJsonObject("facequality");
-                    if (facequality != null)
-                    {
+                    if (facequality != null) {
                         face.setQuality(facequality.get("value").getAsString());
-                    }
-                    else
-                    {
+                    } else {
                         face.setQuality("0");
                     }
 
                     JsonObject gender = jo.getAsJsonObject("gender");
-                    if (gender != null)
-                    {
+                    if (gender != null) {
                         face.setGender(gender.get("value").getAsString());
                     }
-                }
-                else
-                {
+                } else {
                     face.setQuality("0");
                 }
 

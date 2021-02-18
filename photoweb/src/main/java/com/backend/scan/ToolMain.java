@@ -18,8 +18,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
-public class ToolMain
-{
+public class ToolMain {
     private static final Logger logger = LoggerFactory.getLogger(ToolMain.class);
 
     private static BaseSqliteStore metaDataStore = BaseSqliteStore.getInstance();
@@ -28,14 +27,10 @@ public class ToolMain
 
     private static boolean firstRun = true;
 
-    public static void scanfiles()
-    {
-        synchronized (ToolMain.class)
-        {
-            try
-            {
-                if (!firstRun)
-                {
+    public static void scanfiles() {
+        synchronized (ToolMain.class) {
+            try {
+                if (!firstRun) {
                     return;
                 }
 
@@ -45,15 +40,13 @@ public class ToolMain
                 PerformanceStatistics.getInstance().reset();
                 filecount.set(0);
                 logger.warn("start to scan the filesystem which specified by the config file: "
-                                    + AppConfig.getInstance().getInputDir());
-                for (String dir : AppConfig.getInstance().getInputDir())
-                {
+                        + AppConfig.getInstance().getInputDir());
+                for (String dir : AppConfig.getInstance().getInputDir()) {
                     mapAllfiles(new File(dir), excludeDirs);
                 }
 
                 logger.warn("all file count is " + filecount.get());
-                while (filecount.get() != 0)
-                {
+                while (filecount.get() != 0) {
                     Thread.sleep(100);
                 }
                 PerformanceStatistics.getInstance().printPerformanceLog(System.currentTimeMillis());
@@ -64,22 +57,16 @@ public class ToolMain
                 logger.warn("the exclude dirs are: " + excludeDirs);
                 metaDataStore.scanAllRecords(excludeDirs);
                 logger.warn("end to scan the base table.");
-            }
-            catch (Throwable th)
-            {
+            } catch (Throwable th) {
                 logger.error("caught: ", th);
             }
         }
     }
 
-    public static void scanMetaTableForBackup()
-    {
-        synchronized (ToolMain.class)
-        {
-            try
-            {
-                if (!firstRun)
-                {
+    public static void scanMetaTableForBackup() {
+        synchronized (ToolMain.class) {
+            try {
+                if (!firstRun) {
                     return;
                 }
 
@@ -89,141 +76,107 @@ public class ToolMain
                 logger.warn("the exclude dirs are: " + excludeDirs);
                 metaDataStore.scanAllRecords(excludeDirs, true);
                 logger.warn("end to scan the base table.");
-            }
-            catch (Throwable th)
-            {
+            } catch (Throwable th) {
                 logger.error("caught: ", th);
             }
         }
     }
 
-    public static void mapAllfiles(final File f, List<String> excludeDirs)
-    {
-        if (f == null || excludeDirs == null)
-        {
+    public static void mapAllfiles(final File f, List<String> excludeDirs) {
+        if (f == null || excludeDirs == null) {
             return;
         }
 
-        if (f.isFile())
-        {
+        if (f.isFile()) {
             logger.debug("find a file: " + f);
             filecount.incrementAndGet();
-            FileTools.threadPool.submit(new Runnable()
-            {
-                public void run()
-                {
+            FileTools.threadPool.submit(new Runnable() {
+                public void run() {
                     checkOneFile(f);
                     filecount.decrementAndGet();
                 }
             });
-        }
-        else
-        {
+        } else {
             String fpath = null;
-            try
-            {
+            try {
                 fpath = f.getCanonicalPath();
-            }
-            catch (Exception e)
-            {
+            } catch (Exception e) {
                 logger.warn("caught: ", e);
             }
 
-            if (StringUtils.isBlank(fpath))
-            {
+            if (StringUtils.isBlank(fpath)) {
                 return;
             }
 
-            for (String s : excludeDirs)
-            {
-                if (fpath.startsWith(s))
-                {
+            for (String s : excludeDirs) {
+                if (fpath.startsWith(s)) {
                     logger.info("this folder is execluded: " + fpath);
                     return;
                 }
             }
 
             File[] files = f.listFiles();
-            if (files == null)
-            {
+            if (files == null) {
                 logger.info("some empty folder: " + fpath);
                 return;
             }
 
-            for (File cf : files)
-            {
+            for (File cf : files) {
                 mapAllfiles(cf, excludeDirs);
             }
         }
 
     }
 
-    public static void checkOneFile(File f)
-    {
-        if (f == null)
-        {
+    public static void checkOneFile(File f) {
+        if (f == null) {
             return;
         }
 
-        try
-        {
-            synchronized (f.getCanonicalPath().intern())
-            {
+        try {
+            synchronized (f.getCanonicalPath().intern()) {
                 doCheckOneFile(f);
             }
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             logger.error("caught: ", e);
         }
     }
 
-    private static void doCheckOneFile(File f) throws IOException, NoSuchAlgorithmException
-    {
+    private static void doCheckOneFile(File f) throws IOException, NoSuchAlgorithmException {
         boolean isCare = false;
-        for (String s : AppConfig.getInstance().getFileSuffix())
-        {
+        for (String s : AppConfig.getInstance().getFileSuffix()) {
             String fullPath = f.getCanonicalPath();
-            if (f.getName().toLowerCase().endsWith(s))
-            {
-                if (!FileTools.checkFileLengthValid(fullPath))
-                {
+            if (f.getName().toLowerCase().endsWith(s)) {
+                if (!FileTools.checkFileLengthValid(fullPath)) {
                     logger.info("the size is too small or too big. "
-                                        + "it maybe not a normal photo file: " + f);
+                            + "it maybe not a normal photo file: " + f);
                     break;
                 }
 
                 isCare = true;
 
                 // 将mov，mkv，avi文件转码为mp4文件。
-                if (VideoTransCodingTool.needConvert(fullPath))
-                {
+                if (VideoTransCodingTool.needConvert(fullPath)) {
                     fullPath = VideoTransCodingTool.checkAndConvertToMP4(fullPath);
-                    if (StringUtils.isBlank(fullPath))
-                    {
+                    if (StringUtils.isBlank(fullPath)) {
                         logger.warn("convert failed: {}", f.getCanonicalPath());
                         return;
                     }
                 }
 
-                if (PicStatus.EXIST == metaDataStore.checkIfAlreadyExist(new File(fullPath)))
-                {
+                if (PicStatus.EXIST == metaDataStore.checkIfAlreadyExist(new File(fullPath))) {
                     break;
                 }
 
                 FileInfo fi = MediaTool.genFileInfo(fullPath);
-                if (fi == null)
-                {
+                if (fi == null) {
                     logger.warn("error file" + fullPath);
                     return;
                 }
 
-                if (!MediaTool.isVideo(fullPath))
-                {
+                if (!MediaTool.isVideo(fullPath)) {
                     fi.setHash256(FileSHA256Caculater.calFileSha256(new File(fullPath)));
-                }
-                else
-                {
+                } else {
                     // 视频文件通常比较大，采用提取的特征值代替整文件计算MD5值
                     fi.setHash256(FileSHA256Caculater.calFileSha256(fi.getExtrInfo()));
                 }
@@ -235,8 +188,7 @@ public class ToolMain
         PerformanceStatistics.getInstance().addOneFile(isCare);
     }
 
-    public static void setFirstRun(boolean firstRun)
-    {
+    public static void setFirstRun(boolean firstRun) {
         ToolMain.firstRun = firstRun;
     }
 

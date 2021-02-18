@@ -25,70 +25,58 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class HeadUtils
-{
+public class HeadUtils {
     private static final Logger logger = LoggerFactory.getLogger(HeadUtils.class);
 
     private static String cookieName = null;
 
-    public static boolean isMobile()
-    {
+    public static boolean isMobile() {
         Boolean ismobile = (Boolean) SystemProperties.get(SystemConstant.IS_MOBILE_KEY);
         return ismobile != null && ismobile;
     }
 
-    public static boolean isAPK()
-    {
+    public static boolean isAPK() {
         Boolean isapk = (Boolean) SystemProperties.get(SystemConstant.IS_ANDROID_APK_KEY);
         return isapk != null && isapk;
     }
 
-    public static boolean isFaces()
-    {
+    public static boolean isFaces() {
         Boolean isFaces = (Boolean) SystemProperties.get(SystemConstant.IS_FACES_KEY);
         return isFaces != null && isFaces;
     }
 
-    public static boolean isNoFaces()
-    {
+    public static boolean isNoFaces() {
         Boolean isFaces = (Boolean) SystemProperties.get(SystemConstant.IS_NO_FACES_KEY);
         return isFaces != null && isFaces;
     }
 
-    private static boolean isIOS()
-    {
+    private static boolean isIOS() {
         Boolean ismobile = (Boolean) SystemProperties.get(SystemConstant.IS_IOS);
         return ismobile != null && ismobile;
     }
 
-    public static boolean needRotatePic(FileInfo f)
-    {
+    public static boolean needRotatePic(FileInfo f) {
         return !isIOS() && f.getRoatateDegree() != 0;
 
     }
 
-    public static void checkMobile(String ua)
-    {
+    public static void checkMobile(String ua) {
         boolean isMobile = false;
         boolean isIOS = false;
         boolean isAndroidAPK = false;
-        if (StringUtils.isNotBlank(ua))
-        {
+        if (StringUtils.isNotBlank(ua)) {
             ua = ua.toLowerCase();
 
             if (ua.contains("mobile") || ua.contains("android") || (ua.contains("ios") && !ua
-                    .contains("ipad")) || ua.contains("windows phone"))
-            {
+                    .contains("ipad")) || ua.contains("windows phone")) {
                 isMobile = true;
             }
 
-            if (ua.contains("ios"))
-            {
+            if (ua.contains("ios")) {
                 isIOS = true;
             }
 
-            if (ua.contains("jalbum_android_apk_client"))
-            {
+            if (ua.contains("jalbum_android_apk_client")) {
                 isAndroidAPK = true;
             }
         }
@@ -98,10 +86,8 @@ public class HeadUtils
         SystemProperties.add(SystemConstant.IS_ANDROID_APK_KEY, isAndroidAPK);
     }
 
-    public static void setExpiredTime(ResponseBuilder builder)
-    {
-        if (builder == null)
-        {
+    public static void setExpiredTime(ResponseBuilder builder) {
+        if (builder == null) {
             return;
         }
 
@@ -111,61 +97,39 @@ public class HeadUtils
         builder.cacheControl(CacheControl.valueOf("max-age=" + expirAge));
     }
 
-    public static int getMaxCountOfOnePage()
-    {
-        if (isMobile())
-        {
+    public static int getMaxCountOfOnePage() {
+        if (isMobile()) {
             return 9;
-        }
-        else
-        {
+        } else {
             return AppConfig.getInstance().getMaxCountOfPicInOnePage(25);
         }
     }
 
-    public static String judgeMIME(String filePath)
-    {
+    public static String judgeMIME(String filePath) {
         filePath = filePath.toLowerCase();
         String contentType;
-        if (filePath.endsWith(".js"))
-        {
+        if (filePath.endsWith(".js")) {
             contentType = "application/javascript";
-        }
-        else if (filePath.endsWith(".css"))
-        {
+        } else if (filePath.endsWith(".css")) {
             contentType = "text/css";
-        }
-        else if (filePath.endsWith(".gif"))
-        {
+        } else if (filePath.endsWith(".gif")) {
             contentType = "image/gif";
-        }
-        else if (filePath.endsWith(".mp4"))
-        {
+        } else if (filePath.endsWith(".mp4")) {
             contentType = "video/mp4";
-        }
-        else if (filePath.endsWith(".mkv"))
-        {
+        } else if (filePath.endsWith(".mkv")) {
             contentType = "video/x-matroska";
-        }
-        else if (filePath.endsWith(".avi"))
-        {
+        } else if (filePath.endsWith(".avi")) {
             contentType = "video/x-msvideo";
-        }
-        else if (filePath.endsWith(".rmvb"))
-        {
+        } else if (filePath.endsWith(".rmvb")) {
             contentType = "video/vnd.rn-realvideo";
-        }
-        else
-        {
+        } else {
             contentType = "text/html";
         }
         return contentType;
     }
 
-    public static FileType getFileType(String filePath)
-    {
-        if (StringUtils.isBlank(filePath))
-        {
+    public static FileType getFileType(String filePath) {
+        if (StringUtils.isBlank(filePath)) {
             return FileType.JPG;
         }
 
@@ -173,45 +137,32 @@ public class HeadUtils
         FileType contentType;
 
         if (filePath.endsWith(".mp4") || filePath.endsWith(".mkv") || filePath.endsWith(".avi")
-                || filePath.endsWith(".rmvb"))
-        {
+                || filePath.endsWith(".rmvb")) {
             contentType = FileType.VIDEO;
-        }
-        else if (filePath.endsWith(".png"))
-        {
+        } else if (filePath.endsWith(".png")) {
             contentType = FileType.PNG;
-        }
-        else if (filePath.endsWith(".jpeg"))
-        {
+        } else if (filePath.endsWith(".jpeg")) {
             contentType = FileType.JPEG;
-        }
-        else if (filePath.endsWith(".jpg"))
-        {
+        } else if (filePath.endsWith(".jpg")) {
             contentType = FileType.JPG;
-        }
-        else
-        {
+        } else {
             contentType = FileType.JPG;
         }
 
         return contentType;
     }
 
-    public static String getContentType(String pathToFile) throws IOException
-    {
+    public static String getContentType(String pathToFile) throws IOException {
         String mime = Files.probeContentType(Paths.get(pathToFile));
-        if (StringUtils.isBlank(mime))
-        {
+        if (StringUtils.isBlank(mime)) {
             mime = MediaTool.isVideo(pathToFile) ? "video/mp4" : "application/octet-stream";
         }
 
         return mime;
     }
 
-    public static String formatDate(java.sql.Date d)
-    {
-        if (d == null)
-        {
+    public static String formatDate(java.sql.Date d) {
+        if (d == null) {
             return null;
         }
 
@@ -219,65 +170,51 @@ public class HeadUtils
         return sf.format(d);
     }
 
-    public static Date parseDate(String dayStr)
-    {
-        if (StringUtils.isBlank(dayStr))
-        {
+    public static Date parseDate(String dayStr) {
+        if (StringUtils.isBlank(dayStr)) {
             return null;
         }
 
         SimpleDateFormat sf = new SimpleDateFormat("yyyyMMdd");
-        try
-        {
+        try {
             return sf.parse(dayStr);
-        }
-        catch (ParseException e)
-        {
+        } catch (ParseException e) {
             logger.warn("caught: ", e);
         }
 
         return null;
     }
 
-    public static boolean isVideo()
-    {
+    public static boolean isVideo() {
         Boolean isvideo = (Boolean) SystemProperties.get(SystemConstant.IS_VIDEO);
         return isvideo != null && isvideo;
     }
 
-    public static int judgeCountPerOnePage(HttpServletRequest req)
-    {
+    public static int judgeCountPerOnePage(HttpServletRequest req) {
         int count = 0;
         int maxCount = AppConfig.getInstance().getMaxCountOfPicInOnePage(25);
-        if (req == null)
-        {
+        if (req == null) {
             return maxCount;
         }
 
         String countStr = req.getParameter("count");
-        if (StringUtils.isNotBlank(countStr))
-        {
+        if (StringUtils.isNotBlank(countStr)) {
             count = Integer.parseInt(countStr);
         }
 
-        if (count == 0 || count > maxCount)
-        {
+        if (count == 0 || count > maxCount) {
             count = maxCount;
         }
 
-        if (count > 9)
-        {
-            if (HeadUtils.isMobile())
-            {
+        if (count > 9) {
+            if (HeadUtils.isMobile()) {
                 count = 9;
             }
         }
 
         boolean isvideo = HeadUtils.isVideo();
-        if (isvideo)
-        {
-            if (count > 6)
-            {
+        if (isvideo) {
+            if (count > 6) {
                 count = 6;
             }
         }
@@ -285,33 +222,27 @@ public class HeadUtils
         return count;
     }
 
-    public static boolean isSuperLogin()
-    {
-        if (!AppConfig.getInstance().needAccessAuth())
-        {
+    public static boolean isSuperLogin() {
+        if (!AppConfig.getInstance().needAccessAuth()) {
             return true;
         }
 
         Object o = SystemProperties.get(SystemConstant.USER_LOGIN_STATUS);
-        return o != null && o instanceof LoginStatus && o.equals(LoginStatus.SuperLogin);
+        return o instanceof LoginStatus && o.equals(LoginStatus.SuperLogin);
     }
 
-    public static boolean isLocalLogin()
-    {
+    public static boolean isLocalLogin() {
         Object o = SystemProperties.get(SystemConstant.USER_LOGIN_STATUS);
-        return o != null && o instanceof LoginStatus && o.equals(LoginStatus.LocalLoin);
+        return o instanceof LoginStatus && o.equals(LoginStatus.LocalLoin);
     }
 
-    public synchronized static String getCookieName()
-    {
-        if (StringUtils.isNotBlank(cookieName))
-        {
+    public synchronized static String getCookieName() {
+        if (StringUtils.isNotBlank(cookieName)) {
             return cookieName;
         }
 
         String id = GlobalConfDao.getInstance().getConf(SystemConstant.INSTANCE_ID);
-        if (StringUtils.isBlank(id))
-        {
+        if (StringUtils.isBlank(id)) {
             id = UUIDGenerator.getUUID();
             GlobalConfDao.getInstance().setConf(SystemConstant.INSTANCE_ID, id);
         }
@@ -320,16 +251,13 @@ public class HeadUtils
         return cookieName;
     }
 
-    public static void refreshCookie(HttpServletResponse response)
-    {
-        if (response == null)
-        {
+    public static void refreshCookie(HttpServletResponse response) {
+        if (response == null) {
             return;
         }
 
         Object s = SystemProperties.get(SystemConstant.COOKIE_CONTENT);
-        if (s != null && s instanceof String)
-        {
+        if (s instanceof String) {
             // 登录成功跳转到主页
             Cookie c = new Cookie(getCookieName(), (String) s);
             c.setMaxAge(AppConfig.getInstance().getMaxExpireAge());

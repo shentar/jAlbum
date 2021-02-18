@@ -7,12 +7,10 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import java.io.InputStream;
 
-public class ErrorResource
-{
+public class ErrorResource {
     @GET
     public Response get(@Context HttpServletRequest req, @Context HttpServletResponse response,
-            InputStream body)
-    {
+                        InputStream body) {
         return Response.status(500).entity("500 internel error!").build();
     }
 }

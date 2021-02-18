@@ -5,8 +5,7 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class FaceIDManager
-{
+public class FaceIDManager {
     private static final Logger logger = LoggerFactory.getLogger(FaceIDManager.class);
 
     private static FaceIDManager instance = new FaceIDManager();
@@ -15,23 +14,18 @@ public class FaceIDManager
 
     private volatile long faceid = -1;
 
-    private FaceIDManager()
-    {
+    private FaceIDManager() {
 
     }
 
-    public static FaceIDManager getInstance()
-    {
+    public static FaceIDManager getInstance() {
         return instance;
     }
 
-    public synchronized long acquireNewFaceID()
-    {
-        if (faceid == -1)
-        {
+    public synchronized long acquireNewFaceID() {
+        if (faceid == -1) {
             String maxID = GlobalConfDao.getInstance().getConf(FACEID_CONF_STR);
-            if (!StringUtils.isBlank(maxID))
-            {
+            if (!StringUtils.isBlank(maxID)) {
                 faceid = Long.parseLong(maxID);
             }
         }

@@ -11,8 +11,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
-public class DateTableDao extends AbstractRecordsStore
-{
+public class DateTableDao extends AbstractRecordsStore {
     private static final Logger logger = LoggerFactory.getLogger(DateTableDao.class);
 
     private static DateTableDao instance = new DateTableDao();
@@ -23,32 +22,26 @@ public class DateTableDao extends AbstractRecordsStore
 
     private static final String DATE_TMP_TABLE_NAME = "daterecordstmp";
 
-    private DateTableDao()
-    {
+    private DateTableDao() {
 
     }
 
-    public static DateTableDao getInstance()
-    {
+    public static DateTableDao getInstance() {
         return instance;
     }
 
-    public TreeMap<String, TreeMap<String, TreeMap<String, DateRecords>>> getAllDateRecord()
-    {
+    public TreeMap<String, TreeMap<String, TreeMap<String, DateRecords>>> getAllDateRecord() {
         TreeMap<String, TreeMap<String, TreeMap<String, DateRecords>>> allrecords = new TreeMap<>();
         lock.readLock().lock();
         PreparedStatement prep = null;
         ResultSet res = null;
-        try
-        {
+        try {
             prep = conn.prepareStatement("select * from daterecords;");
             res = prep.executeQuery();
 
-            while (res.next())
-            {
+            while (res.next()) {
                 String date = res.getString("datestr");
-                if (StringUtils.isBlank(date) || date.length() != 8)
-                {
+                if (StringUtils.isBlank(date) || date.length() != 8) {
                     logger.error("one empty datestr record: " + (date == null ? "" : date));
                     continue;
                 }
@@ -58,15 +51,13 @@ public class DateTableDao extends AbstractRecordsStore
                 String year = date.substring(0, 4);
 
                 TreeMap<String, TreeMap<String, DateRecords>> myear = allrecords.get(year);
-                if (myear == null)
-                {
+                if (myear == null) {
                     myear = new TreeMap<>();
                     allrecords.put(year, myear);
                 }
 
                 TreeMap<String, DateRecords> mmonth = myear.get(month);
-                if (mmonth == null)
-                {
+                if (mmonth == null) {
                     mmonth = new TreeMap<>();
                     myear.put(month, mmonth);
                 }
@@ -78,13 +69,9 @@ public class DateTableDao extends AbstractRecordsStore
                 mmonth.put(day, dr);
             }
 
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             logger.error("caught: ", e);
-        }
-        finally
-        {
+        } finally {
             closeResource(prep, res);
             lock.readLock().unlock();
         }
@@ -92,24 +79,20 @@ public class DateTableDao extends AbstractRecordsStore
         return allrecords;
     }
 
-    public DateRecords getOneRecordsByDay(String day)
-    {
-        if (StringUtils.isBlank(day) || day.length() != 8)
-        {
+    public DateRecords getOneRecordsByDay(String day) {
+        if (StringUtils.isBlank(day) || day.length() != 8) {
             return null;
         }
 
         lock.readLock().lock();
         PreparedStatement prep = null;
         ResultSet res = null;
-        try
-        {
+        try {
             prep = conn.prepareStatement("select * from daterecords where datestr=?;");
             prep.setString(1, day);
             res = prep.executeQuery();
 
-            if (res.next())
-            {
+            if (res.next()) {
                 DateRecords dr = new DateRecords();
                 dr.setDatestr(day);
                 dr.setFirstpic(res.getString("firstpichashstr"));
@@ -117,13 +100,9 @@ public class DateTableDao extends AbstractRecordsStore
                 return dr;
             }
 
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             logger.warn("caused by: ", e);
-        }
-        finally
-        {
+        } finally {
             closeResource(prep, res);
             lock.readLock().unlock();
         }
@@ -131,11 +110,9 @@ public class DateTableDao extends AbstractRecordsStore
         return null;
     }
 
-    public void refreshDate()
-    {
+    public void refreshDate() {
         boolean tmpready = false;
-        try
-        {
+        try {
             logger.info("start to prepare new date records.");
             prepareNewRecords();
 
@@ -143,56 +120,43 @@ public class DateTableDao extends AbstractRecordsStore
 
             logger.info("start to drop the date records");
             lock.writeLock().lock();
-            if (checkTableExist(DATE_TABLE_NAME))
-            {
+            if (checkTableExist(DATE_TABLE_NAME)) {
                 renameTable(DATE_TABLE_NAME, DATE_BACK_TABLE_NAME);
             }
             renameTable(DATE_TMP_TABLE_NAME, DATE_TABLE_NAME);
 
-            if (checkTableExist(DATE_BACK_TABLE_NAME))
-            {
+            if (checkTableExist(DATE_BACK_TABLE_NAME)) {
                 renameTable(DATE_BACK_TABLE_NAME, DATE_TMP_TABLE_NAME);
             }
             logger.info("refresh all date record.");
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             logger.warn("caused by ", e);
-        }
-        finally
-        {
-            if (tmpready)
-            {
+        } finally {
+            if (tmpready) {
                 lock.writeLock().unlock();
             }
         }
     }
 
-    private void prepareNewRecords() throws SQLException
-    {
+    private void prepareNewRecords() throws SQLException {
         /**
          * CREATE TABLE daterecords ( datestr STRING NOT NULL UNIQUE, piccoount
          * BIGINT NOT NULL, firstpichashstr STRING );
          */
-        if (checkTableExist(DATE_TMP_TABLE_NAME))
-        {
+        if (checkTableExist(DATE_TMP_TABLE_NAME)) {
             cleanTable(DATE_TMP_TABLE_NAME);
-        }
-        else
-        {
+        } else {
             // create the temp table.
             execute("CREATE TABLE " + DATE_TMP_TABLE_NAME + " ( datestr STRING NOT NULL UNIQUE,"
                     + " piccoount BIGINT NOT NULL, firstpichashstr STRING );");
         }
 
-        if (checkTableExist(DATE_BACK_TABLE_NAME))
-        {
+        if (checkTableExist(DATE_BACK_TABLE_NAME)) {
             dropTable(DATE_BACK_TABLE_NAME);
         }
 
         Map<String, DateRecords> dst = UniqPhotosStore.getInstance().genAllDateRecords();
-        if (dst == null || dst.isEmpty())
-        {
+        if (dst == null || dst.isEmpty()) {
             logger.warn("there is no pic.");
             return;
         }
@@ -200,10 +164,8 @@ public class DateTableDao extends AbstractRecordsStore
         PreparedStatement prep = null;
 
         logger.info("start to insert the records to the tmp table.");
-        for (Entry<String, DateRecords> dr : dst.entrySet())
-        {
-            try
-            {
+        for (Entry<String, DateRecords> dr : dst.entrySet()) {
+            try {
                 prep = conn
                         .prepareStatement("insert into " + DATE_TMP_TABLE_NAME + " values(?,?,?);");
                 prep.setString(1, dr.getKey());
@@ -211,13 +173,9 @@ public class DateTableDao extends AbstractRecordsStore
                 prep.setString(3, dr.getValue().getFirstpic());
 
                 prep.execute();
-            }
-            catch (Exception e)
-            {
+            } catch (Exception e) {
                 logger.warn("Exception ", e);
-            }
-            finally
-            {
+            } finally {
                 closeResource(prep, null);
                 prep = null;
             }

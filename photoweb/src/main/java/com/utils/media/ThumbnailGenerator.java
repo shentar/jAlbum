@@ -17,46 +17,42 @@ import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
-public class ThumbnailGenerator
-{
+public class ThumbnailGenerator {
     private static final Logger logger = LoggerFactory.getLogger(ThumbnailGenerator.class);
 
     public static BufferedImage generateThumbnail(String fpath, int w, int h, boolean force)
-            throws IOException
-    {
+            throws IOException {
         File imgFile = new File(fpath);
         checkPicType(imgFile);
 
         logger.debug("target image[{}]'s size, width:{}, height:{}.", fpath, w, h);
         Image img = ImageIO.read(imgFile);
-        if (img == null)
-        {
+        if (img == null) {
             return null;
         }
-        if (!force)
-        {
+        if (!force) {
             // 根据原图与要求的缩略图比例，找到最合适的缩略图比例
             int width = img.getWidth(null);
             int height = img.getHeight(null);
 
-            if (w > width || h > height)
-            {
+            if (w > width || h > height) {
                 // 照片本身比缩略图还小，则直接以照片本身当缩略图。
                 return null;
             }
 
-            if ((width * 1.0) / w > (height * 1.0) / h)
-            {
+            if ((width * 1.0) / w > (height * 1.0) / h) {
                 h = Integer.parseInt(
                         new java.text.DecimalFormat("0").format(height * w / (width * 1.0)));
 
-            }
-            else
-            {
+            } else {
                 w = Integer.parseInt(
                         new java.text.DecimalFormat("0").format(width * h / (height * 1.0)));
             }
@@ -71,20 +67,17 @@ public class ThumbnailGenerator
         return bi;
     }
 
-    private static String checkPicType(File imgFile) throws IOException
-    {
+    private static String checkPicType(File imgFile) throws IOException {
         // ImageIO 支持的图片类型 : [BMP, bmp, jpg, JPG, wbmp, jpeg, png, PNG,
         // JPEG, WBMP, GIF, gif]
         String types = Arrays.toString(ImageIO.getReaderFormatNames());
         String suffix = null;
         // 获取图片后缀
-        if (imgFile.getName().contains("."))
-        {
+        if (imgFile.getName().contains(".")) {
             suffix = imgFile.getName().substring(imgFile.getName().lastIndexOf(".") + 1);
         }
 
-        if (suffix == null || !types.toLowerCase().contains(suffix.toLowerCase()))
-        {
+        if (suffix == null || !types.toLowerCase().contains(suffix.toLowerCase())) {
             logger.error(
                     "Sorry, the image suffix is illegal. the standard image suffix is {}." + types);
             throw new IOException("the file type is not supported!");
@@ -93,23 +86,18 @@ public class ThumbnailGenerator
         return suffix;
     }
 
-    public static byte[] generateThumbnailBuffer(String fpath, int w, int h, boolean force)
-    {
-        try
-        {
+    public static byte[] generateThumbnailBuffer(String fpath, int w, int h, boolean force) {
+        try {
             String suffix = checkPicType(new File(fpath));
             BufferedImage bi = generateThumbnail(fpath, w, h, force);
-            if (bi == null)
-            {
+            if (bi == null) {
                 return null;
             }
             ByteArrayOutputStream bf = new ByteArrayOutputStream();
 
             ImageIO.write(bi, suffix, bf);
             return bf.toByteArray();
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             logger.warn("caused by: ", e);
         }
 
@@ -117,51 +105,39 @@ public class ThumbnailGenerator
     }
 
     public static boolean createThumbnail(FileInfo fi, String thumbnailPath, int w, int h,
-                                          boolean force)
-    {
+                                          boolean force) {
         String filePath = fi.getPath();
-        if (MediaTool.isVideo(filePath))
-        {
+        if (MediaTool.isVideo(filePath)) {
             return generateThumbnailForVideo(fi, thumbnailPath, w, h, force);
-        }
-        else
-        {
+        } else {
             return generateThumbnailForPic(filePath, thumbnailPath, w, h, force);
         }
     }
 
     private static boolean generateThumbnailForVideo(FileInfo fi, String thumbnailPath, int w,
-                                                     int h, boolean force)
-    {
-        try
-        {
+                                                     int h, boolean force) {
+        try {
             FFmpegBuilder builder = new FFmpegBuilder();
             builder.setInput(fi.getPath());
             builder.setStartOffset(0, TimeUnit.SECONDS);
             builder.setVerbosity(Verbosity.QUIET);
 
-            if (!force)
-            {
+            if (!force) {
                 long width = fi.getWidth();
                 long height = fi.getHeight();
-                if (!(fi.getRoatateDegree() % 180 == 0))
-                {
+                if (!(fi.getRoatateDegree() % 180 == 0)) {
                     width = fi.getHeight();
                     height = fi.getWidth();
                 }
 
-                if (w < fi.getWidth() || h < fi.getHeight())
-                {
-                    if ((width * 1.0) / w > (height * 1.0) / h)
-                    {
+                if (w < fi.getWidth() || h < fi.getHeight()) {
+                    if ((width * 1.0) / w > (height * 1.0) / h) {
                         h = Integer.parseInt(new java.text.DecimalFormat("0")
-                                                     .format(height * w / (width * 1.0)));
+                                .format(height * w / (width * 1.0)));
 
-                    }
-                    else
-                    {
+                    } else {
                         w = Integer.parseInt(new java.text.DecimalFormat("0")
-                                                     .format(width * h / (height * 1.0)));
+                                .format(width * h / (height * 1.0)));
                     }
                 }
             }
@@ -173,14 +149,11 @@ public class ThumbnailGenerator
             FFmpeg ffmpeg = new FFmpeg();
             ffmpeg.run(target, null);
             return true;
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             logger.warn("error occured.", e);
         }
 
-        if (FileTools.copyFile(SystemConstant.DEFAULT_VIDEO_PIC_PATH, thumbnailPath))
-        {
+        if (FileTools.copyFile(SystemConstant.DEFAULT_VIDEO_PIC_PATH, thumbnailPath)) {
             logger.warn("the file cannot gen thumbnail copy the src file instead. {}", fi);
             return true;
         }
@@ -190,25 +163,19 @@ public class ThumbnailGenerator
     }
 
     private static boolean generateThumbnailForPic(String fpath, String thumbnailPath, int w, int h,
-                                                   boolean force)
-    {
-        try
-        {
+                                                   boolean force) {
+        try {
             String suffix = checkPicType(new File(fpath));
             BufferedImage bi = generateThumbnail(fpath, w, h, force);
-            if (bi != null)
-            {
+            if (bi != null) {
                 ImageIO.write(bi, suffix, new File(thumbnailPath));
                 return true;
             }
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             logger.warn("caused by: ", e);
         }
 
-        if (FileTools.copyFile(fpath, thumbnailPath))
-        {
+        if (FileTools.copyFile(fpath, thumbnailPath)) {
             logger.warn("the file cannot gen thumbnail copy the src file instead. {}", fpath);
             return true;
         }
@@ -218,32 +185,22 @@ public class ThumbnailGenerator
     }
 
     public static boolean createFaceThumbnail(Object origFile, String suffix, String pos,
-                                              String tmpFile)
-    {
+                                              String tmpFile) {
         if (StringUtils.isBlank(pos) || StringUtils.isBlank(suffix) || origFile == null
-                || StringUtils.isBlank(tmpFile))
-        {
+                || StringUtils.isBlank(tmpFile)) {
             logger.warn("input arguments error!");
             return false;
         }
 
         ImageInputStream iis = null;
-        try
-        {
-            if (origFile instanceof byte[])
-            {
+        try {
+            if (origFile instanceof byte[]) {
                 iis = ImageIO.createImageInputStream(new ByteArrayInputStream((byte[]) origFile));
-            }
-            else if (origFile instanceof File || origFile instanceof InputStream)
-            {
+            } else if (origFile instanceof File || origFile instanceof InputStream) {
                 iis = ImageIO.createImageInputStream(origFile);
-            }
-            else if (origFile instanceof String)
-            {
+            } else if (origFile instanceof String) {
                 iis = ImageIO.createImageInputStream(new File((String) origFile));
-            }
-            else
-            {
+            } else {
                 logger.warn("unknown type of input file: {}", origFile);
                 return false;
             }
@@ -252,8 +209,7 @@ public class ThumbnailGenerator
              * width,height,left,top
              */
             String[] ss = pos.split(",");
-            if (ss.length != 4)
-            {
+            if (ss.length != 4) {
                 logger.warn("the file info is: {}, {}", origFile, pos);
                 return false;
             }
@@ -263,50 +219,38 @@ public class ThumbnailGenerator
             int x = Integer.parseInt(ss[2]);
             int y = Integer.parseInt(ss[3]);
 
-            if (x < 0)
-            {
+            if (x < 0) {
                 logger.warn("the file info is: {}, {}", origFile, pos);
                 w += x;
                 x = 0;
             }
 
-            if (y < 0)
-            {
+            if (y < 0) {
                 logger.warn("the file info is: {}, {}", origFile, pos);
                 h += y;
                 y = 0;
             }
 
-            if (w < 0 || h < 0)
-            {
+            if (w < 0 || h < 0) {
                 logger.warn("the file info is: {}, {}", origFile, pos);
                 return false;
             }
 
             Rectangle rect = new Rectangle(x, y, w, h);
             Rectangle newRect = getNewRectangle(rect);
-            if (!genFaceThumbnail(suffix, tmpFile, iis, newRect == null ? rect : newRect))
-            {
+            if (!genFaceThumbnail(suffix, tmpFile, iis, newRect == null ? rect : newRect)) {
                 logger.warn("generate the face thumbnail failed: {}", origFile);
                 return copyTheOrigFile(origFile, tmpFile);
             }
 
             return true;
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             logger.warn("caused by: ", e);
-        }
-        finally
-        {
-            if (iis != null)
-            {
-                try
-                {
+        } finally {
+            if (iis != null) {
+                try {
                     iis.close();
-                }
-                catch (IOException e)
-                {
+                } catch (IOException e) {
                     logger.warn("caused by: ", e);
                 }
             }
@@ -315,26 +259,16 @@ public class ThumbnailGenerator
         return false;
     }
 
-    private static boolean copyTheOrigFile(Object origFile, String tmpFile) throws IOException
-    {
-        if (origFile instanceof byte[])
-        {
+    private static boolean copyTheOrigFile(Object origFile, String tmpFile) throws IOException {
+        if (origFile instanceof byte[]) {
             FileUtils.writeByteArrayToFile(new File(tmpFile), (byte[]) origFile);
-        }
-        else if (origFile instanceof File)
-        {
+        } else if (origFile instanceof File) {
             FileUtils.copyFile((File) origFile, new File(tmpFile));
-        }
-        else if (origFile instanceof InputStream)
-        {
+        } else if (origFile instanceof InputStream) {
             FileUtils.copyInputStreamToFile((InputStream) origFile, new File(tmpFile));
-        }
-        else if (origFile instanceof String)
-        {
+        } else if (origFile instanceof String) {
             FileUtils.copyFile(new File((String) origFile), new File(tmpFile));
-        }
-        else
-        {
+        } else {
             logger.warn("unknown type of input file: {}", origFile);
             return false;
         }
@@ -342,10 +276,8 @@ public class ThumbnailGenerator
     }
 
     private static boolean genFaceThumbnail(String suffix, String tmpFile, ImageInputStream iis,
-                                            Rectangle newRect)
-    {
-        try
-        {
+                                            Rectangle newRect) {
+        try {
             ImageReader reader = ImageIO.getImageReadersBySuffix(suffix).next();
             reader.setInput(iis, true);
             ImageReadParam param = reader.getDefaultReadParam();
@@ -353,24 +285,20 @@ public class ThumbnailGenerator
             BufferedImage bi = reader.read(0, param);
             ImageIO.write(bi, suffix, new File(tmpFile));
             return true;
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             logger.warn("caused by: ", e);
         }
         return false;
     }
 
-    private static Rectangle getNewRectangle(Rectangle rect)
-    {
+    private static Rectangle getNewRectangle(Rectangle rect) {
         int addInterval = (int) (rect.getHeight() * 0.3);
-        if (rect.getX() < addInterval || rect.getY() < addInterval)
-        {
+        if (rect.getX() < addInterval || rect.getY() < addInterval) {
             return null;
         }
 
         return new Rectangle((int) (rect.getX() - addInterval), (int) (rect.getY() - addInterval),
-                             (int) (rect.getWidth() + 2 * addInterval),
-                             (int) (rect.getHeight() + 2 * addInterval));
+                (int) (rect.getWidth() + 2 * addInterval),
+                (int) (rect.getHeight() + 2 * addInterval));
     }
 }

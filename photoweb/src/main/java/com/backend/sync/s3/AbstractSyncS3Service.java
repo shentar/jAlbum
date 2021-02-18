@@ -15,14 +15,17 @@ import org.jets3t.service.model.StorageObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
-public abstract class AbstractSyncS3Service
-{
+public abstract class AbstractSyncS3Service {
     private static final String OBJECT_PREFIX = "homenas/";
 
     private static final Logger logger = LoggerFactory.getLogger(AbstractSyncS3Service.class);
@@ -37,81 +40,61 @@ public abstract class AbstractSyncS3Service
 
     private AtomicInteger failedTimes = new AtomicInteger(0);
 
-    private boolean checkAlreadyBackuped(FileInfo fi)
-    {
+    private boolean checkAlreadyBackuped(FileInfo fi) {
         BackupedFilesDao backupedFilesDao = S3ServiceFactory.getBackUpDao();
-        if (fi != null && backupedFilesDao != null && backupedFilesDao.isBackup(fi.getHash256()))
-        {
+        if (fi != null && backupedFilesDao != null && backupedFilesDao.isBackup(fi.getHash256())) {
             logger.info("already exist: {}", fi);
             return true;
-        }
-        else
-        {
+        } else {
             logger.info("need to upload the object: {}", fi);
             return false;
         }
     }
 
-    private void delayRetry()
-    {
-        try
-        {
+    private void delayRetry() {
+        try {
             int ft = failedTimes.incrementAndGet();
 
             ft = ft > 8 ? 8 : ft;
 
             Thread.sleep((long) (AppConfig.getInstance().getRetryInitS3() * Math.pow(2, ft)));
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             logger.warn("caused by: ", e);
         }
     }
 
-    public void restoreObject(FileInfo fi)
-    {
+    public void restoreObject(FileInfo fi) {
 
     }
 
-    public boolean downloadObject(FileInfo fi)
-    {
+    public boolean downloadObject(FileInfo fi) {
 
-        if (fi == null)
-        {
+        if (fi == null) {
             return false;
         }
 
-        if (fi.exist())
-        {
+        if (fi.exist()) {
             logger.warn("the file is already exist: {}", fi);
             return false;
         }
 
-        try
-        {
+        try {
             S3Object so = s3service.getObject(getBucketName(), genObjectKey(fi));
-            if (!MediaTool.isVideo(fi.getPath()))
-            {
-                if (!StringUtils.equalsIgnoreCase(so.getETag(), fi.getHash256()))
-                {
+            if (!MediaTool.isVideo(fi.getPath())) {
+                if (!StringUtils.equalsIgnoreCase(so.getETag(), fi.getHash256())) {
                     logger.warn("some error file: {}, s3object: {}", fi, so);
                 }
             }
 
-            if (so.getContentLength() != 0)
-            {
+            if (so.getContentLength() != 0) {
                 writeToFile(fi, so);
                 return true;
-            }
-            else
-            {
+            } else {
                 logger.warn("an empty s3Object, file: {}, s3object: {}", fi, so);
             }
 
 
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             logger.warn("caused by: ", e);
             delayRetry();
         }
@@ -119,27 +102,20 @@ public abstract class AbstractSyncS3Service
         return false;
     }
 
-    public boolean objectExist(FileInfo fi)
-    {
-        if (fi == null)
-        {
+    public boolean objectExist(FileInfo fi) {
+        if (fi == null) {
             return false;
         }
-        try
-        {
+        try {
             StorageObject so = s3service.getObjectDetails(getBucketName(), genObjectKey(fi));
             return true;
-        }
-        catch (ServiceException e)
-        {
+        } catch (ServiceException e) {
             if (404 == e.getResponseCode() || "NoSuchKey".equals(e.getErrorCode()) || "NoSuchBucket"
-                    .equals(e.getErrorCode()))
-            {
+                    .equals(e.getErrorCode())) {
                 return false;
             }
 
-            if ("AccessDenied".equals(e.getErrorCode()))
-            {
+            if ("AccessDenied".equals(e.getErrorCode())) {
                 logger.warn("403 forbidden, fi: {}", fi);
                 return true;
             }
@@ -149,67 +125,49 @@ public abstract class AbstractSyncS3Service
         return false;
     }
 
-    private void writeToFile(FileInfo fi, S3Object so) throws ServiceException, IOException
-    {
+    private void writeToFile(FileInfo fi, S3Object so) throws ServiceException, IOException {
         InputStream in = null;
         OutputStream ou = null;
-        try
-        {
+        try {
             in = so.getDataInputStream();
             ou = new FileOutputStream(fi.getPath());
             IOUtils.copy(in, ou, 1024 * 16);
-        }
-        finally
-        {
-            try
-            {
-                if (in != null)
-                {
+        } finally {
+            try {
+                if (in != null) {
                     in.close();
                 }
-            }
-            catch (Exception e)
-            {
+            } catch (Exception e) {
                 logger.warn("caused by: ", e);
             }
 
-            try
-            {
-                if (ou != null)
-                {
+            try {
+                if (ou != null) {
                     ou.close();
                 }
-            }
-            catch (Exception e)
-            {
+            } catch (Exception e) {
                 logger.warn("caused by: ", e);
             }
         }
     }
 
-    public void uploadObject(FileInfo fi)
-    {
-        try
-        {
+    public void uploadObject(FileInfo fi) {
+        try {
             // TODO use Multi-Parts to upload big file.
-            if (!isInit)
-            {
+            if (!isInit) {
                 logger.warn("the sync service is not prepared now!");
                 delayRetry();
                 SyncTool.submitSyncTask(fi);
                 return;
             }
 
-            if (fi == null || checkAlreadyBackuped(fi))
-            {
+            if (fi == null || checkAlreadyBackuped(fi)) {
                 return;
             }
 
             // 避免同一个文件备份两次。
-            synchronized (fi.getHash256().intern())
-            {
-                if (checkAlreadyBackuped(fi))
-                {
+            synchronized (fi.getHash256().intern()) {
+                if (checkAlreadyBackuped(fi)) {
                     logger.warn("the file is already backedUp: {}", fi);
                     return;
                 }
@@ -219,34 +177,28 @@ public abstract class AbstractSyncS3Service
                 so.setDataInputFile(new File(fi.getPath()));
                 so.setContentLength(fi.getSize());
                 so.addMetadata(Constants.REST_METADATA_PREFIX + "type",
-                               HeadUtils.getFileType(fi.getPath()).name());
+                        HeadUtils.getFileType(fi.getPath()).name());
                 S3Object o = s3service.putObject(getBucketName(), so);
                 failedTimes.set(0);
 
                 if (StringUtils.equalsIgnoreCase(o.getETag(), fi.getHash256()) || MediaTool
-                        .isVideo(fi.getPath()))
-                {
+                        .isVideo(fi.getPath())) {
                     // 使用jalbum提取的指纹计算得到的etag来做key，而不是使用真实的文件的etag。
                     // 注意此处，有可能两个线程同时上传同一张照片，但是文件不同。此时可能导致总存量计算不正确。
                     if (getBackupedFileDao()
-                            .addOneRecords(fi.getHash256().toUpperCase(), o.getETag(), o.getKey()))
-                    {
+                            .addOneRecords(fi.getHash256().toUpperCase(), o.getETag(), o.getKey())) {
                         addStatistics(o.getContentLength());
                     }
-                }
-                else
-                {
+                } else {
                     logger.error("the object etag is not equals file info is: {}", fi);
                 }
                 logger.warn("upload the object successfully: {}", o);
                 logger.warn("the size of all object in s3 is: space size: {}, object count: [{}]",
-                            String.format("%4.3fGB",
-                                          ((float) backedUpSize.get()) / (1024 * 1024 * 1024)),
-                            backedUpCount.get());
+                        String.format("%4.3fGB",
+                                ((float) backedUpSize.get()) / (1024 * 1024 * 1024)),
+                        backedUpCount.get());
             }
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             logger.warn("caused by: ", e);
             // retry this task. limit retry times?
             delayRetry();
@@ -254,26 +206,21 @@ public abstract class AbstractSyncS3Service
         }
     }
 
-    private void addStatistics(long contentLength)
-    {
+    private void addStatistics(long contentLength) {
         backedUpSize.addAndGet(contentLength);
         backedUpCount.incrementAndGet();
     }
 
 
-    private String genObjectKey(FileInfo fi)
-    {
+    private String genObjectKey(FileInfo fi) {
         return OBJECT_PREFIX + timeToFolder(fi.getPhotoTime().getTime()) + fi.getHash256();
     }
 
-    private static String getHashStrFromObjectKey(String objKey)
-    {
+    private static String getHashStrFromObjectKey(String objKey) {
         int pos = StringUtils.lastIndexOf(objKey, "/");
-        if (pos > 0)
-        {
+        if (pos > 0) {
             String hashStr = StringUtils.substring(objKey, pos + 1);
-            if (StringUtils.isNotBlank(hashStr) && hashStr.length() == 32)
-            {
+            if (StringUtils.isNotBlank(hashStr) && hashStr.length() == 32) {
                 return hashStr;
             }
         }
@@ -281,16 +228,13 @@ public abstract class AbstractSyncS3Service
         return null;
     }
 
-    private String timeToFolder(long date)
-    {
+    private String timeToFolder(long date) {
         SimpleDateFormat sf = new SimpleDateFormat("yyyy/MM/dd/");
         return sf.format(new Date(date));
     }
 
-    protected synchronized void init()
-    {
-        if (isInit)
-        {
+    protected synchronized void init() {
+        if (isInit) {
             return;
         }
 

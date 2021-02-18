@@ -20,21 +20,17 @@ import java.sql.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
-public class VideoFFProbeTool
-{
+public class VideoFFProbeTool {
     private static final long INVALID_TIME_IN_MILLS = -1;
 
     private static final Logger logger = LoggerFactory.getLogger(VideoFFProbeTool.class);
 
-    public static String getFFprobeInfo(String filePath)
-    {
-        if (StringUtils.isBlank(filePath))
-        {
+    public static String getFFprobeInfo(String filePath) {
+        if (StringUtils.isBlank(filePath)) {
             return null;
         }
 
-        try
-        {
+        try {
             String query = "ffprobe -v quiet -print_format json -show_format -show_streams \""
                     + filePath + "\"";
             String[] command = {"/bin/sh", "-c", query};
@@ -52,13 +48,10 @@ public class VideoFFProbeTool
             int rlen;
             int off = 0;
             StringBuilder sb = new StringBuilder();
-            while (true)
-            {
+            while (true) {
                 rlen = bin.read(buffer, 0, 1024 * 64);
-                if (rlen == -1)
-                {
-                    if (off != 0)
-                    {
+                if (rlen == -1) {
+                    if (off != 0) {
                         sb.append(new String(buffer, "UTF-8").substring(0, off));
                     }
                     break;
@@ -66,8 +59,7 @@ public class VideoFFProbeTool
 
                 off += rlen;
                 nlen -= rlen;
-                if (nlen == 0)
-                {
+                if (nlen == 0) {
                     sb.append(new String(buffer, "UTF-8"));
                 }
             }
@@ -75,97 +67,72 @@ public class VideoFFProbeTool
             bin.close();
 
             return sb.toString();
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             logger.warn("caused: ", e);
         }
 
         return null;
     }
 
-    public static FFmpegFormat getFileFormat(String filePath)
-    {
-        if (StringUtils.isBlank(filePath))
-        {
+    public static FFmpegFormat getFileFormat(String filePath) {
+        if (StringUtils.isBlank(filePath)) {
             return null;
         }
 
-        try
-        {
+        try {
             FFprobe ffprobe = new FFprobe("ffprobe");
             FFmpegProbeResult probeResult = ffprobe.probe(filePath);
             return probeResult.getFormat();
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             logger.warn("caused: ", e);
         }
 
         return null;
     }
 
-    private static FFmpegStream getVideoStream(String filePath)
-    {
-        if (StringUtils.isBlank(filePath))
-        {
+    private static FFmpegStream getVideoStream(String filePath) {
+        if (StringUtils.isBlank(filePath)) {
             return null;
         }
 
-        try
-        {
+        try {
             FFprobe ffprobe = new FFprobe("ffprobe");
             FFmpegProbeResult probeResult = ffprobe.probe(filePath);
 
-            if (probeResult != null && probeResult.getStreams() != null)
-            {
-                for (FFmpegStream fs : probeResult.getStreams())
-                {
-                    if (fs.codec_type.equals(CodecType.VIDEO))
-                    {
+            if (probeResult != null && probeResult.getStreams() != null) {
+                for (FFmpegStream fs : probeResult.getStreams()) {
+                    if (fs.codec_type.equals(CodecType.VIDEO)) {
                         return fs;
                     }
                 }
             }
 
-        }
-        catch (Throwable e)
-        {
+        } catch (Throwable e) {
             logger.warn("caused: ", e);
         }
 
         return null;
     }
 
-    private static long getVideoCreateTime(FFmpegStream fs)
-    {
-        if (fs != null && fs.tags != null)
-        {
+    private static long getVideoCreateTime(FFmpegStream fs) {
+        if (fs != null && fs.tags != null) {
             Object ti = fs.tags.get("creation_time");
-            if (ti != null)
-            {
+            if (ti != null) {
                 String dateStr = ti.toString();
-                if (StringUtils.isBlank(dateStr))
-                {
+                if (StringUtils.isBlank(dateStr)) {
                     return INVALID_TIME_IN_MILLS;
                 }
 
                 SimpleDateFormat sf;
-                if (dateStr.contains("T"))
-                {
+                if (dateStr.contains("T")) {
                     sf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'");
-                }
-                else
-                {
+                } else {
                     sf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 }
 
-                try
-                {
+                try {
                     return sf.parse(dateStr).getTime();
-                }
-                catch (ParseException e)
-                {
+                } catch (ParseException e) {
                     logger.warn("caused: ", e);
                 }
             }
@@ -174,19 +141,13 @@ public class VideoFFProbeTool
         return INVALID_TIME_IN_MILLS;
     }
 
-    private static int getVideoRotate(FFmpegStream fs)
-    {
-        if (fs != null && fs.tags != null)
-        {
+    private static int getVideoRotate(FFmpegStream fs) {
+        if (fs != null && fs.tags != null) {
             Object ti = fs.tags.get("rotate");
-            if (ti != null)
-            {
-                try
-                {
+            if (ti != null) {
+                try {
                     return Integer.parseInt(ti.toString());
-                }
-                catch (Exception e)
-                {
+                } catch (Exception e) {
                     logger.warn("caused: ", e);
                 }
             }
@@ -195,23 +156,18 @@ public class VideoFFProbeTool
         return 0;
     }
 
-    private static int getWidth(FFmpegStream fs)
-    {
+    private static int getWidth(FFmpegStream fs) {
         return fs.width;
     }
 
-    private static int getHeight(FFmpegStream fs)
-    {
+    private static int getHeight(FFmpegStream fs) {
         return fs.height;
     }
 
-    public static FileInfo genFileInfos(String fpath)
-    {
-        try
-        {
+    public static FileInfo genFileInfos(String fpath) {
+        try {
             FFmpegStream fs = getVideoStream(fpath);
-            if (fs != null)
-            {
+            if (fs != null) {
                 File f = new File(fpath);
 
                 FileInfo fi = new FileInfo();
@@ -230,21 +186,18 @@ public class VideoFFProbeTool
                 fi.setExtrInfo(generateFingerStringForVideo(fs));
                 return fi;
             }
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             logger.warn("Caused by: ", e);
         }
 
         return null;
     }
 
-    private static String generateFingerStringForVideo(FFmpegStream fs)
-    {
+    private static String generateFingerStringForVideo(FFmpegStream fs) {
         return String.format("[%s,%s,%s,%s,%s,%s,%s,%s,%s,%s]", fs.avg_frame_rate.toString(),
-                             fs.bit_rate + "", fs.bits_per_raw_sample + "", fs.codec_name + "", fs.duration + "",
-                             fs.duration_ts + "", fs.display_aspect_ratio + "", fs.max_bit_rate + "",
-                             fs.width + "", fs.height + "");
+                fs.bit_rate + "", fs.bits_per_raw_sample + "", fs.codec_name + "", fs.duration + "",
+                fs.duration_ts + "", fs.display_aspect_ratio + "", fs.max_bit_rate + "",
+                fs.width + "", fs.height + "");
     }
 
 }

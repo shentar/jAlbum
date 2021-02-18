@@ -3,7 +3,6 @@ package com.backend.dao;
 import com.backend.entity.FileInfo;
 import com.backend.entity.FileType;
 import com.backend.entity.PicStatus;
-import com.backend.facer.FaceRecService;
 import com.backend.facer.FaceRecServiceFactory;
 import com.backend.scan.FileTools;
 import com.backend.scan.RefreshFlag;
@@ -24,8 +23,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-public class BaseSqliteStore extends AbstractRecordsStore
-{
+public class BaseSqliteStore extends AbstractRecordsStore {
     public static final String tableName = "files";
 
     private static final Logger logger = LoggerFactory.getLogger(BaseSqliteStore.class);
@@ -33,49 +31,38 @@ public class BaseSqliteStore extends AbstractRecordsStore
     private static BaseSqliteStore instance = new BaseSqliteStore();
 
 
-    private BaseSqliteStore()
-    {
+    private BaseSqliteStore() {
 
     }
 
-    public static BaseSqliteStore getInstance()
-    {
+    public static BaseSqliteStore getInstance() {
         return instance;
     }
 
-    public FileInfo getOneFileByHashID(String id)
-    {
-        if (StringUtils.isBlank(id))
-        {
+    public FileInfo getOneFileByHashID(String id) {
+        if (StringUtils.isBlank(id)) {
             return null;
         }
 
         PreparedStatement prep = null;
         ResultSet res = null;
-        try
-        {
+        try {
             lock.readLock().lock();
             prep = conn.prepareStatement(
                     "select * from files where sha256=? and (deleted <> 'true' or deleted is null);");
             prep.setString(1, id);
             res = prep.executeQuery();
 
-            while (res.next())
-            {
+            while (res.next()) {
                 FileInfo f = getFileInfoFromTable(res);
-                if (new File(f.getPath()).isFile())
-                {
+                if (new File(f.getPath()).isFile()) {
                     return f;
                 }
             }
 
-        }
-        catch (SQLException e)
-        {
+        } catch (SQLException e) {
             logger.error("caught: " + id, e);
-        }
-        finally
-        {
+        } finally {
             closeResource(prep, res);
             lock.readLock().unlock();
         }
@@ -88,16 +75,13 @@ public class BaseSqliteStore extends AbstractRecordsStore
      *
      * @param fi 文件对象
      */
-    public void insertOneRecord(FileInfo fi)
-    {
+    public void insertOneRecord(FileInfo fi) {
         PreparedStatement prep = null;
-        try
-        {
+        try {
             // 检查是否已经存在隐藏的照片的记录。
             checkAndRefreshFileInfo(fi);
 
-            try
-            {
+            try {
                 lock.writeLock().lock();
                 prep = conn.prepareStatement("insert into files values(?,?,?,?,?,?,?,?,?,?);");
                 prep.setString(1, fi.getPath());
@@ -112,103 +96,80 @@ public class BaseSqliteStore extends AbstractRecordsStore
                 prep.setInt(10, fi.getFtype().ordinal());
                 prep.execute();
                 logger.warn("insert one file to the table successfully!" + fi);
-            }
-            finally
-            {
+            } finally {
                 lock.writeLock().unlock();
             }
 
             RefreshFlag.getInstance().getAndSet(true);
-            if (fi.getStatus() == PicStatus.EXIST)
-            {
+            if (fi.getStatus() == PicStatus.EXIST) {
                 // SyncTool.submitSyncTask(fi);
                 FaceRecServiceFactory.getFaceRecService().detectFaces(fi);
             }
             FileTools.submitAnThumbnailTask(fi);
 
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             logger.error("caught: " + fi, e);
-        }
-        finally
-        {
+        } finally {
             closeResource(prep, null);
         }
     }
 
-    public void deleteOneRecordByPath(FileInfo fi)
-    {
-        if (fi == null || StringUtils.isBlank(fi.getPath()))
-        {
+    public void deleteOneRecordByPath(FileInfo fi) {
+        if (fi == null || StringUtils.isBlank(fi.getPath())) {
             logger.warn("input file's path is empty.");
             return;
         }
         deleteRecord(fi.getPath(), true);
     }
 
-    public FileInfo getOneFileByPath(String path)
-    {
-        if (StringUtils.isBlank(path))
-        {
+    public FileInfo getOneFileByPath(String path) {
+        if (StringUtils.isBlank(path)) {
             return null;
         }
 
         ResultSet res = null;
         PreparedStatement prep = null;
-        try
-        {
+        try {
             lock.readLock().lock();
             prep = conn.prepareStatement("select * from files where path=?;");
             prep.setString(1, path);
 
             res = prep.executeQuery();
 
-            if (res.next())
-            {
+            if (res.next()) {
                 return getFileInfoFromTable(res);
             }
 
             lock.readLock().unlock();
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             logger.warn("caught: ", e);
-        }
-        finally
-        {
+        } finally {
             closeResource(prep, res);
         }
 
         return null;
     }
 
-    public PicStatus checkIfAlreadyExist(File f)
-    {
+    public PicStatus checkIfAlreadyExist(File f) {
         ResultSet res = null;
         PreparedStatement prep = null;
-        try
-        {
+        try {
             lock.readLock().lock();
             prep = conn.prepareStatement("select * from files where path=?;");
             prep.setString(1, f.getCanonicalPath());
 
             res = prep.executeQuery();
             lock.readLock().unlock();
-            if (res.next())
-            {
+            if (res.next()) {
                 FileInfo oldfi = getFileInfoFromTable(res);
 
                 long fileTime = FileTools.getFileCreateTime(f);
                 if (oldfi.getSize() == f.length() /*&& oldfi.getcTime() != null
-                        && oldfi.getcTime().getTime() == fileTime*/)
-                {
+                        && oldfi.getcTime().getTime() == fileTime*/) {
                     logger.info("the file is exist: " + f);
                     checkPhotoTime(oldfi);
                     return PicStatus.EXIST;
-                }
-                else
-                {
+                } else {
                     logger.warn(
                             "the file was changed, the file info is: {}:{}, {}:{}], rebuild the record: {}",
                             oldfi.getSize(), f.length(), oldfi.getcTime().getTime(), fileTime,
@@ -219,20 +180,15 @@ public class BaseSqliteStore extends AbstractRecordsStore
                     return PicStatus.NOT_EXIST;
                 }
             }
-        }
-        catch (SQLException | IOException e)
-        {
+        } catch (SQLException | IOException e) {
             logger.error("caught: " + f, e);
-        }
-        finally
-        {
+        } finally {
             closeResource(prep, res);
         }
         return PicStatus.NOT_EXIST;
     }
 
-    private FileInfo getFileInfoFromTable(ResultSet res) throws SQLException
-    {
+    private FileInfo getFileInfoFromTable(ResultSet res) throws SQLException {
         FileInfo fi = new FileInfo();
         fi.setPath(res.getString("path"));
         fi.setHash256(res.getString("sha256"));
@@ -248,44 +204,35 @@ public class BaseSqliteStore extends AbstractRecordsStore
         return fi;
     }
 
-    private PicStatus getFileStatus(String value)
-    {
-        if ("true".equalsIgnoreCase(value))
-        {
+    private PicStatus getFileStatus(String value) {
+        if ("true".equalsIgnoreCase(value)) {
             return PicStatus.HIDDEN;
         }
 
-        if ("false".equalsIgnoreCase(value))
-        {
+        if ("false".equalsIgnoreCase(value)) {
             return PicStatus.EXIST;
         }
 
         return PicStatus.valueOf(value);
     }
 
-    private void checkPhotoTime(FileInfo oldfi)
-    {
+    private void checkPhotoTime(FileInfo oldfi) {
         List<String> suffixs = AppConfig.getInstance().getFileSuffix();
-        for (String s : suffixs)
-        {
-            if (oldfi.getPath().toLowerCase().endsWith(s))
-            {
+        for (String s : suffixs) {
+            if (oldfi.getPath().toLowerCase().endsWith(s)) {
                 boolean bneedupdate = false;
 
                 FileType ftype = HeadUtils.getFileType(oldfi.getPath());
-                if (!oldfi.getFtype().equals(ftype))
-                {
+                if (!oldfi.getFtype().equals(ftype)) {
                     bneedupdate = true;
                 }
 
                 if (oldfi.getPhotoTime() == null || oldfi.getcTime() == null
-                        || oldfi.getPhotoTime().getTime() > System.currentTimeMillis())
-                {
+                        || oldfi.getPhotoTime().getTime() > System.currentTimeMillis()) {
                     bneedupdate = true;
                 }
 
-                if (bneedupdate)
-                {
+                if (bneedupdate) {
                     oldfi = MediaTool.genFileInfo(oldfi.getPath());
                     logger.info("need to update the file info: " + oldfi);
                     updatePhotoInfo(oldfi);
@@ -296,19 +243,16 @@ public class BaseSqliteStore extends AbstractRecordsStore
         }
     }
 
-    public void updatePhotoInfo(FileInfo fi)
-    {
-        if (fi == null)
-        {
+    public void updatePhotoInfo(FileInfo fi) {
+        if (fi == null) {
             return;
         }
 
         PreparedStatement prep = null;
-        try
-        {
+        try {
             lock.writeLock().lock();
             prep = conn.prepareStatement("update files set phototime=?,width=?,height=?,"
-                                                 + "deleted=?,ftype=? where path=?;");
+                    + "deleted=?,ftype=? where path=?;");
             prep.setDate(1, fi.getPhotoTime());
             prep.setLong(2, fi.getWidth());
             prep.setLong(3, fi.getHeight());
@@ -318,69 +262,53 @@ public class BaseSqliteStore extends AbstractRecordsStore
             prep.execute();
             logger.warn("update the file to: {}", fi);
             RefreshFlag.getInstance().getAndSet(true);
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             logger.error("caught: ", e);
-        }
-        finally
-        {
+        } finally {
             closeResource(prep, null);
             lock.writeLock().unlock();
         }
     }
 
-    public void scanAllRecords(List<String> excludeDirs)
-    {
+    public void scanAllRecords(List<String> excludeDirs) {
         scanAllRecords(excludeDirs, false);
     }
 
-    public void scanAllRecords(List<String> excludeDirs, boolean needSyncS3)
-    {
+    public void scanAllRecords(List<String> excludeDirs, boolean needSyncS3) {
         lock.readLock().lock();
         ResultSet res = null;
         PreparedStatement prep = null;
-        try
-        {
+        try {
             logger.warn("start to check all records in the files table.");
             prep = conn.prepareStatement(
                     "select * from files where deleted is null or deleted <> 'true';");
             res = prep.executeQuery();
             lock.readLock().unlock();
 
-            while (res.next())
-            {
+            while (res.next()) {
                 FileInfo fi = getFileInfoFromTable(res);
 
                 PicStatus status = FileTools.checkFileDeleted(fi, excludeDirs);
 
-                if (status == PicStatus.NOTCHANGED && fi.getStatus() == PicStatus.EXIST)
-                {
+                if (status == PicStatus.NOTCHANGED && fi.getStatus() == PicStatus.EXIST) {
                     // 检查同步S3。
-                    if (needSyncS3)
-                    {
+                    if (needSyncS3) {
                         SyncTool.submitSyncTask(fi);
                     }
 
                     FaceRecServiceFactory.getFaceRecService().detectFaces(fi);
-                    if (ThumbnailManager.checkTheThumbnailExist(fi.getHash256()))
-                    {
+                    if (ThumbnailManager.checkTheThumbnailExist(fi.getHash256())) {
                         PerformanceStatistics.getInstance().addOneFile(false);
-                    }
-                    else
-                    {
+                    } else {
                         FileTools.submitAnThumbnailTask(fi);
                     }
-                }
-                else if (status != PicStatus.NOTCHANGED && fi.getStatus() != status)
-                {
+                } else if (status != PicStatus.NOTCHANGED && fi.getStatus() != status) {
                     fi.setStatus(status);
                     updatePhotoInfo(fi);
                     PerformanceStatistics.getInstance().addOneFile(true);
                 }
 
-                if (needSyncS3 && fi.getStatus() == PicStatus.NOT_EXIST)
-                {
+                if (needSyncS3 && fi.getStatus() == PicStatus.NOT_EXIST) {
                     //  if (HuaweiOBSSyncService.getInstance().objectExist(fi))
                     //  {
                     // 从远端云存储上面找回数据。
@@ -398,85 +326,63 @@ public class BaseSqliteStore extends AbstractRecordsStore
             }
             PerformanceStatistics.getInstance().printPerformanceLog(System.currentTimeMillis());
             logger.warn("end checking all records in the files table.");
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             logger.error("caught: ", e);
-        }
-        finally
-        {
+        } finally {
             closeResource(prep, res);
         }
     }
 
-    public void deleteRecord(String str, boolean isPath)
-    {
-        if (str == null || StringUtils.isBlank(str))
-        {
+    public void deleteRecord(String str, boolean isPath) {
+        if (str == null || StringUtils.isBlank(str)) {
             logger.warn("input file's path is empty.");
             return;
         }
 
         PreparedStatement prep = null;
-        try
-        {
+        try {
             lock.writeLock().lock();
-            if (isPath)
-            {
+            if (isPath) {
                 prep = conn.prepareStatement("delete from files where path=?;");
-            }
-            else
-            {
+            } else {
                 prep = conn.prepareStatement("delete from files where sha256=?;");
             }
             prep.setString(1, str);
             prep.execute();
             RefreshFlag.getInstance().getAndSet(true);
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             logger.error("caught: " + str, e);
-        }
-        finally
-        {
+        } finally {
             closeResource(prep, null);
             lock.writeLock().unlock();
         }
     }
 
-    public void setPhotoToBeHiden(FileInfo fi)
-    {
-        if (fi == null || StringUtils.isBlank(fi.getHash256()))
-        {
+    public void setPhotoToBeHiden(FileInfo fi) {
+        if (fi == null || StringUtils.isBlank(fi.getHash256())) {
             logger.warn("input file's path is empty.");
             return;
         }
         setPhotoToBeHiden(fi.getHash256(), false);
     }
 
-    public void deleteRecordsInDirs(String dir)
-    {
-        if (StringUtils.isBlank(dir))
-        {
+    public void deleteRecordsInDirs(String dir) {
+        if (StringUtils.isBlank(dir)) {
             return;
         }
 
         boolean deleteFile = false;
         // 以此来识别文件和文件夹。防止误删名称重叠的记录。
         // 删除IMG_0122.MOV时，不至于误删IMG_0122.MOV.mp4
-        if (!StringUtils.endsWith(dir, File.separator))
-        {
-            for (String suffix : AppConfig.getInstance().getFileSuffix())
-            {
-                if (StringUtils.endsWithIgnoreCase(dir, suffix))
-                {
+        if (!StringUtils.endsWith(dir, File.separator)) {
+            for (String suffix : AppConfig.getInstance().getFileSuffix()) {
+                if (StringUtils.endsWithIgnoreCase(dir, suffix)) {
                     deleteFile = true;
                     break;
                 }
             }
 
-            if (!deleteFile)
-            {
+            if (!deleteFile) {
                 dir = dir + File.separator;
             }
         }
@@ -485,43 +391,32 @@ public class BaseSqliteStore extends AbstractRecordsStore
         PreparedStatement prep = null;
         ResultSet res = null;
         boolean needDel = false;
-        try
-        {
+        try {
             lock.readLock().lock();
             prep = conn.prepareStatement("select * from files where path like ?;");
             prep.setString(1, dir + "%");
             res = prep.executeQuery();
-            if (res.next())
-            {
+            if (res.next()) {
                 needDel = true;
             }
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             logger.error("caught: ", e);
-        }
-        finally
-        {
+        } finally {
             closeResource(prep, res);
             lock.readLock().unlock();
         }
 
-        if (!needDel)
-        {
+        if (!needDel) {
             logger.info("there is not any item in the dir: {}", dir);
             return;
         }
 
         logger.warn("start to delete the items in the folder: {}", dir);
-        try
-        {
+        try {
             lock.writeLock().lock();
-            if (deleteFile)
-            {
+            if (deleteFile) {
                 prep = conn.prepareStatement("update files set deleted=? where path=?;");
-            }
-            else
-            {
+            } else {
                 prep = conn.prepareStatement("update files set deleted=? where path like ?;");
             }
 
@@ -530,48 +425,34 @@ public class BaseSqliteStore extends AbstractRecordsStore
             prep.execute();
             RefreshFlag.getInstance().getAndSet(true);
             logger.warn("end to delete the items in the folder: {}", dir);
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             logger.error("caught: " + dir, e);
-        }
-        finally
-        {
+        } finally {
             closeResource(prep, null);
             lock.writeLock().unlock();
         }
     }
 
-    public void setPhotoToBeHiden(String file, boolean isPath)
-    {
-        if (StringUtils.isBlank(file))
-        {
+    public void setPhotoToBeHiden(String file, boolean isPath) {
+        if (StringUtils.isBlank(file)) {
             logger.warn("input file is empty.");
             return;
         }
 
         PreparedStatement prep = null;
-        try
-        {
+        try {
             lock.writeLock().lock();
-            if (isPath)
-            {
+            if (isPath) {
                 prep = conn.prepareStatement("update files set deleted='true' where path=?;");
-            }
-            else
-            {
+            } else {
                 prep = conn.prepareStatement("update files set deleted='true' where sha256=?;");
             }
             prep.setString(1, file);
             prep.execute();
             RefreshFlag.getInstance().getAndSet(true);
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             logger.error("caught: " + file, e);
-        }
-        finally
-        {
+        } finally {
             closeResource(prep, null);
             lock.writeLock().unlock();
         }
@@ -580,10 +461,8 @@ public class BaseSqliteStore extends AbstractRecordsStore
     /**
      * @return 返回true，则为新插入，否则更新信息。
      */
-    public boolean checkAndRefreshFileInfo(FileInfo fi)
-    {
-        if (fi == null || StringUtils.isBlank(fi.getHash256()))
-        {
+    public boolean checkAndRefreshFileInfo(FileInfo fi) {
+        if (fi == null || StringUtils.isBlank(fi.getHash256())) {
             logger.warn("input id is empty.");
             return false;
         }
@@ -591,20 +470,17 @@ public class BaseSqliteStore extends AbstractRecordsStore
         String id = fi.getHash256();
         ResultSet res = null;
         PreparedStatement prep = null;
-        try
-        {
+        try {
             lock.readLock().lock();
             prep = conn.prepareStatement("select * from files where sha256=?;");
             prep.setString(1, id);
             res = prep.executeQuery();
 
-            if (res.next())
-            {
+            if (res.next()) {
                 // 同步已经存在的文件的时间和隐藏状态。
                 FileInfo fexist = getFileInfoFromTable(res);
 
-                if (fexist.getStatus() == PicStatus.HIDDEN)
-                {
+                if (fexist.getStatus() == PicStatus.HIDDEN) {
                     fi.setStatus(fexist.getStatus());
                     logger.warn("the file is already hidden: {}, orig: {}", fi, fexist);
                 }
@@ -612,13 +488,9 @@ public class BaseSqliteStore extends AbstractRecordsStore
             }
 
             // RefreshFlag.getInstance().getAndSet(true);
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             logger.error("caught: " + id, e);
-        }
-        finally
-        {
+        } finally {
             closeResource(prep, res);
             lock.readLock().unlock();
         }

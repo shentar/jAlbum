@@ -12,48 +12,43 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
-public class UniqPhotosStore extends AbstractRecordsStore
-{
+public class UniqPhotosStore extends AbstractRecordsStore {
     public static final String tableName = "uniqphotos1";
 
     private static final Logger logger = LoggerFactory.getLogger(UniqPhotosStore.class);
 
     private static UniqPhotosStore instance = new UniqPhotosStore();
 
-    private UniqPhotosStore()
-    {
+    private UniqPhotosStore() {
 
     }
 
-    public static UniqPhotosStore getInstance()
-    {
+    public static UniqPhotosStore getInstance() {
         return instance;
     }
 
-    public FileInfo getOneFileByHashStr(String id)
-    {
+    public FileInfo getOneFileByHashStr(String id) {
         PreparedStatement prep = null;
         ResultSet res = null;
-        try
-        {
+        try {
             lock.readLock().lock();
             prep = conn.prepareStatement("select * from uniqphotos1 where hashstr=?;");
             prep.setString(1, id);
             res = prep.executeQuery();
 
-            if (res.next())
-            {
+            if (res.next()) {
                 return getFileInfoFromTable(res);
             }
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             logger.error("caught: ", e);
-        }
-        finally
-        {
+        } finally {
             closeResource(prep, res);
             lock.readLock().unlock();
         }
@@ -61,52 +56,41 @@ public class UniqPhotosStore extends AbstractRecordsStore
         return null;
     }
 
-    public Map<String, DateRecords> genAllDateRecords()
-    {
+    public Map<String, DateRecords> genAllDateRecords() {
 
         PreparedStatement prep = null;
         ResultSet res = null;
 
-        try
-        {
+        try {
             logger.debug("start to get all date records");
             lock.readLock().lock();
             prep = conn.prepareStatement("select * from uniqphotos1;");
             res = prep.executeQuery();
 
             Map<String, DateRecords> dst = new HashMap<>();
-            while (res.next())
-            {
+            while (res.next()) {
                 Date ptime = res.getDate("phototime");
-                if (ptime == null)
-                {
+                if (ptime == null) {
                     logger.warn("some error file: " + res.getString("hashstr"));
                     continue;
                 }
                 String datestr = HeadUtils.formatDate(ptime);
 
                 DateRecords dr = dst.get(datestr);
-                if (dr == null)
-                {
+                if (dr == null) {
                     dr = new DateRecords();
                     dr.setDatestr(datestr);
                     dr.setPiccount(1);
                     dr.setFirstpic(res.getString("hashstr"));
                     dst.put(datestr, dr);
-                }
-                else
-                {
+                } else {
                     dr.setPiccount(dr.getPiccount() + 1);
                 }
             }
             return dst;
-        }
-        catch (SQLException e)
-        {
+        } catch (SQLException e) {
             logger.error("caught: ", e);
-        }
-        finally
-        {
+        } finally {
             closeResource(prep, res);
             lock.readLock().unlock();
             logger.debug("end to get all date records.");
@@ -116,53 +100,40 @@ public class UniqPhotosStore extends AbstractRecordsStore
     }
 
     public List<FileInfo> getNextNineFileByHashStr(String id, int count, boolean isnext,
-                                                   boolean isvideo)
-    {
+                                                   boolean isvideo) {
         logger.debug("start to get file list: {}, {}, {}, {}", id, count, isnext, isvideo);
         PreparedStatement prep = null;
         ResultSet res = null;
-        try
-        {
+        try {
             lock.readLock().lock();
             String sqlstr = "select * from uniqphotos1";
 
             FileInfo fi = null;
-            if (id != null)
-            {
+            if (id != null) {
                 fi = getOneFileByHashStr(id);
             }
 
-            if (fi != null)
-            {
+            if (fi != null) {
                 sqlstr += " where phototime";
-                if (isnext)
-                {
+                if (isnext) {
                     sqlstr += "<?";
-                }
-                else
-                {
+                } else {
                     sqlstr += ">?";
                 }
 
-                if (isvideo)
-                {
+                if (isvideo) {
                     sqlstr += " and ftype==?";
                 }
 
-                if (!isnext)
-                {
+                if (!isnext) {
                     sqlstr += " order by phototime asc";
                 }
-            }
-            else
-            {
-                if (isvideo)
-                {
+            } else {
+                if (isvideo) {
                     sqlstr += " where ftype==?";
                 }
 
-                if (!isnext)
-                {
+                if (!isnext) {
                     sqlstr += " order by phototime asc";
                 }
             }
@@ -170,18 +141,13 @@ public class UniqPhotosStore extends AbstractRecordsStore
             sqlstr += " limit " + count + ";";
             prep = conn.prepareStatement(sqlstr);
 
-            if (fi != null)
-            {
+            if (fi != null) {
                 prep.setDate(1, fi.getPhotoTime());
-                if (isvideo)
-                {
+                if (isvideo) {
                     prep.setInt(2, FileType.VIDEO.ordinal());
                 }
-            }
-            else
-            {
-                if (isvideo)
-                {
+            } else {
+                if (isvideo) {
                     prep.setInt(1, FileType.VIDEO.ordinal());
                 }
             }
@@ -189,25 +155,19 @@ public class UniqPhotosStore extends AbstractRecordsStore
             res = prep.executeQuery();
 
             List<FileInfo> lst = new LinkedList<>();
-            while (res.next())
-            {
+            while (res.next()) {
                 FileInfo f = getFileInfoFromTable(res);
                 lst.add(f);
             }
 
-            if (!isnext && !lst.isEmpty())
-            {
+            if (!isnext && !lst.isEmpty()) {
                 Collections.reverse(lst);
             }
 
             return lst;
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             logger.error("caught: ", e);
-        }
-        finally
-        {
+        } finally {
             closeResource(prep, res);
             lock.readLock().unlock();
             logger.debug("end to get file list: {}, {}, {}, {}", id, count, isnext, isvideo);
@@ -216,37 +176,28 @@ public class UniqPhotosStore extends AbstractRecordsStore
         return null;
     }
 
-    public void getDupFiles()
-    {
+    public void getDupFiles() {
         /**
          * select * from files where sha256 in( select sha256 from files group
          * by sha256 having count(sha256)>1 ) ORDER BY sha256
          */
         PreparedStatement prep;
-        try
-        {
+        try {
             boolean ut1 = checkTableExist("uniqphotos1");
             boolean ut2 = checkTableExist("uniqphotos2");
             boolean utmp = checkTableExist("uniqphotostmp");
 
-            if (ut1 && ut2 && utmp)
-            {
+            if (ut1 && ut2 && utmp) {
                 logger.warn("three tables are both exist.");
                 dropTable("uniqphotostmp");
-            }
-            else if ((!ut1) && ut2 && utmp)
-            {
+            } else if ((!ut1) && ut2 && utmp) {
                 lock.writeLock().lock();
                 renameTable("uniqphotos2", "uniqphotos1");
                 lock.writeLock().unlock();
                 renameTable("uniqphotostmp", "uniqphotos2");
-            }
-            else if (ut1 && (!ut2) && utmp)
-            {
+            } else if (ut1 && (!ut2) && utmp) {
                 renameTable("uniqphotostmp", "uniqphotos2");
-            }
-            else if (!(ut1 && ut2))
-            {
+            } else if (!(ut1 && ut2)) {
                 logger.error("some error occured.");
                 return;
             }
@@ -256,11 +207,11 @@ public class UniqPhotosStore extends AbstractRecordsStore
 
             BaseSqliteStore.getInstance().lock.readLock().lock();
             prep = conn.prepareStatement("insert into uniqphotos2(path,hashstr,size,phototime,"
-                                                 + "width,height,degree, ftype) select path,sha256,size,"
-                                                 + "phototime,width,height,degree,ftype from files where "
-                                                 + "(deleted=='false' or deleted=='EXIST' or deleted is null) and "
-                                                 + "sha256 in(select sha256 from files group by sha256) "
-                                                 + "group by sha256 ORDER BY phototime DESC");
+                    + "width,height,degree, ftype) select path,sha256,size,"
+                    + "phototime,width,height,degree,ftype from files where "
+                    + "(deleted=='false' or deleted=='EXIST' or deleted is null) and "
+                    + "sha256 in(select sha256 from files group by sha256) "
+                    + "group by sha256 ORDER BY phototime DESC");
             prep.execute();
             closeResource(prep, null);
             BaseSqliteStore.getInstance().lock.readLock().unlock();
@@ -274,16 +225,13 @@ public class UniqPhotosStore extends AbstractRecordsStore
             lock.writeLock().unlock();
 
             renameTable("uniqphotostmp", "uniqphotos2");
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             logger.error("caught: ", e);
         }
 
     }
 
-    private FileInfo getFileInfoFromTable(ResultSet res) throws SQLException
-    {
+    private FileInfo getFileInfoFromTable(ResultSet res) throws SQLException {
         FileInfo fi = new FileInfo();
         fi.setPath(res.getString("path"));
         fi.setHash256(res.getString("hashstr"));
@@ -297,12 +245,10 @@ public class UniqPhotosStore extends AbstractRecordsStore
         return fi;
     }
 
-    public List<FileInfo> getAllPhotosBy(String day)
-    {
+    public List<FileInfo> getAllPhotosBy(String day) {
         java.util.Date d;
         d = HeadUtils.parseDate(day);
-        if (d == null)
-        {
+        if (d == null) {
             return new ArrayList<>();
         }
 
@@ -310,8 +256,7 @@ public class UniqPhotosStore extends AbstractRecordsStore
         ResultSet res = null;
         Date dstart = new Date(d.getTime());
         Date dend = new Date(d.getTime() + 24 * 3600 * 1000);
-        try
-        {
+        try {
             lock.readLock().lock();
             prep = conn.prepareStatement(
                     "select * from uniqphotos1 where phototime>=? and phototime<?;");
@@ -320,75 +265,56 @@ public class UniqPhotosStore extends AbstractRecordsStore
             res = prep.executeQuery();
 
             List<FileInfo> flst = new LinkedList<>();
-            while (res.next())
-            {
+            while (res.next()) {
                 FileInfo f = getFileInfoFromTable(res);
                 flst.add(f);
             }
             return flst;
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             logger.error("caught: ", e);
-        }
-        finally
-        {
+        } finally {
             closeResource(prep, res);
             lock.readLock().unlock();
         }
         return null;
     }
 
-    public void deleteRecordByID(String id)
-    {
-        if (id == null || StringUtils.isBlank(id))
-        {
+    public void deleteRecordByID(String id) {
+        if (id == null || StringUtils.isBlank(id)) {
             logger.warn("input file's path is empty.");
             return;
         }
 
         PreparedStatement prep = null;
-        try
-        {
+        try {
             lock.writeLock().lock();
             prep = conn.prepareStatement("delete from uniqphotos1 where hashstr=?;");
             prep.setString(1, id);
             prep.execute();
             prep.close();
             RefreshFlag.getInstance().getAndSet(true);
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             logger.error("caught: " + id, e);
-        }
-        finally
-        {
+        } finally {
             closeResource(prep, null);
             lock.writeLock().unlock();
         }
     }
 
-    public long getVideoCount()
-    {
+    public long getVideoCount() {
         PreparedStatement prep = null;
         ResultSet res = null;
-        try
-        {
+        try {
             lock.writeLock().lock();
             prep = conn.prepareStatement("select count(1) from uniqphotos1 where ftype=?;");
             prep.setInt(1, FileType.VIDEO.ordinal());
             res = prep.executeQuery();
-            if (res.next())
-            {
+            if (res.next()) {
                 return res.getLong(1);
             }
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             logger.error("caught: ", e);
-        }
-        finally
-        {
+        } finally {
             closeResource(prep, null);
             lock.writeLock().unlock();
         }

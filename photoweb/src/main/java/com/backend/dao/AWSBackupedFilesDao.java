@@ -1,21 +1,17 @@
 package com.backend.dao;
 
-public class AWSBackupedFilesDao extends BackupedFilesDao
-{
+public class AWSBackupedFilesDao extends BackupedFilesDao {
     private static BackupedFilesDao instance = new AWSBackupedFilesDao();
 
-    private AWSBackupedFilesDao()
-    {
+    private AWSBackupedFilesDao() {
 
     }
 
-    public static BackupedFilesDao getInstance()
-    {
+    public static BackupedFilesDao getInstance() {
         return instance;
     }
 
-    public String getBackupedTableName()
-    {
+    public String getBackupedTableName() {
         return "backupded";
     }
 }

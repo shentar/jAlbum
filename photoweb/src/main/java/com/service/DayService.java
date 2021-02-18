@@ -19,21 +19,18 @@ import javax.ws.rs.core.Response.ResponseBuilder;
 import java.util.List;
 import java.util.TreeMap;
 
-public class DayService
-{
+public class DayService {
     private static final Logger logger = LoggerFactory.getLogger(MonthService.class);
 
     private String day;
 
-    public DayService(String day)
-    {
+    public DayService(String day) {
         this.day = day;
     }
 
     @GET
     public Response getDayIndex(@Context HttpServletRequest req,
-            @Context HttpServletResponse response)
-    {
+                                @Context HttpServletResponse response) {
         ResponseBuilder builder = Response.status(200);
         TreeMap<String, TreeMap<String, TreeMap<String, DateRecords>>> map = DateTableDao
                 .getInstance().getAllDateRecord();
@@ -47,35 +44,28 @@ public class DayService
         TreeMap<String, DateRecords> mmap;
 
         TreeMap<String, TreeMap<String, DateRecords>> ymap = map.get(year);
-        if (ymap != null)
-        {
+        if (ymap != null) {
             mmap = ymap.get(month);
-            if (mmap != null)
-            {
+            if (mmap != null) {
                 dr = mmap.get(sday);
                 prevDay = mmap.lowerKey(sday);
-                if (StringUtils.isNotBlank(prevDay))
-                {
+                if (StringUtils.isNotBlank(prevDay)) {
                     prevDay = year + month + prevDay;
                 }
 
                 nextDay = mmap.higherKey(sday);
-                if (StringUtils.isNotBlank(nextDay))
-                {
+                if (StringUtils.isNotBlank(nextDay)) {
                     nextDay = year + month + nextDay;
                 }
             }
         }
 
-        if (dr == null)
-        {
+        if (dr == null) {
             logger.info("there is no photos in day: " + day);
             builder.status(404);
             builder.entity(GenerateHTML.generate404Notfound());
             return builder.build();
-        }
-        else
-        {
+        } else {
             List<FileInfo> flst = UniqPhotosStore.getInstance().getAllPhotosBy(day);
             builder.entity(GenerateHTML.generateDayPage(day, prevDay, nextDay, flst,
                     HeadUtils.isMobile() ? 3 : 5));

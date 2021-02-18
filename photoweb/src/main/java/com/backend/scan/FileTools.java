@@ -14,7 +14,12 @@ import org.slf4j.LoggerFactory;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
@@ -25,8 +30,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 
-public class FileTools
-{
+public class FileTools {
     private static final Logger logger = LoggerFactory.getLogger(FileTools.class);
 
     public static final ExecutorService threadPool =
@@ -36,49 +40,38 @@ public class FileTools
     public static final ExecutorService threadPool4Thumbnail =
             ThreadPoolFactory.getThreadPool(ThreadPoolFactory.THREAD_POOL_4THUMBNAIL);
 
-    public static void readShortFileContent(byte[] buffer, File f) throws IOException
-    {
+    public static void readShortFileContent(byte[] buffer, File f) throws IOException {
         int maxLen = buffer.length;
         FileInputStream fin = null;
-        try
-        {
+        try {
             fin = new FileInputStream(f);
 
             int offset = 0;
-            while (true)
-            {
+            while (true) {
                 int readlen = fin.read(buffer, offset, maxLen - offset);
-                if (readlen < 0)
-                {
+                if (readlen < 0) {
                     break;
                 }
 
                 offset += readlen;
 
-                if (offset >= maxLen)
-                {
+                if (offset >= maxLen) {
                     break;
                 }
             }
-        }
-        finally
-        {
-            if (fin != null)
-            {
+        } finally {
+            if (fin != null) {
                 fin.close();
             }
         }
     }
 
-    private static boolean checkFileExist(String path)
-    {
+    private static boolean checkFileExist(String path) {
         return !StringUtils.isBlank(path) && new File(path).isFile();
     }
 
-    public static boolean checkFileLengthValid(String path)
-    {
-        if (StringUtils.isBlank(path))
-        {
+    public static boolean checkFileLengthValid(String path) {
+        if (StringUtils.isBlank(path)) {
             return false;
         }
         File f = new File(path);
@@ -89,14 +82,10 @@ public class FileTools
 
     }
 
-    public static boolean checkExclude(final FileInfo fi, List<String> excludeDirs)
-    {
-        if (excludeDirs != null && fi != null)
-        {
-            for (String dir : excludeDirs)
-            {
-                if (fi.getPath().startsWith(dir))
-                {
+    public static boolean checkExclude(final FileInfo fi, List<String> excludeDirs) {
+        if (excludeDirs != null && fi != null) {
+            for (String dir : excludeDirs) {
+                if (fi.getPath().startsWith(dir)) {
                     return true;
                 }
             }
@@ -105,10 +94,8 @@ public class FileTools
         return false;
     }
 
-    public static boolean checkFileChanged(final FileInfo fi) throws IOException
-    {
-        if (fi == null)
-        {
+    public static boolean checkFileChanged(final FileInfo fi) throws IOException {
+        if (fi == null) {
             return true;
         }
 
@@ -118,48 +105,39 @@ public class FileTools
     }
 
     public static PicStatus checkFileDeleted(final FileInfo fi, List<String> excludeDirs)
-            throws IOException
-    {
+            throws IOException {
         // 判空。
-        if (fi == null)
-        {
+        if (fi == null) {
             return PicStatus.ERRORFILE;
         }
 
-        switch (fi.getStatus())
-        {
+        switch (fi.getStatus()) {
             case EXIST:
-                if (!checkFileExist(fi.getPath()))
-                {
+                if (!checkFileExist(fi.getPath())) {
                     return PicStatus.NOT_EXIST;
                 }
 
-                if (!checkFileLengthValid(fi.getPath()))
-                {
+                if (!checkFileLengthValid(fi.getPath())) {
                     return PicStatus.ERRORFILE;
                 }
 
-                if (checkExclude(fi, excludeDirs))
-                {
+                if (checkExclude(fi, excludeDirs)) {
                     return PicStatus.ERRORFILE;
                 }
 
-                if (checkFileChanged(fi))
-                {
+                if (checkFileChanged(fi)) {
                     return PicStatus.ERRORFILE;
                 }
                 break;
             case ERRORFILE:
             case NOT_EXIST:
                 if (checkFileExist(fi.getPath()) && checkFileLengthValid(fi.getPath())
-                        && !checkExclude(fi, excludeDirs) && !checkFileChanged(fi))
-                {
+                        && !checkExclude(fi, excludeDirs) && !checkFileChanged(fi)) {
                     return PicStatus.EXIST;
                 }
                 break;
             case HIDDEN:
-                if (checkFileChanged(fi))
-                {
+                if (checkFileChanged(fi)) {
                     // TODO 已经被隐藏的文件被覆盖成其他文件或者已经删除。
                 }
                 break;
@@ -171,29 +149,23 @@ public class FileTools
     }
 
     @SuppressWarnings("unused")
-    private static void rotateOneFile(FileInfo fi, int angel)
-    {
+    private static void rotateOneFile(FileInfo fi, int angel) {
         FileTools.rotatePhonePhoto(fi.getPath(), angel);
         SimpleDateFormat sf = new SimpleDateFormat("yyyy:MM:dd HH:mm:ss");
-        try
-        {
+        try {
             String tmpFilePath = fi.getPath() + "_tmpfile";
             new File(fi.getPath()).renameTo(new File(tmpFilePath));
             ExifCreator.addExifDate(
                     new String[]{tmpFilePath, fi.getPath(), sf.format(fi.getPhotoTime())});
 
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             logger.error("caught: ", e);
         }
     }
 
-    public static long getFileCreateTime(File f) throws IOException
-    {
+    public static long getFileCreateTime(File f) throws IOException {
         // 取文件的创建时间和修改时间里面较小者。
-        if (f == null)
-        {
+        if (f == null) {
             return -1;
         }
         Path path = FileSystems.getDefault().getPath(f.getParent(), f.getName());
@@ -201,9 +173,8 @@ public class FileTools
                 Files.readAttributes(path, BasicFileAttributes.class, LinkOption.NOFOLLOW_LINKS);
         long timetmp = attrs.lastModifiedTime().toMillis();
         logger.debug("the timetmp is: lastModify[{}], creation[{}], fileLastModify[{}]",
-                     attrs.lastModifiedTime(), attrs.creationTime(), new Date(f.lastModified()));
-        if (timetmp > attrs.creationTime().toMillis())
-        {
+                attrs.lastModifiedTime(), attrs.creationTime(), new Date(f.lastModified()));
+        if (timetmp > attrs.creationTime().toMillis()) {
             timetmp = attrs.creationTime().toMillis();
         }
 
@@ -216,11 +187,9 @@ public class FileTools
      *
      * @return
      */
-    public static void rotatePhonePhoto(String fullPath, int angel)
-    {
+    public static void rotatePhonePhoto(String fullPath, int angel) {
         BufferedImage src;
-        try
-        {
+        try {
             File oldFile = new File(fullPath);
             src = ImageIO.read(oldFile);
             int src_width = src.getWidth(null);
@@ -229,8 +198,7 @@ public class FileTools
             int swidth = src_width;
             int sheight = src_height;
 
-            if (angel == 90 || angel == 270)
-            {
+            if (angel == 90 || angel == 270) {
                 swidth = src_height;
                 sheight = src_width;
             }
@@ -250,56 +218,39 @@ public class FileTools
             ImageIO.write(res, "jpg", newTmpFile);
             oldFile.renameTo(new File(fullPath + ".old"));
             newTmpFile.renameTo(oldFile);
-        }
-        catch (IOException e)
-        {
+        } catch (IOException e) {
             logger.warn("cause by: ", e);
         }
     }
 
-    public static boolean copyFile(String src, String dst)
-    {
+    public static boolean copyFile(String src, String dst) {
         BufferedInputStream fis = null;
         BufferedOutputStream fos = null;
-        try
-        {
+        try {
             byte[] iobuff = new byte[1024 * 16];
             fis = new BufferedInputStream(new FileInputStream(src));
             fos = new BufferedOutputStream(new FileOutputStream(dst));
 
             int bytes;
-            while ((bytes = fis.read(iobuff)) != -1)
-            {
+            while ((bytes = fis.read(iobuff)) != -1) {
                 fos.write(iobuff, 0, bytes);
             }
 
             return true;
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             logger.warn("copy file failed!", e);
-        }
-        finally
-        {
-            if (fis != null)
-            {
-                try
-                {
+        } finally {
+            if (fis != null) {
+                try {
                     fis.close();
-                }
-                catch (IOException e)
-                {
+                } catch (IOException e) {
                     logger.warn("caused by: ", e);
                 }
             }
-            if (fos != null)
-            {
-                try
-                {
+            if (fos != null) {
+                try {
                     fos.close();
-                }
-                catch (IOException e)
-                {
+                } catch (IOException e) {
                     logger.warn("caused by: ", e);
                 }
             }
@@ -307,26 +258,19 @@ public class FileTools
         return false;
     }
 
-    public static void submitAnThumbnailTask(final FileInfo fi)
-    {
+    public static void submitAnThumbnailTask(final FileInfo fi) {
         if (!GlobalLockBaseOnString.getInstance(GlobalLockBaseOnString.PIC_THUMBNAIL_LOCK)
-                .tryToDo(fi.getHash256()))
-        {
+                .tryToDo(fi.getHash256())) {
             logger.warn("the task of pic id [{}] is already being done.", fi);
             return;
         }
 
-        threadPool4Thumbnail.submit(new Runnable()
-        {
+        threadPool4Thumbnail.submit(new Runnable() {
             @Override
-            public void run()
-            {
-                try
-                {
+            public void run() {
+                try {
                     ThumbnailManager.checkAndGenThumbnail(fi);
-                }
-                finally
-                {
+                } finally {
                     GlobalLockBaseOnString.getInstance(GlobalLockBaseOnString.PIC_THUMBNAIL_LOCK)
                             .done(fi.getHash256());
                 }

@@ -2,8 +2,7 @@ package com.backend.facer;
 
 import com.backend.entity.FileInfo;
 
-public class Face
-{
+public class Face {
     private String etag;
 
     private String facetoken;
@@ -22,8 +21,7 @@ public class Face
 
     private FileInfo fi;
 
-    public Face()
-    {
+    public Face() {
         faceid = -1;
         quality = "0";
         facetoken = "null";
@@ -32,101 +30,82 @@ public class Face
         pos = "null";
     }
 
-    public String getEtag()
-    {
+    public String getEtag() {
         return etag;
     }
 
-    public void setEtag(String etag)
-    {
+    public void setEtag(String etag) {
         this.etag = etag;
     }
 
-    public String getFacetoken()
-    {
+    public String getFacetoken() {
         return facetoken;
     }
 
-    public void setFacetoken(String facetoken)
-    {
+    public void setFacetoken(String facetoken) {
         this.facetoken = facetoken;
     }
 
-    public long getFaceid()
-    {
+    public long getFaceid() {
         return faceid;
     }
 
-    public void setFaceid(long faceid)
-    {
+    public void setFaceid(long faceid) {
         this.faceid = faceid;
     }
 
-    public String getPos()
-    {
+    public String getPos() {
         return pos;
     }
 
-    public void setPos(String pos)
-    {
+    public void setPos(String pos) {
         this.pos = pos;
     }
 
-    public String getQuality()
-    {
+    public String getQuality() {
         return quality;
     }
 
-    public void setQuality(String quality)
-    {
+    public void setQuality(String quality) {
         this.quality = quality;
     }
 
-    public String getGender()
-    {
+    public String getGender() {
         return gender;
     }
 
-    public void setGender(String gender)
-    {
+    public void setGender(String gender) {
         this.gender = gender;
     }
 
-    public String getAge()
-    {
+    public String getAge() {
         return age;
     }
 
-    public void setAge(String age)
-    {
+    public void setAge(String age) {
         this.age = age;
     }
 
-    public FileInfo getFi()
-    {
+    public FileInfo getFi() {
         return fi;
     }
 
-    public void setFi(FileInfo fi)
-    {
+    public void setFi(FileInfo fi) {
         this.fi = fi;
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return "Face [etag=" + etag + ", facetoken=" + facetoken + ", faceid=" + faceid + ", pos="
                 + pos + ", quality=" + quality + ", gender=" + gender + ", age=" + age + ", fi="
                 + fi + "]";
     }
 
-    public long getPtime()
-    {
+    public long getPtime() {
         return ptime;
     }
 
-    public void setPtime(long ptime)
-    {
+    public void setPtime(long ptime) {
         this.ptime = ptime;
     }
 }

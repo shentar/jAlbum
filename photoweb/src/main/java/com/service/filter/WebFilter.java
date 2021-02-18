@@ -10,33 +10,33 @@ import org.apache.log4j.MDC;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.servlet.*;
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-public class WebFilter implements Filter
-{
+public class WebFilter implements Filter {
     private static final Logger logger = LoggerFactory.getLogger(WebFilter.class);
 
     @Override
-    public void destroy()
-    {
+    public void destroy() {
 
     }
 
     @Override
     public void doFilter(ServletRequest req, ServletResponse res, FilterChain chains)
-            throws IOException, ServletException
-    {
+            throws IOException, ServletException {
         long startTime = System.currentTimeMillis();
-        try
-        {
+        try {
             initMDC();
             MDC.put(SystemConstant.REQUESTIDKEY, UUIDGenerator.getUUID());
 
-            if (!(req instanceof HttpServletRequest) || !(res instanceof HttpServletResponse))
-            {
+            if (!(req instanceof HttpServletRequest) || !(res instanceof HttpServletResponse)) {
                 logger.error("got an not request not http.");
                 return;
             }
@@ -44,39 +44,34 @@ public class WebFilter implements Filter
             HttpServletResponse newres = (HttpServletResponse) res;
 
             newres.setHeader(SystemConstant.REQUEST_ID_HEADER,
-                             (String) MDC.get(SystemConstant.REQUESTIDKEY));
+                    (String) MDC.get(SystemConstant.REQUESTIDKEY));
 
             MDC.put(SystemConstant.HOST_NAME,
                     newreq.getHeader("Host") + "/" + newreq.getLocalAddr() + ":" + newreq
                             .getLocalPort());
 
             String useragent = newreq.getHeader(SystemConstant.USER_AGENT_HEADER);
-            if (StringUtils.isNotBlank(useragent))
-            {
+            if (StringUtils.isNotBlank(useragent)) {
                 MDC.put(SystemConstant.USER_AGENT, useragent);
                 HeadUtils.checkMobile(useragent);
 
                 logger.info("user agent is: " + useragent);
             }
 
-            if (newreq.getParameter("video") != null)
-            {
+            if (newreq.getParameter("video") != null) {
                 SystemProperties.add(SystemConstant.IS_VIDEO, true);
             }
 
-            if (newreq.getParameter("face") != null)
-            {
+            if (newreq.getParameter("face") != null) {
                 SystemProperties.add(SystemConstant.IS_FACES_KEY, Boolean.TRUE);
             }
 
-            if (newreq.getParameter("noface") != null)
-            {
+            if (newreq.getParameter("noface") != null) {
                 SystemProperties.add(SystemConstant.IS_NO_FACES_KEY, Boolean.TRUE);
             }
 
             String ft = newreq.getParameter("facetoken");
-            if (ft != null && ft.length() >= 32)
-            {
+            if (ft != null && ft.length() >= 32) {
                 SystemProperties.add(SystemConstant.FACE_TOKEN_KEY, ft);
             }
 
@@ -84,8 +79,7 @@ public class WebFilter implements Filter
                     newreq.getRemoteAddr() + ":" + newreq.getRemotePort());
 
             String url = newreq.getRequestURI();
-            if (StringUtils.isNotBlank(newreq.getQueryString()))
-            {
+            if (StringUtils.isNotBlank(newreq.getQueryString())) {
                 url += ("?" + newreq.getQueryString());
             }
             MDC.put(SystemConstant.HTTP_URI, url);
@@ -95,9 +89,7 @@ public class WebFilter implements Filter
             MDC.put(SystemConstant.HTTP_STATUS, "" + newres.getStatus());
             MDC.put(SystemConstant.USER_LOGIN_STATUS,
                     "" + SystemProperties.get(SystemConstant.USER_LOGIN_STATUS));
-        }
-        finally
-        {
+        } finally {
             MDC.put(SystemConstant.CONSUMED_TIME, (System.currentTimeMillis() - startTime) + "");
             MDC.put(SystemConstant.IS_MOBILE_KEY, "" + HeadUtils.isMobile());
             AccessLogger.accessLog();
@@ -107,8 +99,7 @@ public class WebFilter implements Filter
         }
     }
 
-    private void initMDC()
-    {
+    private void initMDC() {
         MDC.put(SystemConstant.CONSUMED_TIME, SystemConstant.DEFAULT_LOG_VALUE);
         MDC.put(SystemConstant.IS_MOBILE_KEY, SystemConstant.DEFAULT_LOG_VALUE);
         MDC.put(SystemConstant.HTTP_STATUS, SystemConstant.DEFAULT_LOG_VALUE);
@@ -123,8 +114,7 @@ public class WebFilter implements Filter
     }
 
     @Override
-    public void init(FilterConfig arg0) throws ServletException
-    {
+    public void init(FilterConfig arg0) throws ServletException {
 
     }
 

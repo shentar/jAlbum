@@ -11,8 +11,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class VideoTransCodingTool
-{
+public class VideoTransCodingTool {
     private static final Logger logger = LoggerFactory.getLogger(VideoTransCodingTool.class);
 
     private static final List<String> SUPPORTED_SUFFIX =
@@ -21,12 +20,9 @@ public class VideoTransCodingTool
     private static final String DST_FORMAT = ".mp4";
 
 
-    public static boolean needConvert(String fpath)
-    {
-        for (String suffix : SUPPORTED_SUFFIX)
-        {
-            if (StringUtils.endsWithIgnoreCase(fpath, suffix))
-            {
+    public static boolean needConvert(String fpath) {
+        for (String suffix : SUPPORTED_SUFFIX) {
+            if (StringUtils.endsWithIgnoreCase(fpath, suffix)) {
                 return true;
             }
         }
@@ -34,21 +30,17 @@ public class VideoTransCodingTool
         return false;
     }
 
-    public static String checkAndConvertToMP4(String fpath)
-    {
-        if (!needConvert(fpath))
-        {
+    public static String checkAndConvertToMP4(String fpath) {
+        if (!needConvert(fpath)) {
             return fpath;
         }
 
-        try
-        {
+        try {
             String dstFpath = fpath + "_" + System.currentTimeMillis() + DST_FORMAT;
             String dstFpathTmp = dstFpath + ".tmp";
             File fdst = new File(dstFpath);
             File fdstTmp = new File(dstFpathTmp);
-            if (fdst.exists() || fdstTmp.exists())
-            {
+            if (fdst.exists() || fdstTmp.exists()) {
                 logger.warn("the file [{}] has already been converted to [{}].", fpath, dstFpath);
                 return null;
             }
@@ -58,28 +50,24 @@ public class VideoTransCodingTool
             fFmpegBuilder.addInput(fpath).addOutput(dstFpathTmp).setVideoCodec("copy")
                     .setAudioCodec("copy").setFormat("mp4")
                     .addExtraArgs("-c:a", "aac", "-map_metadata:s:a", "0:s:a", "-map_metadata",
-                                  "0:g", "-map_metadata:s:v", "0:s:v").done();
+                            "0:g", "-map_metadata:s:v", "0:s:v").done();
             fFmpeg.run(fFmpegBuilder, null);
             logger.warn("convert the file [{}] to [{}] successfully.", fpath, dstFpathTmp);
 
             File bakfile = new File(fpath + "_" + System.currentTimeMillis() + ".bak");
-            if (bakfile.exists())
-            {
+            if (bakfile.exists()) {
                 logger.warn("the file is already exist: {}", bakfile.getCanonicalPath());
                 return null;
             }
 
             File fin = new File(fpath);
-            if (fdstTmp.renameTo(fdst) && fin.renameTo(bakfile))
-            {
+            if (fdstTmp.renameTo(fdst) && fin.renameTo(bakfile)) {
                 return dstFpath;
             }
 
             logger.warn("rename the file [{}] to [{}] failed!", fpath, bakfile);
             return dstFpath;
-        }
-        catch (Throwable e)
-        {
+        } catch (Throwable e) {
             logger.warn("some error, ", e);
         }
 

@@ -1,36 +1,31 @@
 package com.shentar.frontend;
 
 import org.eclipse.jetty.http.HttpVersion;
-import org.eclipse.jetty.server.*;
+import org.eclipse.jetty.server.HttpConfiguration;
+import org.eclipse.jetty.server.HttpConnectionFactory;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.server.SslConnectionFactory;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.webapp.WebAppContext;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.LinkedList;
-import java.util.List;
 
-public class FrontMain
-{
+public class FrontMain {
     private static final int DEFAULT_PORT = 2148;
 
-    public static void main(String[] args) throws Exception
-    {
+    public static void main(String[] args) throws Exception {
         int port = DEFAULT_PORT;
-        if (args.length == 1)
-        {
+        if (args.length == 1) {
             String pstr = args[0];
-            try
-            {
+            try {
                 port = Integer.parseInt(pstr);
-                if (port < 0 || port > 65535)
-                {
+                if (port < 0 || port > 65535) {
                     port = DEFAULT_PORT;
                 }
-            }
-            catch (Exception e)
-            {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
@@ -47,21 +42,16 @@ public class FrontMain
 
         String epath = "lib" + File.separator + "extra";
         File[] fs = new File(epath).listFiles();
-        if (fs != null && fs.length > 0)
-        {
+        if (fs != null && fs.length > 0) {
             StringBuilder extraPath = new StringBuilder();
-            for (File f : fs)
-            {
+            for (File f : fs) {
                 String filename = f.getName();
-                if (filename.toLowerCase().endsWith(".jar"))
-                {
+                if (filename.toLowerCase().endsWith(".jar")) {
                     extraPath.append(epath).append(File.separator).append(filename).append(",");
                 }
             }
             context.setExtraClasspath(extraPath.toString());
-        }
-        else
-        {
+        } else {
             throw new IOException("there is no extra lib files.");
         }
 
