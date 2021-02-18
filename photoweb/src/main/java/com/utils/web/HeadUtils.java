@@ -99,7 +99,7 @@ public class HeadUtils {
 
     public static int getMaxCountOfOnePage() {
         return isMobile() ?
-                AppConfig.getInstance().getMobileMaxCountOfPicInOnePage(25) :
+                AppConfig.getInstance().getMobileMaxCountOfPicInOnePage(90) :
                 AppConfig.getInstance().getMaxCountOfPicInOnePage(25);
     }
 
@@ -191,7 +191,7 @@ public class HeadUtils {
     public static int judgeCountPerOnePage(HttpServletRequest req) {
         int count = 0;
         int maxCount = AppConfig.getInstance().getMaxCountOfPicInOnePage(25);
-        int mobileMaxCount = AppConfig.getInstance().getMobileMaxCountOfPicInOnePage(25);
+        int mobileMaxCount = AppConfig.getInstance().getMobileMaxCountOfPicInOnePage(90);
 
         if (req == null) {
             return isMobile() ? mobileMaxCount : maxCount;
