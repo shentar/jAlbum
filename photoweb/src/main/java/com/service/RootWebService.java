@@ -187,9 +187,7 @@ public class RootWebService extends HttpServlet {
             throws IOException {
         ResponseBuilder builder = Response.status(200);
         String body = GenerateHTML.genIndexPage(getFileList(req),
-                (HeadUtils.isMobile() || HeadUtils.isVideo()) ? 3
-                        : 5,
-                true);
+                (HeadUtils.isMobile() || HeadUtils.isVideo()) ? 3 : 5, true);
         if (StringUtils.isNotBlank(body)) {
             builder.entity(body);
             builder.header("Content-type", "text/html");

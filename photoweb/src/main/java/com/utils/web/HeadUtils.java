@@ -206,16 +206,16 @@ public class HeadUtils {
             count = maxCount;
         }
 
-        if (count > 9) {
+        if (count > 90) {
             if (HeadUtils.isMobile()) {
-                count = 9;
+                count = 90;
             }
         }
 
         boolean isvideo = HeadUtils.isVideo();
         if (isvideo) {
-            if (count > 6) {
-                count = 6;
+            if (count > 24) {
+                count = 24;
             }
         }
 
