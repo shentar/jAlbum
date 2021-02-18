@@ -559,7 +559,7 @@ public class GenerateHTML {
             if (size < 400) {
                 String style = "width:" + size + "px;text-align: center;vertical-align: middle;display: table-cell;";
                 if (isVideo) {
-                    style += "height:" + size + 20 + "px;";
+                    style += "height:" + (size + 20) + "px;";
                 } else {
                     style += "height:" + size + "px;overflow: hidden;";
                     needHeight = false;
