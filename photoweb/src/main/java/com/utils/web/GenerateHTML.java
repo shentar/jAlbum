@@ -597,12 +597,10 @@ public class GenerateHTML {
             String title = String.format(" title=\"size: %s&#13;path: %s\" ",
                     digitFormat.format(f.getSize()), f.getPath());
 
-            img += " src = \"/photos/" + f.getHash256() + "?content=true&size=" + size + (isFace
-                    ? "isface=true"
-                    : "")
+            img += " src = \"/photos/" + f.getHash256() + "?content=true&size=" + size + (isFace ? "isface=true" : "")
                     + "\"" + title;
             if (!needHeight) {
-                img += "style:\"width: 100%;height: 100%;object-fit: cover;\">";
+                img += " style=\"width: 100%;height: 100%;object-fit: cover;\">";
             } else {
                 img += ">";
             }
