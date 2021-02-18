@@ -554,11 +554,18 @@ public class GenerateHTML {
             boolean isVideo = MediaTool.isVideo(f.getPath());
             boolean needRoatate = HeadUtils.needRotatePic(f);
             boolean needRestrict = restrictSize(f);
+            boolean needHeight = true;
             String img = "";
-            if (size < 400 && needRoatate) {
-                String style = "width:" + size + "px;height: " + (isVideo ? size + 20 : size)
-                        + "px;text-align: center;vertical-align: middle;display: table-cell;";
-                img += "<dvi style=" + "\"" + style + "\">";
+            if (size < 400) {
+                String style = "width:" + size + "px;text-align: center;vertical-align: middle;display: table-cell;";
+                if (isVideo) {
+                    style += "height:" + size + 20 + "px;";
+                } else {
+                    style += "height:" + size + "px;overflow: hidden;";
+                    needHeight = false;
+                }
+
+                img += "<div style=" + "\"" + style + "\">";
             }
             img += "<img";
             img += " " + exinfo;
@@ -575,7 +582,7 @@ public class GenerateHTML {
                 }
             } else {
                 // 普通照片
-                if (f.getHeight() > size || f.getWidth() > size || f.getHeight() == 0
+                if (needHeight && f.getHeight() > size || f.getWidth() > size || f.getHeight() == 0
                         || f.getWidth() == 0) {
                     img += " " + (needRestrict ? "width" : "height") + "=" + "\"" + size + "px\"";
                 }
@@ -593,8 +600,15 @@ public class GenerateHTML {
             img += " src = \"/photos/" + f.getHash256() + "?content=true&size=" + size + (isFace
                     ? "isface=true"
                     : "")
-                    + "\"" + title + ">";
+                    + "\"" + title;
+            if (!needHeight) {
+                img += "style:\"width: 100%;height: 100%;object-fit: cover;\">";
+            } else {
+                img += ">";
+            }
+
             img += "</img>";
+
 
             if (isVideo && !HeadUtils.isVideo()) {
                 // img += "</br><span style=\"text-align: center;font-family:
@@ -604,7 +618,7 @@ public class GenerateHTML {
                         "</br><img width=\"20px\" style=\"padding: 2px 0 0px 0;\" src=\"/js/player.png\">";
             }
 
-            if (size < 400 && needRoatate) {
+            if (size < 400) {
                 img += "</div>";
             }
 
