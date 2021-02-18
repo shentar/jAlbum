@@ -207,12 +207,12 @@ public class HeadUtils {
         }
 
         if (isMobile()) {
-            if (count > maxCount) {
-                count = maxCount;
-            }
-        } else {
             if (count > mobileMaxCount) {
                 count = mobileMaxCount;
+            }
+        } else {
+            if (count > maxCount) {
+                count = maxCount;
             }
         }
 
