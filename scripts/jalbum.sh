@@ -74,8 +74,8 @@ case ${cmd} in
         stopnow
         ;;
     restart)
-        stopnow
-        startup
+        ${sf} stop
+        ${sf} start
         ;;
     *)
         usage
