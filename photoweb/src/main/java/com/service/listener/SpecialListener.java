@@ -17,14 +17,10 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 public class SpecialListener implements ServletContextListener {
-    private static Logger logger = LoggerFactory.getLogger(SpecialListener.class);
-
-    private static Future<?> fFreshAllData = null;
-
-    private static Future<?> fBackupScanTask = null;
-
     private static final int HOUR_TO_BACKUP = 22;
-
+    private static Logger logger = LoggerFactory.getLogger(SpecialListener.class);
+    private static Future<?> fFreshAllData = null;
+    private static Future<?> fBackupScanTask = null;
     private static int lastBackUpDay = -1;
 
     static {
@@ -56,11 +52,10 @@ public class SpecialListener implements ServletContextListener {
         // 启动时默认同步全盘一次。
         BackendScanner.getInstance().scheduleOneTask();
 
-
         fBackupScanTask = new ScheduledThreadPoolExecutor(1).scheduleWithFixedDelay(new Runnable() {
             public void run() {
                 if (Calendar.getInstance().get(Calendar.DAY_OF_YEAR) != lastBackUpDay
-                        && Calendar.getInstance().get(Calendar.HOUR_OF_DAY) == HOUR_TO_BACKUP) {        // 每天备份数据到远端云存储。
+                        && Calendar.getInstance().get(Calendar.HOUR_OF_DAY) == HOUR_TO_BACKUP) {
                     if (AppConfig.getInstance().isAutoBackUp()) {
                         BackendScanner.getInstance().scheduleOneBackupTask();
                         lastBackUpDay = Calendar.getInstance().get(Calendar.DAY_OF_YEAR);
@@ -68,7 +63,6 @@ public class SpecialListener implements ServletContextListener {
                 }
             }
         }, 300, 59 * 60, TimeUnit.SECONDS);
-
 
         // 5秒检查是否需要刷新数据表。
         fFreshAllData = new ScheduledThreadPoolExecutor(1).scheduleWithFixedDelay(new Runnable() {

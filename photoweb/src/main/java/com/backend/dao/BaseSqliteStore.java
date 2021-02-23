@@ -296,6 +296,7 @@ public class BaseSqliteStore extends AbstractRecordsStore {
                         SyncTool.submitSyncTask(fi);
                     }
 
+                    SyncTool.syncPhotoLibrary(fi);
                     FaceRecServiceFactory.getFaceRecService().detectFaces(fi);
                     if (ThumbnailManager.checkTheThumbnailExist(fi.getHash256())) {
                         PerformanceStatistics.getInstance().addOneFile(false);

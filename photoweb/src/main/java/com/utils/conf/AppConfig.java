@@ -122,6 +122,11 @@ public class AppConfig {
                     strList.add((String) s);
                 }
             }
+            strList.add(getThumbnailDir());
+
+            if (StringUtils.isNotBlank(getPhotoLibraryDir())){
+                strList.add(getPhotoLibraryDir());
+            }
 
             for (String s : strList) {
                 File f = new File(s);
@@ -137,6 +142,10 @@ public class AppConfig {
 
     public String getThumbnailDir() {
         return config.getString("thumbnaildir", "./thumbnail");
+    }
+
+    public String getPhotoLibraryDir() {
+        return config.getString("uniqlibrarydir");
     }
 
     public boolean needAccessAuth() {

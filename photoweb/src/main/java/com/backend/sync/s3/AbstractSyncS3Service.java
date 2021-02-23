@@ -40,6 +40,18 @@ public abstract class AbstractSyncS3Service {
 
     private AtomicInteger failedTimes = new AtomicInteger(0);
 
+    private static String getHashStrFromObjectKey(String objKey) {
+        int pos = StringUtils.lastIndexOf(objKey, "/");
+        if (pos > 0) {
+            String hashStr = StringUtils.substring(objKey, pos + 1);
+            if (StringUtils.isNotBlank(hashStr) && hashStr.length() == 32) {
+                return hashStr;
+            }
+        }
+
+        return null;
+    }
+
     private boolean checkAlreadyBackuped(FileInfo fi) {
         BackupedFilesDao backupedFilesDao = S3ServiceFactory.getBackUpDao();
         if (fi != null && backupedFilesDao != null && backupedFilesDao.isBackup(fi.getHash256())) {
@@ -185,8 +197,7 @@ public abstract class AbstractSyncS3Service {
                         .isVideo(fi.getPath())) {
                     // 使用jalbum提取的指纹计算得到的etag来做key，而不是使用真实的文件的etag。
                     // 注意此处，有可能两个线程同时上传同一张照片，但是文件不同。此时可能导致总存量计算不正确。
-                    if (getBackupedFileDao()
-                            .addOneRecords(fi.getHash256().toUpperCase(), o.getETag(), o.getKey())) {
+                    if (getBackupedFileDao().addOneRecords(fi.getHash256().toUpperCase(), o.getETag(), o.getKey())) {
                         addStatistics(o.getContentLength());
                     }
                 } else {
@@ -211,21 +222,8 @@ public abstract class AbstractSyncS3Service {
         backedUpCount.incrementAndGet();
     }
 
-
     private String genObjectKey(FileInfo fi) {
         return OBJECT_PREFIX + timeToFolder(fi.getPhotoTime().getTime()) + fi.getHash256();
-    }
-
-    private static String getHashStrFromObjectKey(String objKey) {
-        int pos = StringUtils.lastIndexOf(objKey, "/");
-        if (pos > 0) {
-            String hashStr = StringUtils.substring(objKey, pos + 1);
-            if (StringUtils.isNotBlank(hashStr) && hashStr.length() == 32) {
-                return hashStr;
-            }
-        }
-
-        return null;
     }
 
     private String timeToFolder(long date) {

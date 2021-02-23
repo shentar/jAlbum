@@ -150,6 +150,20 @@ public class HeadUtils {
         return contentType;
     }
 
+    public static String getFileNameSuffix(FileType ft) {
+        switch (ft) {
+            case JPG:
+            case JPEG:
+                return ".jpg";
+            case PNG:
+                return ".png";
+            case VIDEO:
+                return ".mp4";
+        }
+
+        return "";
+    }
+
     public static String getContentType(String pathToFile) throws IOException {
         String mime = Files.probeContentType(Paths.get(pathToFile));
         if (StringUtils.isBlank(mime)) {
