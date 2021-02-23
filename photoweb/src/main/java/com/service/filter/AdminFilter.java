@@ -85,7 +85,7 @@ public class AdminFilter extends AbstractFilter {
                         token);
             }
 
-            sb.append(GlobalConfDao.getInstance().getOneUserKey(i)).append(":").append(token)
+            sb.append(GlobalConfDao.getInstance().getOneUserKey(i)).append(": ").append(token)
                     .append("\r\n");
         }
 
@@ -95,7 +95,7 @@ public class AdminFilter extends AbstractFilter {
             GlobalConfDao.getInstance().setConf(SystemConstant.SUPER_TOKEN_KEY, superToken);
         }
 
-        sb.append("superToken: ").append(superToken);
+        sb.append("superToken: ").append(superToken).append("\r\n");
 
         TokenCache.getInstance().refreshToken();
         try {
