@@ -57,6 +57,11 @@ public class SyncTool {
             @Override
             public void run() {
                 synchronized (fullFilePath.intern()) {
+                    // double check.
+                    if (f.exists()) {
+                        return;
+                    }
+
                     File origFile = new File(fi.getPath());
                     String dstTmp = fullFilePath + ".tmp";
                     File ftmp = new File(dstTmp);
