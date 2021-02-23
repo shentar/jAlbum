@@ -62,12 +62,13 @@ public class SyncTool {
                     File ftmp = new File(dstTmp);
                     try {
                         Files.copy(origFile.toPath(), ftmp.toPath(), StandardCopyOption.COPY_ATTRIBUTES);
-                        logger.warn(String.format("Add one file to the library: %s -> %s",
-                                origFile.getAbsolutePath(), ftmp.getAbsolutePath()));
                         boolean res = ftmp.renameTo(f);
                         if (!res) {
                             logger.warn(String.format("rename file failed: %s -> %s",
                                     ftmp.getAbsolutePath(), f.getAbsolutePath()));
+                        } else {
+                            logger.warn(String.format("Add one file to the library: %s -> %s",
+                                    origFile.getAbsolutePath(), f.getAbsolutePath()));
                         }
                     } catch (Exception e) {
                         logger.warn(String.format("copy file failed: %s -> %s",
