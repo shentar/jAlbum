@@ -66,7 +66,7 @@ public class SyncTool {
                     String dstTmp = fullFilePath + ".tmp";
                     File ftmp = new File(dstTmp);
                     try {
-                        Files.copy(origFile.toPath(), ftmp.toPath(), StandardCopyOption.COPY_ATTRIBUTES);
+                        Files.copy(origFile.toPath(), ftmp.toPath(), StandardCopyOption.COPY_ATTRIBUTES, StandardCopyOption.REPLACE_EXISTING);
                         boolean res = ftmp.renameTo(f);
                         if (!res) {
                             logger.warn(String.format("rename file failed: %s -> %s",
