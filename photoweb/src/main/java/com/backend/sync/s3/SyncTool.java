@@ -77,7 +77,7 @@ public class SyncTool {
                         }
                     } catch (Exception e) {
                         logger.warn(String.format("copy file failed: %s -> %s",
-                                origFile.getAbsolutePath(), f.getAbsolutePath()));
+                                origFile.getAbsolutePath(), f.getAbsolutePath()), e);
                     }
                 }
             }
