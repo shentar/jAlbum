@@ -74,8 +74,8 @@ case ${cmd} in
         stopnow
         ;;
     restart)
-        ${sf} stop
-        ${sf} start
+        sh ./"${sf}" stop
+        sh ./"${sf}" start
         ;;
     *)
         usage
