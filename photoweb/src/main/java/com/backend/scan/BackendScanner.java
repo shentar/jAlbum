@@ -89,7 +89,9 @@ public class BackendScanner {
             ToolMain.setFirstRun(true);
             logger.warn("start a new Scan Task: isFirstTime {}, isDone {}.", isFirstTime, isDone);
             scanallTaskFuture = threadPool.submit(scanallTask);
-            facerScanTaskFuture = threadPool.submit(facerScanTask);
+            if (AppConfig.getInstance().isFacerConfigured()) {
+                facerScanTaskFuture = threadPool.submit(facerScanTask);
+            }
             watchServiceRestartTaskFuture = threadPool.submit(watchServiceRestartTask);
             logger.warn("scheduled a new Scan Task.");
             return true;

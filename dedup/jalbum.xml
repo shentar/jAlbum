@@ -56,7 +56,7 @@ thumbnaildir specify the folder which to store the thumbnail to.
         <service_host></service_host>
         <detect_port></detect_port>
         <search_port></search_port>
-        <service_type></service_type>
+        <service_type>0</service_type>
         <threadperbucket></threadperbucket>
         <ak></ak>
         <sk></sk>

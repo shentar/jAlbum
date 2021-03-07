@@ -30,8 +30,10 @@ public class ThreadPoolFactory {
         factory.put(FILE_TOOL, genOnePool(FILE_TOOL, AppConfig.getInstance().getThreadCount()));
         // 对于树莓派等系统，最多只能2个线程同时计算缩略图。
         factory.put(THREAD_POOL_4THUMBNAIL, genOnePool(THREAD_POOL_4THUMBNAIL, 2));
-        factory.put(FACE_REC_SERVICE, genOnePool(FACE_REC_SERVICE, AppConfig.getInstance()
-                .getFacerConcurrentThreads()));
+        if (AppConfig.getInstance().isFacerConfigured()) {
+            factory.put(FACE_REC_SERVICE, genOnePool(FACE_REC_SERVICE, AppConfig.getInstance()
+                    .getFacerConcurrentThreads()));
+        }
     }
 
     public static ThreadPoolExecutor getThreadPool(String type) {
