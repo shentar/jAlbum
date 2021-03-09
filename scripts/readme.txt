@@ -1,1 +1,1 @@
-See https://shentar.github.io/2018/02/11/jalbum/ for details.
+See https://codefine.site/2837.html for details.
