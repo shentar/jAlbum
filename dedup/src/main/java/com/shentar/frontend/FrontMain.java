@@ -1,8 +1,11 @@
 package com.shentar.frontend;
 
-import org.eclipse.jetty.http.HttpVersion;
+import org.eclipse.jetty.alpn.server.ALPNServerConnectionFactory;
+import org.eclipse.jetty.http2.HTTP2Cipher;
+import org.eclipse.jetty.http2.server.HTTP2ServerConnectionFactory;
 import org.eclipse.jetty.server.HttpConfiguration;
 import org.eclipse.jetty.server.HttpConnectionFactory;
+import org.eclipse.jetty.server.SecureRequestCustomizer;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.SslConnectionFactory;
@@ -68,14 +71,22 @@ public class FrontMain {
         // connector.setSoLingerTime(5000);
         server.addConnector(connector);
 
-        SslContextFactory sslContextFactory = new SslContextFactory();
+        SslContextFactory sslContextFactory = new SslContextFactory.Server();
         sslContextFactory.setKeyStorePath("keystore");
         sslContextFactory.setKeyStorePassword("123456");
         sslContextFactory.setKeyManagerPassword("123456");
-        SslConnectionFactory scf =
-                new SslConnectionFactory(sslContextFactory, HttpVersion.HTTP_1_1.asString());
+        sslContextFactory.setCipherComparator(HTTP2Cipher.COMPARATOR);
 
-        connector = new ServerConnector(server, scf, new HttpConnectionFactory(configuration));
+        HttpConfiguration https_config = new HttpConfiguration(configuration);
+        https_config.setSecurePort(5443);
+        https_config.addCustomizer(new SecureRequestCustomizer());
+        ALPNServerConnectionFactory alpn = new ALPNServerConnectionFactory();
+        HTTP2ServerConnectionFactory h2 = new HTTP2ServerConnectionFactory(https_config);
+
+        SslConnectionFactory scf =
+                new SslConnectionFactory(sslContextFactory, alpn.getProtocol());
+
+        connector = new ServerConnector(server, scf, alpn, h2, new HttpConnectionFactory(https_config));
         connector.setAcceptQueueSize(4);
         connector.setIdleTimeout(5000);
         connector.setPort(5443);

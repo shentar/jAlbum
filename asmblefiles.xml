@@ -41,6 +41,12 @@
             <fileset dir="${photoweb.dir}/target/dependency">
             </fileset>
         </copy>
+
+        <copy todir="${distribute.dir}/lib" overwrite="true">
+            <fileset dir="${dedup.dir}/target/dependency">
+            </fileset>
+        </copy>
+
         <copy todir="${distribute.dir}/js" overwrite="true">
             <fileset dir="${dedup.dir}/js"/>
         </copy>
