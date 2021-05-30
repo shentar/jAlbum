@@ -56,8 +56,8 @@ public class HeadUtils {
     }
 
     public static boolean needRotatePic(FileInfo f) {
-        return !isIOS() && f.getRoatateDegree() != 0;
-
+        // return !isIOS() && f.getRoatateDegree() != 0;
+        return AppConfig.getInstance().forceRotate();
     }
 
     public static void checkMobile(String ua) {

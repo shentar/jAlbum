@@ -124,7 +124,7 @@ public class AppConfig {
             }
             strList.add(getThumbnailDir());
 
-            if (StringUtils.isNotBlank(getPhotoLibraryDir())){
+            if (StringUtils.isNotBlank(getPhotoLibraryDir())) {
                 strList.add(getPhotoLibraryDir());
             }
 
@@ -350,5 +350,9 @@ public class AppConfig {
 
     public int getFacerSearchPort() {
         return config.getInt("Facer.search_port", 12547);
+    }
+
+    public boolean forceRotate() {
+        return config.getBoolean("forceRotate", false);
     }
 }
