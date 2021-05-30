@@ -552,7 +552,7 @@ public class GenerateHTML {
             content = video;
         } else {
             boolean isVideo = MediaTool.isVideo(f.getPath());
-            boolean needRoatate = HeadUtils.needRotatePic(f);
+            boolean needRotate = HeadUtils.needRotateThumbnail(f);
             boolean needRestrict = restrictSize(f);
             boolean needHeight = true;
             String img = "";
@@ -587,7 +587,7 @@ public class GenerateHTML {
                     img += " " + (needRestrict ? "width" : "height") + "=" + "\"" + size + "px\"";
                 }
 
-                if (needRoatate) {
+                if (needRotate) {
                     img += " style=\"transform: rotate(" + f.getRoatateDegree()
                             + "deg); transform-origin: 50% 50% 0px;\"";
                 }

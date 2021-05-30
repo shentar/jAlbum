@@ -60,6 +60,10 @@ public class HeadUtils {
         return AppConfig.getInstance().forceRotate();
     }
 
+    public static boolean needRotateThumbnail(FileInfo f) {
+        return f.getRoatateDegree() != 0;
+    }
+
     public static void checkMobile(String ua) {
         boolean isMobile = false;
         boolean isIOS = false;
