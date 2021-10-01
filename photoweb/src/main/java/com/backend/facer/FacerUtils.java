@@ -31,7 +31,11 @@ public class FacerUtils {
 
     public static final String OUTER_ID = "outer_id";
 
+    public static final String START = "start";
+
     public static final String FACE_TOKEN = "face_token";
+
+    public static final String FACE_COUNT = "face_count";
 
     public static final String DETACT_URL = "/facepp/v3/detect";
 
@@ -162,7 +166,7 @@ public class FacerUtils {
                         continue;
                     }
                 } else if (response.getStatusLine().getStatusCode() != 200) {
-                    logger.error("post request failed: " + result);
+                    logger.error("post request failed: {}, url: {}, params: {}", result, url, params);
                     logger.error("the file is: " + params.get(IMG_FILE));
                     result = null;
                 }

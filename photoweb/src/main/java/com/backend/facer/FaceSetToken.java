@@ -2,6 +2,7 @@ package com.backend.facer;
 
 import com.backend.dao.GlobalConfDao;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.utils.conf.AppConfig;
@@ -57,6 +58,7 @@ public class FaceSetToken {
                     GlobalConfDao.getInstance()
                             .setConf(CURRENT_FACESETID_CONF_KEY, currentFaceSetID + "");
                 }
+                createFaceSet();
             }
 
             if (facecount < 0) {
@@ -65,7 +67,7 @@ public class FaceSetToken {
                         facecount);
             }
 
-            while (facecount >= 1000) {
+            while (facecount >= 3000) {
                 refreshFaceCount();
             }
 
@@ -80,13 +82,14 @@ public class FaceSetToken {
 
     private void refreshFaceCount() {
         currentFaceSetID++;
+        createFaceSet();
         GlobalConfDao.getInstance().setConf(CURRENT_FACESETID_CONF_KEY, currentFaceSetID + "");
         facecount = getFaceCount();
         logger.warn("the faceset id is {}, facecount is {}", currentFaceSetID, facecount);
     }
 
     public synchronized String acquireFaceSetID() {
-        while (facecount >= 1000) {
+        while (facecount >= 3000) {
             refreshFaceCount();
         }
 
@@ -115,19 +118,23 @@ public class FaceSetToken {
         if (StringUtils.isBlank(result)) {
             logger.warn("create faceset failed: " + facesetid);
         } else {
-            logger.warn("created the faceset: ", result);
+            logger.warn("created the faceset: {}", result);
             GlobalConfDao.getInstance().setConf(CURRENT_FACESETID_CONF_KEY, currentFaceSetID + "");
         }
     }
 
     private int getFaceCount() {
-        List<String> flst = getFaceTokens(getCurrentFaceSetID());
-        if (flst == null) {
-            createFaceSet();
+        String faceSetID = getCurrentFaceSetID();
+        Map<String, Object> mp = new HashMap<>();
+        mp.put(FacerUtils.OUTER_ID, faceSetID);
+        String result = FacerUtils.post(FacerUtils.FACESET_DETAIL_URL, mp);
+        if (StringUtils.isBlank(result)) {
             return 0;
         }
 
-        return flst.size();
+        JsonParser parser = new JsonParser();
+        JsonObject jr = (JsonObject) parser.parse(result);
+        return jr.get(FacerUtils.FACE_COUNT).getAsInt();
     }
 
     public List<String> getFaceTokens(String faceSetID) {
@@ -137,20 +144,32 @@ public class FaceSetToken {
 
         Map<String, Object> mp = new HashMap<>();
         mp.put(FacerUtils.OUTER_ID, faceSetID);
-        String result = FacerUtils.post(FacerUtils.FACESET_DETAIL_URL, mp);
-
-        if (StringUtils.isBlank(result)) {
-            return null;
-        }
-
+        String start = "";
         List<String> flst = new LinkedList<>();
+        while (true) {
+            if (StringUtils.isNotBlank(start)) {
+                mp.put(FacerUtils.START, start);
+            }
 
-        JsonParser parser = new JsonParser();
-        JsonObject jr = (JsonObject) parser.parse(result);
-        JsonArray ja = jr.getAsJsonArray("face_tokens");
-        if (ja != null) {
-            for (int i = 0; i != ja.size(); i++) {
-                flst.add(ja.get(i).getAsString());
+            String result = FacerUtils.post(FacerUtils.FACESET_DETAIL_URL, mp);
+            if (StringUtils.isBlank(result)) {
+                break;
+            }
+
+            JsonParser parser = new JsonParser();
+            JsonObject jr = (JsonObject) parser.parse(result);
+            JsonArray ja = jr.getAsJsonArray("face_tokens");
+            if (ja != null) {
+                for (int i = 0; i != ja.size(); i++) {
+                    flst.add(ja.get(i).getAsString());
+                }
+            }
+
+            JsonElement next = jr.get("next");
+            if (next == null) {
+                break;
+            } else {
+                start = next.getAsString();
             }
         }
 

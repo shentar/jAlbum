@@ -132,5 +132,4 @@ public class FaceSetManager {
             deleteFaceFromSet(dlst, faceSetID);
         }
     }
-
 }
