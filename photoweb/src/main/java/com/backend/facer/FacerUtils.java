@@ -1,6 +1,7 @@
 package com.backend.facer;
 
 import com.backend.entity.FileInfo;
+import com.backend.metrics.MetricsClient;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -156,6 +157,7 @@ public class FacerUtils {
                 int statusCode = response.getStatusLine().getStatusCode();
 
                 if (statusCode == 403) {
+                    MetricsClient.getInstance().metricsCount("face_req_failed", 1);
                     JsonParser parser = new JsonParser();
                     JsonObject jr = (JsonObject) parser.parse(result);
                     JsonElement je = jr.get("error_message");
@@ -166,15 +168,17 @@ public class FacerUtils {
                         continue;
                     }
                 } else if (response.getStatusLine().getStatusCode() != 200) {
+                    MetricsClient.getInstance().metricsCount("face_req_failed", 1);
                     logger.error("post request failed: {}, url: {}, params: {}", result, url, params);
                     logger.error("the file is: " + params.get(IMG_FILE));
                     result = null;
                 }
                 EntityUtils.consume(entity);
                 needRetry = false;
-
+                MetricsClient.getInstance().metricsCount("face_req_succ", 1);
                 return result;
             } catch (Exception e) {
+                MetricsClient.getInstance().metricsCount("face_req_failed", 1);
                 logger.error("caused by: ", e);
                 logger.error("the file is: " + params.get(IMG_FILE));
                 needRetry = true;

@@ -278,7 +278,7 @@ public class ObjectService {
         try {
             // 延迟1.5s下发删除请求，前端刷新页面时需要依赖此条记录。盲等前端刷新玩页面后再行删除。
             Thread.sleep(1500);
-            BaseSqliteStore.getInstance().setPhotoToBeHiden(id, false);
+            BaseSqliteStore.getInstance().setPhotoToBeHidden(id, false);
             UniqPhotosStore.getInstance().deleteRecordByID(id);
             if (FaceRecServiceFactory.getFaceRecService().deleteOneFile(id)) {
                 FaceTableDao.getInstance().deleteOneFile(id);

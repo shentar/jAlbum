@@ -2,6 +2,7 @@ package com.backend.sync.s3;
 
 import com.backend.dao.BackupedFilesDao;
 import com.backend.entity.FileInfo;
+import com.backend.metrics.MetricsClient;
 import com.utils.conf.AppConfig;
 import com.utils.media.MediaTool;
 import com.utils.web.HeadUtils;
@@ -191,6 +192,8 @@ public abstract class AbstractSyncS3Service {
                 so.addMetadata(Constants.REST_METADATA_PREFIX + "type",
                         HeadUtils.getFileType(fi.getPath()).name());
                 S3Object o = s3service.putObject(getBucketName(), so);
+                MetricsClient.getInstance().metricsCount("upload_object_count", 1);
+                MetricsClient.getInstance().metricsCount("upload_object_size", fi.getSize());
                 failedTimes.set(0);
 
                 if (StringUtils.equalsIgnoreCase(o.getETag(), fi.getHash256()) || MediaTool
@@ -210,6 +213,7 @@ public abstract class AbstractSyncS3Service {
                         backedUpCount.get());
             }
         } catch (Exception e) {
+            MetricsClient.getInstance().metricsCount("upload_object_failed", 1);
             logger.warn("caused by: ", e);
             // retry this task. limit retry times?
             delayRetry();

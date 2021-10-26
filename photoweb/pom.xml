@@ -274,7 +274,11 @@
             <scope>system</scope>
             <systemPath>${project.basedir}/lib/MediaChest.jar</systemPath>
         </dependency>
-
+        <dependency>
+            <groupId>com.timgroup</groupId>
+            <artifactId>java-statsd-client</artifactId>
+            <version>3.0.1</version>
+        </dependency>
     </dependencies>
     <build>
         <pluginManagement>

@@ -61,4 +61,9 @@ thumbnaildir specify the folder which to store the thumbnail to.
         <ak></ak>
         <sk></sk>
     </Facer>
+    <Metrics>
+        <Enabled>false</Enabled>
+        <Host>172.17.0.1</Host>
+        <Port>9125</Port>
+    </Metrics>
 </config>

@@ -355,4 +355,16 @@ public class AppConfig {
     public boolean forceRotate() {
         return config.getBoolean("forceRotate", false);
     }
+
+    public boolean isMetricsEnabled() {
+        return config.getBoolean("Metrics.Enabled", false);
+    }
+
+    public String getMetricsServerHost() {
+        return config.getString("Metrics.Host", "172.17.0.1");
+    }
+
+    public int getMetricsServerPort() {
+        return config.getInt("Metrics.Port", 9091);
+    }
 }

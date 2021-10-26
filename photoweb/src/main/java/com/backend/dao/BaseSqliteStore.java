@@ -4,6 +4,7 @@ import com.backend.entity.FileInfo;
 import com.backend.entity.FileType;
 import com.backend.entity.PicStatus;
 import com.backend.facer.FaceRecServiceFactory;
+import com.backend.metrics.MetricsClient;
 import com.backend.scan.FileTools;
 import com.backend.scan.RefreshFlag;
 import com.backend.sync.s3.SyncTool;
@@ -96,6 +97,12 @@ public class BaseSqliteStore extends AbstractRecordsStore {
                 prep.setInt(10, fi.getFtype().ordinal());
                 prep.execute();
                 logger.warn("insert one file to the table successfully!" + fi);
+                MetricsClient.getInstance().metricsCount("insert_new_file", 1);
+                MetricsClient.getInstance().metricsCount("insert_new_file_size", fi.getSize());
+                if (FileType.VIDEO.equals(fi.getFtype())) {
+                    MetricsClient.getInstance().metricsCount("insert_new_video", 1);
+                    MetricsClient.getInstance().metricsCount("insert_new_video_size", fi.getSize());
+                }
             } finally {
                 lock.writeLock().unlock();
             }
@@ -351,6 +358,7 @@ public class BaseSqliteStore extends AbstractRecordsStore {
             prep.setString(1, str);
             prep.execute();
             RefreshFlag.getInstance().getAndSet(true);
+            MetricsClient.getInstance().metricsCount("delete_one_file", 1);
         } catch (Exception e) {
             logger.error("caught: " + str, e);
         } finally {
@@ -359,12 +367,12 @@ public class BaseSqliteStore extends AbstractRecordsStore {
         }
     }
 
-    public void setPhotoToBeHiden(FileInfo fi) {
+    public void setPhotoToBeHidden(FileInfo fi) {
         if (fi == null || StringUtils.isBlank(fi.getHash256())) {
             logger.warn("input file's path is empty.");
             return;
         }
-        setPhotoToBeHiden(fi.getHash256(), false);
+        setPhotoToBeHidden(fi.getHash256(), false);
     }
 
     public void deleteRecordsInDirs(String dir) {
@@ -434,7 +442,7 @@ public class BaseSqliteStore extends AbstractRecordsStore {
         }
     }
 
-    public void setPhotoToBeHiden(String file, boolean isPath) {
+    public void setPhotoToBeHidden(String file, boolean isPath) {
         if (StringUtils.isBlank(file)) {
             logger.warn("input file is empty.");
             return;
@@ -451,6 +459,7 @@ public class BaseSqliteStore extends AbstractRecordsStore {
             prep.setString(1, file);
             prep.execute();
             RefreshFlag.getInstance().getAndSet(true);
+            MetricsClient.getInstance().metricsCount("hide_one_file", 1);
         } catch (Exception e) {
             logger.error("caught: " + file, e);
         } finally {
