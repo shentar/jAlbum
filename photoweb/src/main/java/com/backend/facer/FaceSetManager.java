@@ -6,6 +6,7 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.awt.event.AdjustmentListener;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -96,6 +97,7 @@ public class FaceSetManager {
     }
 
     public synchronized void checkFaceSet() {
+        logger.warn("start to check face tokens.");
         if (!AppConfig.getInstance().isFacerConfigured()) {
             return;
         }
@@ -116,6 +118,7 @@ public class FaceSetManager {
         }
 
         for (int i = 0; i <= maxIDu; i++) {
+            logger.warn("start to check face-set-id: {}.", i);
             String faceSetID = FaceSetToken.getInstance().getFaceSetIDBySn(i);
             List<String> flst = FaceSetToken.getInstance().getFaceTokens(faceSetID);
             List<String> dlst = new LinkedList<>();
@@ -124,12 +127,19 @@ public class FaceSetManager {
                     Face f = FaceTableDao.getInstance().getFace(token);
                     if (f == null) {
                         dlst.add(token);
+                        if (dlst.size() >= 100) {
+                            deleteFaceFromSet(dlst, faceSetID);
+                            dlst.clear();
+                        }
                     }
                 }
             }
 
-            // clear the face that not found in the local face table.
-            deleteFaceFromSet(dlst, faceSetID);
+            if (dlst.size() > 0) {
+                deleteFaceFromSet(dlst, faceSetID);
+            }
+            logger.warn("ended checking face-set-id: {}.", i);
         }
+        logger.warn("delete all invalid face tokens end.");
     }
 }
