@@ -52,7 +52,7 @@ public class BaseSqliteStore extends AbstractRecordsStore {
             prep = conn.prepareStatement(
                     "select * from files where sha256=? and (deleted <> 'true' or deleted is null);");
             prep.setString(1, id);
-            res = prep.executeQuery();
+            res = SQLProxy.executeQuery(prep);
 
             while (res.next()) {
                 FileInfo f = getFileInfoFromTable(res);
@@ -95,7 +95,7 @@ public class BaseSqliteStore extends AbstractRecordsStore {
                 prep.setString(8, fi.getStatus().name());
                 prep.setLong(9, fi.getRoatateDegree());
                 prep.setInt(10, fi.getFtype().ordinal());
-                prep.execute();
+                SQLProxy.execute(prep);
                 logger.warn("insert one file to the table successfully!" + fi);
                 MetricsClient.getInstance().metricsCount("insert_new_file", 1);
                 MetricsClient.getInstance().metricsCount("insert_new_file_size", fi.getSize());
@@ -141,7 +141,7 @@ public class BaseSqliteStore extends AbstractRecordsStore {
             prep = conn.prepareStatement("select * from files where path=?;");
             prep.setString(1, path);
 
-            res = prep.executeQuery();
+            res = SQLProxy.executeQuery(prep);
 
             if (res.next()) {
                 return getFileInfoFromTable(res);
@@ -165,7 +165,7 @@ public class BaseSqliteStore extends AbstractRecordsStore {
             prep = conn.prepareStatement("select * from files where path=?;");
             prep.setString(1, f.getCanonicalPath());
 
-            res = prep.executeQuery();
+            res = SQLProxy.executeQuery(prep);
             lock.readLock().unlock();
             if (res.next()) {
                 FileInfo oldfi = getFileInfoFromTable(res);
@@ -266,7 +266,7 @@ public class BaseSqliteStore extends AbstractRecordsStore {
             prep.setString(4, fi.getStatus().name());
             prep.setInt(5, fi.getFtype().ordinal());
             prep.setString(6, fi.getPath());
-            prep.execute();
+            SQLProxy.execute(prep);
             logger.warn("update the file to: {}", fi);
             RefreshFlag.getInstance().getAndSet(true);
         } catch (Exception e) {
@@ -289,7 +289,7 @@ public class BaseSqliteStore extends AbstractRecordsStore {
             logger.warn("start to check all records in the files table.");
             prep = conn.prepareStatement(
                     "select * from files where deleted is null or deleted <> 'true';");
-            res = prep.executeQuery();
+            res = SQLProxy.executeQuery(prep);
             lock.readLock().unlock();
 
             while (res.next()) {
@@ -356,7 +356,7 @@ public class BaseSqliteStore extends AbstractRecordsStore {
                 prep = conn.prepareStatement("delete from files where sha256=?;");
             }
             prep.setString(1, str);
-            prep.execute();
+            SQLProxy.execute(prep);
             RefreshFlag.getInstance().getAndSet(true);
             MetricsClient.getInstance().metricsCount("delete_one_file", 1);
         } catch (Exception e) {
@@ -404,7 +404,7 @@ public class BaseSqliteStore extends AbstractRecordsStore {
             lock.readLock().lock();
             prep = conn.prepareStatement("select * from files where path like ?;");
             prep.setString(1, dir + "%");
-            res = prep.executeQuery();
+            res = SQLProxy.executeQuery(prep);
             if (res.next()) {
                 needDel = true;
             }
@@ -431,7 +431,7 @@ public class BaseSqliteStore extends AbstractRecordsStore {
 
             prep.setString(1, PicStatus.NOT_EXIST.name());
             prep.setString(2, dir + "%");
-            prep.execute();
+            SQLProxy.execute(prep);
             RefreshFlag.getInstance().getAndSet(true);
             logger.warn("end to delete the items in the folder: {}", dir);
         } catch (Exception e) {
@@ -457,7 +457,7 @@ public class BaseSqliteStore extends AbstractRecordsStore {
                 prep = conn.prepareStatement("update files set deleted='true' where sha256=?;");
             }
             prep.setString(1, file);
-            prep.execute();
+            SQLProxy.execute(prep);
             RefreshFlag.getInstance().getAndSet(true);
             MetricsClient.getInstance().metricsCount("hide_one_file", 1);
         } catch (Exception e) {
@@ -484,7 +484,7 @@ public class BaseSqliteStore extends AbstractRecordsStore {
             lock.readLock().lock();
             prep = conn.prepareStatement("select * from files where sha256=?;");
             prep.setString(1, id);
-            res = prep.executeQuery();
+            res = SQLProxy.executeQuery(prep);
 
             if (res.next()) {
                 // 同步已经存在的文件的时间和隐藏状态。

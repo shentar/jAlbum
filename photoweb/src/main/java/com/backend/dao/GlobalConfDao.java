@@ -31,7 +31,7 @@ public class GlobalConfDao extends AbstractRecordsStore {
             prep = conn.prepareStatement("select value from globalconf where key=?;");
             prep.setString(1, key);
 
-            res = prep.executeQuery();
+            res = SQLProxy.executeQuery(prep);
             String value = null;
             if (res.next()) {
                 value = res.getString(1);
@@ -82,7 +82,7 @@ public class GlobalConfDao extends AbstractRecordsStore {
 
             }
 
-            prep.execute();
+            SQLProxy.execute(prep);
             prep.close();
         } catch (Exception e) {
             logger.warn("caused by: ", e);
@@ -99,7 +99,7 @@ public class GlobalConfDao extends AbstractRecordsStore {
             prep = conn.prepareStatement("delete from globalconf where key=?;");
             prep.setString(1, key);
 
-            prep.execute();
+            SQLProxy.execute(prep);
         } catch (Exception e) {
             logger.warn("caused by: ", e);
         } finally {

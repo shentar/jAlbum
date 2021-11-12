@@ -37,7 +37,7 @@ public class DateTableDao extends AbstractRecordsStore {
         ResultSet res = null;
         try {
             prep = conn.prepareStatement("select * from daterecords;");
-            res = prep.executeQuery();
+            res = SQLProxy.executeQuery(prep);
 
             while (res.next()) {
                 String date = res.getString("datestr");
@@ -90,7 +90,7 @@ public class DateTableDao extends AbstractRecordsStore {
         try {
             prep = conn.prepareStatement("select * from daterecords where datestr=?;");
             prep.setString(1, day);
-            res = prep.executeQuery();
+            res = SQLProxy.executeQuery(prep);
 
             if (res.next()) {
                 DateRecords dr = new DateRecords();
@@ -172,7 +172,7 @@ public class DateTableDao extends AbstractRecordsStore {
                 prep.setLong(2, dr.getValue().getPiccount());
                 prep.setString(3, dr.getValue().getFirstpic());
 
-                prep.execute();
+                SQLProxy.execute(prep);
             } catch (Exception e) {
                 logger.warn("Exception ", e);
             } finally {

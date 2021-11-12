@@ -49,12 +49,12 @@ public class FaceTableDao extends AbstractRecordsStore {
             prep = conn.prepareStatement(
                     "CREATE TABLE faces (facetoken STRING, etag STRING (32, 32), "
                             + "pos STRING, faceid BIGINT, quality STRING, gender STRING, age STRING, ptime DATE);");
-            prep.execute();
+            SQLProxy.execute(prep);
             prep.close();
 
             prep = conn.prepareStatement(
                     "CREATE INDEX faceindex ON faces (facetoken, etag, faceid, ptime);");
-            prep.execute();
+            SQLProxy.execute(prep);
             prep.close();
             isInit = true;
         } catch (Exception e) {
@@ -84,7 +84,7 @@ public class FaceTableDao extends AbstractRecordsStore {
                 prep.setDate(8, new Date(face.getPtime()));
             }
 
-            prep.execute();
+            SQLProxy.execute(prep);
             logger.warn("add one face to the faces: {}", face);
         } catch (SQLException e) {
             logger.error("caught: " + face, e);
@@ -116,7 +116,7 @@ public class FaceTableDao extends AbstractRecordsStore {
         try {
             prep = conn.prepareStatement("select * from faces where etag=?;");
             prep.setString(1, eTag);
-            res = prep.executeQuery();
+            res = SQLProxy.executeQuery(prep);
 
             if (res.next()) {
                 logger.info("already exist: {}", eTag);
@@ -154,7 +154,7 @@ public class FaceTableDao extends AbstractRecordsStore {
                     + "and facetoken <> ? order by quality asc;");
             prep.setLong(1, -1);
             prep.setString(2, "null");
-            res = prep.executeQuery();
+            res = SQLProxy.executeQuery(prep);
 
             List<Face> flst = new LinkedList<>();
             while (res.next()) {
@@ -183,7 +183,7 @@ public class FaceTableDao extends AbstractRecordsStore {
         try {
             prep = conn.prepareStatement("select * from faces where facetoken=?;");
             prep.setString(1, token);
-            res = prep.executeQuery();
+            res = SQLProxy.executeQuery(prep);
 
             Face f;
             if (res.next()) {
@@ -240,7 +240,7 @@ public class FaceTableDao extends AbstractRecordsStore {
             prep = conn.prepareStatement("update faces set faceid=? where facetoken=?;");
             prep.setLong(1, f.getFaceid());
             prep.setString(2, f.getFacetoken());
-            prep.execute();
+            SQLProxy.execute(prep);
         } catch (Exception e) {
             logger.warn("caused by: ", e);
         } finally {
@@ -259,7 +259,7 @@ public class FaceTableDao extends AbstractRecordsStore {
         try {
             prep = conn.prepareStatement("delete from faces where etag=?;");
             prep.setString(1, f);
-            prep.execute();
+            SQLProxy.execute(prep);
         } catch (Exception e) {
             logger.warn("caused by: ", e);
         } finally {
@@ -288,7 +288,7 @@ public class FaceTableDao extends AbstractRecordsStore {
                     "select faceid,count(faceid) " + "from faces where faceid!='-1' "
                             + "group by faceid order by count(faceid) desc limit " + (
                             (facecount > 0 && facecount < 300) ? facecount : 25) + ";");
-            res = prep.executeQuery();
+            res = SQLProxy.executeQuery(prep);
 
             while (res.next()) {
                 lst.add(res.getLong(1));
@@ -312,7 +312,7 @@ public class FaceTableDao extends AbstractRecordsStore {
             prep = conn.prepareStatement(
                     "select * from faces where faceid=? order by quality desc limit 1;");
             prep.setLong(1, id);
-            res = prep.executeQuery();
+            res = SQLProxy.executeQuery(prep);
 
             if (res.next()) {
                 return getFaceFromTableRecord(res);
@@ -335,7 +335,7 @@ public class FaceTableDao extends AbstractRecordsStore {
             prep = conn.prepareStatement(
                     "select * from faces where faceid=?;");
             prep.setLong(1, id);
-            res = prep.executeQuery();
+            res = SQLProxy.executeQuery(prep);
 
             String faceSize = "";
             Face ret = null;
@@ -372,7 +372,7 @@ public class FaceTableDao extends AbstractRecordsStore {
         try {
             prep = conn.prepareStatement("select * from faces where faceid=?;");
             prep.setLong(1, id);
-            res = prep.executeQuery();
+            res = SQLProxy.executeQuery(prep);
 
             while (res.next()) {
                 Face f = getFaceFromTableRecord(res);
@@ -408,7 +408,7 @@ public class FaceTableDao extends AbstractRecordsStore {
             prep = conn.prepareStatement("update faces set faceid=? where faceid=?;");
             prep.setLong(1, newfaceid);
             prep.setLong(2, oldfaceid);
-            prep.execute();
+            SQLProxy.execute(prep);
         } catch (Exception e) {
             logger.warn("caused by: ", e);
         } finally {
@@ -446,7 +446,7 @@ public class FaceTableDao extends AbstractRecordsStore {
                 prep = conn.prepareStatement(statment);
                 prep.setDate(1, f.getPhotoTime());
             }
-            res = prep.executeQuery();
+            res = SQLProxy.executeQuery(prep);
 
             List<Face> flst = new LinkedList<>();
             while (res.next()) {
@@ -502,7 +502,7 @@ public class FaceTableDao extends AbstractRecordsStore {
                 Collections.reverse(allf);
             }
 
-            int maxCount = allf.size() < count ? allf.size() : count;
+            int maxCount = Math.min(allf.size(), count);
 
             int c = 0;
             List<Face> flst = new LinkedList<>();
@@ -555,7 +555,7 @@ public class FaceTableDao extends AbstractRecordsStore {
         try {
             prep = conn.prepareStatement("delete from faces where etag not in"
                     + " (select hashstr from uniqphotos1 group by hashstr);");
-            prep.execute();
+            SQLProxy.execute(prep);
         } catch (Exception e) {
             logger.warn("caused by: ", e);
         } finally {
@@ -571,7 +571,7 @@ public class FaceTableDao extends AbstractRecordsStore {
         try {
             prep = conn.prepareStatement("delete from faces where faceid=?;");
             prep.setLong(1, faceID);
-            prep.execute();
+            SQLProxy.execute(prep);
         } catch (Exception e) {
             logger.warn("caused by: ", e);
         } finally {
@@ -592,7 +592,7 @@ public class FaceTableDao extends AbstractRecordsStore {
             prep = conn.prepareStatement("select * from faces where etag=?;");
             prep.setString(1, id);
 
-            res = prep.executeQuery();
+            res = SQLProxy.executeQuery(prep);
 
             while (res.next()) {
                 Face face = getFaceFromTableRecord(res);

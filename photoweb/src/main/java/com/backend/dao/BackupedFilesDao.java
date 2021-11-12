@@ -28,7 +28,7 @@ public abstract class BackupedFilesDao extends AbstractRecordsStore {
             prep = conn.prepareStatement(
                     "select * from " + getBackupedTableName() + " where hashstr=?;");
             prep.setString(1, hashStr);
-            res = prep.executeQuery();
+            res = SQLProxy.executeQuery(prep);
 
             if (res.next()) {
                 return true;
@@ -58,7 +58,7 @@ public abstract class BackupedFilesDao extends AbstractRecordsStore {
             prep.setString(1, hashStr);
             prep.setString(2, eTag);
             prep.setString(3, objkey);
-            prep.execute();
+            SQLProxy.execute(prep);
             logger.warn(
                     "add one backup the file record successfully: [hashstr: {}, etag: {}, objectkey: {}]",
                     hashStr, eTag, objkey);
@@ -81,7 +81,7 @@ public abstract class BackupedFilesDao extends AbstractRecordsStore {
 
             prep = conn.prepareStatement("CREATE TABLE " + getBackupedTableName()
                     + " (hashstr STRING PRIMARY KEY, etag STRING (32, 32), objkey STRING);");
-            prep.execute();
+            SQLProxy.execute(prep);
         } catch (Exception e) {
             logger.error("caught: ", e);
         }
@@ -95,7 +95,7 @@ public abstract class BackupedFilesDao extends AbstractRecordsStore {
         try {
             lock.readLock().lock();
             prep = conn.prepareStatement("select * from " + getBackupedTableName() + ";");
-            res = prep.executeQuery();
+            res =  SQLProxy.executeQuery(prep);
 
             while (res.next()) {
                 lst.add(res.getString("hashstr"));

@@ -41,7 +41,7 @@ public class UniqPhotosStore extends AbstractRecordsStore {
             lock.readLock().lock();
             prep = conn.prepareStatement("select * from uniqphotos1 where hashstr=?;");
             prep.setString(1, id);
-            res = prep.executeQuery();
+            res = SQLProxy.executeQuery(prep);
 
             if (res.next()) {
                 return getFileInfoFromTable(res);
@@ -65,7 +65,7 @@ public class UniqPhotosStore extends AbstractRecordsStore {
             logger.debug("start to get all date records");
             lock.readLock().lock();
             prep = conn.prepareStatement("select * from uniqphotos1;");
-            res = prep.executeQuery();
+            res = SQLProxy.executeQuery(prep);
 
             Map<String, DateRecords> dst = new HashMap<>();
             while (res.next()) {
@@ -152,7 +152,7 @@ public class UniqPhotosStore extends AbstractRecordsStore {
                 }
             }
 
-            res = prep.executeQuery();
+            res = SQLProxy.executeQuery(prep);
 
             List<FileInfo> lst = new LinkedList<>();
             while (res.next()) {
@@ -262,7 +262,7 @@ public class UniqPhotosStore extends AbstractRecordsStore {
                     "select * from uniqphotos1 where phototime>=? and phototime<?;");
             prep.setDate(1, dstart);
             prep.setDate(2, dend);
-            res = prep.executeQuery();
+            res = SQLProxy.executeQuery(prep);
 
             List<FileInfo> flst = new LinkedList<>();
             while (res.next()) {
@@ -308,7 +308,7 @@ public class UniqPhotosStore extends AbstractRecordsStore {
             lock.writeLock().lock();
             prep = conn.prepareStatement("select count(1) from uniqphotos1 where ftype=?;");
             prep.setInt(1, FileType.VIDEO.ordinal());
-            res = prep.executeQuery();
+            res = SQLProxy.executeQuery(prep);
             if (res.next()) {
                 return res.getLong(1);
             }

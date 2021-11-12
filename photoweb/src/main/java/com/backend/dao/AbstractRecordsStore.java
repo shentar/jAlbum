@@ -30,7 +30,7 @@ public class AbstractRecordsStore {
             prep = conn.prepareStatement(
                     "SELECT COUNT(*) FROM sqlite_master where type='table' and name=?;");
             prep.setString(1, tablename);
-            res = prep.executeQuery();
+            res = SQLProxy.executeQuery(prep);
 
             if (res.next()) {
                 if (res.getInt(1) == 1) {
@@ -52,7 +52,7 @@ public class AbstractRecordsStore {
         PreparedStatement prep = null;
         try {
             prep = conn.prepareStatement("ALTER TABLE " + src + " RENAME TO " + dst + ";");
-            prep.execute();
+            SQLProxy.execute(prep);
             logger.info("rename {} to {} successfully!", src, dst);
         } finally {
             closeResource(prep, null);
@@ -65,7 +65,7 @@ public class AbstractRecordsStore {
         try {
             prep = conn.prepareStatement("DROP TABLE " + table + ";");
 
-            prep.execute();
+            SQLProxy.execute(prep);
             logger.info("drop the table {} successfully.", table);
         } finally {
             closeResource(prep, null);
@@ -78,7 +78,7 @@ public class AbstractRecordsStore {
         try {
             prep = conn.prepareStatement("delete from " + table + ";");
 
-            prep.execute();
+            SQLProxy.execute(prep);
             logger.info("drop the table {} successfully.", table);
         } finally {
             closeResource(prep, null);
@@ -90,7 +90,7 @@ public class AbstractRecordsStore {
         PreparedStatement prep = null;
         try {
             prep = conn.prepareStatement(sql);
-            prep.execute();
+            SQLProxy.execute(prep);
 
             logger.info("execute the sql {} successfully.", sql);
         } finally {
@@ -122,7 +122,7 @@ public class AbstractRecordsStore {
         try {
             lock.readLock().lock();
             prep = conn.prepareStatement("select count(1) from " + table + ";");
-            res = prep.executeQuery();
+            res = SQLProxy.executeQuery(prep);
             if (res.next()) {
                 return res.getLong(1);
             }

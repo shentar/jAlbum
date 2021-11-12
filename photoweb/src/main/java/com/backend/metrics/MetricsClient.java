@@ -26,4 +26,12 @@ public class MetricsClient {
 
         statsd.count(metrics, value);
     }
+
+    public void metricsTimeDuration(String metrics, long value) {
+        if (!AppConfig.getInstance().isMetricsEnabled()) {
+            return;
+        }
+
+        statsd.time(metrics, value);
+    }
 }
