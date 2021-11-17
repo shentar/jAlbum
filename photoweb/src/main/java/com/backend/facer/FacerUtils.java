@@ -157,15 +157,17 @@ public class FacerUtils {
                 int statusCode = response.getStatusLine().getStatusCode();
 
                 if (statusCode == 403) {
-                    MetricsClient.getInstance().metricsCount("face_req_failed", 1);
                     JsonParser parser = new JsonParser();
                     JsonObject jr = (JsonObject) parser.parse(result);
                     JsonElement je = jr.get("error_message");
-                    if (je != null && StringUtils.equalsIgnoreCase("CONCURRENCY_LIMIT_EXCEEDED",
-                            je.getAsString())) {
+                    if (je != null && StringUtils.equalsIgnoreCase("CONCURRENCY_LIMIT_EXCEEDED", je.getAsString())) {
                         // need retry.
                         EntityUtils.consume(entity);
+                        logger.warn("post request need retry: {}, url: {}, params: {}", result, url, params);
                         continue;
+                    } else {
+                        MetricsClient.getInstance().metricsCount("face_req_failed", 1);
+                        logger.error("post request failed: {}, url: {}, params: {}", result, url, params);
                     }
                 } else if (response.getStatusLine().getStatusCode() != 200) {
                     MetricsClient.getInstance().metricsCount("face_req_failed", 1);
