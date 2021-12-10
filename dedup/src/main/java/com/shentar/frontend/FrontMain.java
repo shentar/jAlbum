@@ -1,15 +1,9 @@
 package com.shentar.frontend;
 
-import org.eclipse.jetty.alpn.server.ALPNServerConnectionFactory;
-import org.eclipse.jetty.http2.HTTP2Cipher;
-import org.eclipse.jetty.http2.server.HTTP2ServerConnectionFactory;
 import org.eclipse.jetty.server.HttpConfiguration;
 import org.eclipse.jetty.server.HttpConnectionFactory;
-import org.eclipse.jetty.server.SecureRequestCustomizer;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
-import org.eclipse.jetty.server.SslConnectionFactory;
-import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.webapp.WebAppContext;
 
@@ -66,11 +60,14 @@ public class FrontMain {
         ServerConnector connector =
                 new ServerConnector(server, new HttpConnectionFactory(configuration));
         connector.setIdleTimeout(5000);
+        connector.setHost("127.0.0.1");
         connector.setPort(port);
+        connector.setReuseAddress(true);
         connector.setAcceptQueueSize(4);
         // connector.setSoLingerTime(5000);
         server.addConnector(connector);
 
+        /*
         SslContextFactory sslContextFactory = new SslContextFactory.Server();
         sslContextFactory.setKeyStorePath("keystore");
         sslContextFactory.setKeyStorePassword("123456");
@@ -91,6 +88,7 @@ public class FrontMain {
         connector.setIdleTimeout(5000);
         connector.setPort(5443);
         server.addConnector(connector);
+        */
 
         /**
          * SignalHandler sig = new SignalHandler() {
