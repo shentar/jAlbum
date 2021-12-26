@@ -65,6 +65,7 @@ public class AdminFilter extends AbstractFilter {
                 for (int i = 0; i != 5; i++) {
                     GlobalConfDao.getInstance().delete(GlobalConfDao.getInstance().getOneUserKey(i));
                 }
+                GlobalConfDao.getInstance().delete(SystemConstant.SUPER_TOKEN_KEY);
                 checkAndGenToken(httpres);
                 return false;
 
