@@ -54,4 +54,6 @@ public class SystemConstant {
     public static final String COOKIE_CONTENT = "cookie_content";
 
     public static final int MAX_EXPIRE_AGE = 3600 * 24 * 3600;
+
+    public static final String X_REAL_IP = "X-Real-IP";
 }

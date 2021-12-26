@@ -33,7 +33,13 @@ public class AuthFilter extends AbstractFilter {
             return true;
         }
 
-        if (StringUtils.equals(httpreq.getRemoteAddr(), "127.0.0.1")) {
+        String remoteIp = httpreq.getRemoteAddr();
+        if (StringUtils.isNotBlank(httpreq.getHeader(SystemConstant.X_REAL_IP))) {
+            // use nginx proxy.
+            remoteIp = httpreq.getHeader(SystemConstant.X_REAL_IP);
+        }
+
+        if (StringUtils.equals(remoteIp, "127.0.0.1")) {
             logger.info("login from local host.");
             SystemProperties.add(SystemConstant.USER_LOGIN_STATUS, LoginStatus.LocalLoin);
             return true;
