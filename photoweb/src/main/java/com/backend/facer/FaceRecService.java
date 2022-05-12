@@ -40,7 +40,7 @@ public class FaceRecService implements FaceRecServiceInterface {
 
         if (!GlobalLockBaseOnString.getInstance(GlobalLockBaseOnString.FACE_DETECT_LOCK)
                 .tryToDo(fi.getHash256())) {
-            logger.warn("a task already asigned {}", fi);
+            logger.info("a task already asigned {}", fi);
             return;
         }
 

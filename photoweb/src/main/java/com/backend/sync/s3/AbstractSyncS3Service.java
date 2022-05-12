@@ -68,7 +68,7 @@ public abstract class AbstractSyncS3Service {
         try {
             int ft = failedTimes.incrementAndGet();
 
-            ft = ft > 8 ? 8 : ft;
+            ft = Math.min(ft, 8);
 
             Thread.sleep((long) (AppConfig.getInstance().getRetryInitS3() * Math.pow(2, ft)));
         } catch (Exception e) {

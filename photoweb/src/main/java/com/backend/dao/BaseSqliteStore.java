@@ -294,6 +294,10 @@ public class BaseSqliteStore extends AbstractRecordsStore {
 
             while (res.next()) {
                 FileInfo fi = getFileInfoFromTable(res);
+                if (StringUtils.isEmpty(fi.getPath()) || StringUtils.isEmpty(fi.getHash256())) {
+                    logger.warn("some wrong records: {}", fi);
+                    continue;
+                }
 
                 PicStatus status = FileTools.checkFileDeleted(fi, excludeDirs);
 
@@ -317,19 +321,8 @@ public class BaseSqliteStore extends AbstractRecordsStore {
                 }
 
                 if (needSyncS3 && fi.getStatus() == PicStatus.NOT_EXIST) {
-                    //  if (HuaweiOBSSyncService.getInstance().objectExist(fi))
-                    //  {
                     // 从远端云存储上面找回数据。
-                    logger.info(
-                            "the local file is not exist. please fetch it from the cloud storage: {}",
-                            fi);
-                    // }
-                    // else
-                    // {
-                    //     logger.warn(
-                    //             "the local file not exist, cloud storage file also not exist. fi: {}",
-                    //             fi);
-                    // }
+                    logger.info("the local file is not exist. please fetch it from the cloud storage: {}", fi);
                 }
             }
             PerformanceStatistics.getInstance().printPerformanceLog(System.currentTimeMillis());
