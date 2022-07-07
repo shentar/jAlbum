@@ -9,7 +9,7 @@
     <url>http://maven.apache.org</url>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <jetty.version>9.4.41.v20210516</jetty.version>
+        <jetty.version>10.0.10</jetty.version>
         <jetty.alpn.api.version>1.1.2.v20150522</jetty.alpn.api.version>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
