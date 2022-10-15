@@ -1107,27 +1107,14 @@ public class GenerateHTML {
     }
 
     public static String getGAStr() {
-        /*
-         * <!-- Global site tag (gtag.js) - Google Analytics -->
-         <script async src="https://www.googletagmanager.com/gtag/js?id=UA-300061-16"></script>
-         <script>
-         window.dataLayer = window.dataLayer || [];
-         function gtag(){dataLayer.push(arguments);}
-         gtag('js', new Date());
-
-         gtag('config', 'UA-300061-16');
-         </script>
-         */
         String id = AppConfig.getInstance().getGoogleAnalyticsID();
         if (StringUtils.isNotBlank(id)) {
-            String gastr = "<!-- Global site tag (gtag.js) - Google Analytics -->\n"
-                    + "         <script async src=\"https://www.googletagmanager.com/gtag/js?id="
-                    + id + "\"></script>\n" + "         <script>\n"
-                    + "         window.dataLayer = window.dataLayer || [];\n"
-                    + "         function gtag(){dataLayer.push(arguments);}\n"
-                    + "         gtag('js', new Date());\n" + "         gtag('config', '" + id
-                    + "');\n" + "         </script>";
-            return gastr;
+            return "<script> var _paq = window._paq = window._paq || [];" +
+                    "_paq.push(['trackPageView']);_paq.push(['enableLinkTracking']);" +
+                    "(function() {var u=\"//analytics.codefine.site:6870/\";" +
+                    "_paq.push(['setTrackerUrl', u+'matomo.php']); _paq.push(['setSiteId', '2']);" +
+                    "var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];" +
+                    "g.async=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);})();</script>";
         } else {
             return "";
         }
