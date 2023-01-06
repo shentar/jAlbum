@@ -888,15 +888,7 @@ public class GenerateHTML {
     }
 
     private static void logHtml(StringBuffer sb) {
-        logHtml(sb, false);
-    }
-
-    private static void logHtml(StringBuffer sb, boolean forced) {
-        if (forced) {
-            logger.warn("html body: {}", sb);
-        } else {
-            logger.info("html body: {}", sb);
-        }
+        logger.debug("html body: {}", sb);
     }
 
     private static String generateImgTag(Face f, boolean isThumbnail) {

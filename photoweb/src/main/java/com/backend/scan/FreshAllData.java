@@ -66,7 +66,7 @@ public class FreshAllData {
         FaceSetManager.getInstance().checkFaceSet();
 
         logger.info("end to refresh all tables: {}", this);
-        logger.info("the count of dir which is monitered is "
+        logger.info("the count of dir which is monitored is "
                 + DirWatchService.getInstance().getTheWatchDirCount() + ".");
         lastFreshTime = System.currentTimeMillis();
         lastEventTime = 0;
