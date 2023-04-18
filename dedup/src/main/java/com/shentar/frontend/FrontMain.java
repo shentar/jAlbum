@@ -60,7 +60,7 @@ public class FrontMain {
         ServerConnector connector =
                 new ServerConnector(server, new HttpConnectionFactory(configuration));
         connector.setIdleTimeout(5000);
-        connector.setHost("127.0.0.1");
+        connector.setHost("0.0.0.0");
         connector.setPort(port);
         connector.setReuseAddress(true);
         connector.setAcceptQueueSize(4);

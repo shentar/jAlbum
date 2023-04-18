@@ -15,7 +15,7 @@ import java.util.List;
 public class AppConfig {
     private static final Logger logger = LoggerFactory.getLogger(AppConfig.class);
 
-    private static final String configFilePath = "jalbum.xml";
+    private static final String configFilePath = "/app/config/jalbum.xml";
     private static final AppConfig instance = new AppConfig();
     private static XMLConfiguration config;
 

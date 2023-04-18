@@ -30,6 +30,7 @@
             </fileset>
             <fileset dir="${scripts.dir}">
                 <include name="jalbum.sh"/>
+                <include name="jalbum-entrypoint.sh"/>
                 <include name="start.bat"/>
                 <include name="readme.txt"/>
             </fileset>
