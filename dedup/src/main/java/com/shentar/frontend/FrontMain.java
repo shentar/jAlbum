@@ -15,6 +15,7 @@ public class FrontMain {
 
     public static void main(String[] args) throws Exception {
         int port = DEFAULT_PORT;
+        String host = "127.0.0.1";
         if (args.length == 1) {
             String pstr = args[0];
             try {
@@ -25,6 +26,8 @@ public class FrontMain {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        } else if (args.length == 2) {
+            host = args[1];
         }
 
         QueuedThreadPool thp = new QueuedThreadPool();
@@ -60,7 +63,7 @@ public class FrontMain {
         ServerConnector connector =
                 new ServerConnector(server, new HttpConnectionFactory(configuration));
         connector.setIdleTimeout(5000);
-        connector.setHost("127.0.0.1");
+        connector.setHost(host);
         connector.setPort(port);
         connector.setReuseAddress(true);
         connector.setAcceptQueueSize(4);
