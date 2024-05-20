@@ -227,7 +227,8 @@ public abstract class AbstractSyncS3Service {
     }
 
     private String genObjectKey(FileInfo fi) {
-        return OBJECT_PREFIX + timeToFolder(fi.getPhotoTime().getTime()) + fi.getHash256();
+        return OBJECT_PREFIX + timeToFolder(fi.getPhotoTime().getTime()) + fi.getHash256() + "." +
+                HeadUtils.getFileNameSuffix(fi.getFtype());
     }
 
     private String timeToFolder(long date) {
